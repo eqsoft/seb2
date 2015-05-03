@@ -33,7 +33,7 @@ this.EXPORTED_SYMBOLS = ["seb"];
 
 /* Modules */
 const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components,
-	{ appinfo, io, locale, prefs } = Cu.import("resource://gre/modules/Services.jsm").Services,
+	{ appinfo, io, locale, prefs, prompt } = Cu.import("resource://gre/modules/Services.jsm").Services,
 	{ FileUtils } = Cu.import("resource://gre/modules/FileUtils.jsm",{}),
 	{ OS } = Cu.import("resource://gre/modules/osfile.jsm");
 
@@ -47,6 +47,7 @@ XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","Seb
 XPCOMUtils.defineLazyModuleGetter(this,"sw","resource://modules/SebWin.jsm","SebWin");
 XPCOMUtils.defineLazyModuleGetter(this,"sb","resource://modules/SebBrowser.jsm","SebBrowser");
 XPCOMUtils.defineLazyModuleGetter(this,"sn","resource://modules/SebNet.jsm","SebNet");
+XPCOMUtils.defineLazyModuleGetter(this,"sh","resource://modules/SebHost.jsm","SebHost");
 
 /* ModuleGlobals */
 let	base = null;
@@ -54,17 +55,23 @@ let	base = null;
 this.seb =  {
 	DEBUG : false,
 	cmdline : null,
-	config	: null,
+	config : null,
+	url : "",
 	mainWin : null,
 	profile: {},
 	locs : null,	
 	consts : null,
-	
+	allowQuit : false,
+	quitURL : "",
+	quitIgnorePassword : false,
+	quitIgnoreWarning : false,
+	hostForceQuit : false,
+
 	toString : function() {
 		return appinfo.name;
 	},
 	
-	shutdownObserver : {
+	quitObserver : {
 		observe	: function(subject, topic, data) {
 			if (topic == "xpcom-shutdown") {
 				if (base.config["removeProfile"]) {
@@ -90,7 +97,7 @@ this.seb =  {
 		},
 		register: function() {  
 			this.observerService.addObserver(this, "xpcom-shutdown", false);  
-			sl.debug("shutdownObserver registered");
+			sl.debug("quitObserver registered");
 		},  
 		unregister: function()  {  
 			this.observerService.removeObserver(this, "xpcom-shutdown");  
@@ -114,7 +121,11 @@ this.seb =  {
 		let prefFile = (base.DEBUG) ? FileUtils.getFile("CurProcD",["debug_prefs.js"], null) : FileUtils.getFile("CurProcD",["debug_reset prefs.js"], null);
 		if (prefFile.exists()) {
 			sl.debug("found " + prefFile.path);
-			try { prefs.readUserPrefs(prefFile); }
+			try { 
+				prefs.readUserPrefs(prefFile);
+				prefs.readUserPrefs(null); // tricky: for current prefs file use profile prefs, so my original prefs will never be overridden ;-)
+				prefs.savePrefFile(null);
+			}
 			catch (e) { sl.err(e); }
 		}
 		else { sl.err("could not find: " + prefFile.path); }
@@ -126,11 +137,7 @@ this.seb =  {
 			if (typeof obj == "object") {
 				sl.debug("config object found");
 				base.config = obj;
-				if (typeof base.config.browserPrefs == "object") {
-					su.setPrefs(base.config.browserPrefs);
-				}
-				base.initLocale();
-				sn.init(base); // needs config on init for compiled RegEx
+				base.initAfterConfig();
 			}
 		}
 		let configParam = su.getCmd("config");
@@ -147,6 +154,15 @@ this.seb =  {
 				sl.err("no config param and no default config.json!");
 			}
 		}
+	},
+	
+	initAfterConfig() {
+		if (typeof base.config.browserPrefs == "object") {
+					su.setPrefs(base.config.browserPrefs);
+		}
+		base.initLocale();
+		sn.init(base); // needs config on init for compiled RegEx
+		sh.init(base);
 	},
 	
 	initProfile : function() {
@@ -218,21 +234,24 @@ this.seb =  {
 	
 	initMain : function(win) {
 		sl.debug("initMain");
-		url = su.getUrl();
+		base.url = su.getUrl();
+		base.allowQuit = su.getConfig("allowQuit","boolean",false);
+		base.quitURL =su.getConfig("quitURL","string","");
 		sb.setEmbeddedCerts();
-		base.setShutdownHandler(win);
+		base.setQuitHandler(win);
 		sn.httpRequestObserver.register();
+		sh.setMessageSocketHandler(win);
 		base.locs = win.document.getElementById("locale");	
 		base.consts = win.document.getElementById("const");
 		sw.showLoading(win);
-		sw.loadPage(win,url);
+		sw.loadPage(win,base.url);
 	},
 	
 	/* handler */
-	setShutdownHandler : function(win) {
-		sl.debug("setShutdownHandler");
-		win.addEventListener( "close", base.shutdown, true); // controlled shutdown for main window
-		base.shutdownObserver.register();
+	setQuitHandler : function(win) {
+		sl.debug("setQuitHandler");
+		win.addEventListener( "close", base.quit, true); // controlled shutdown for main window
+		base.quitObserver.register();
 	},
 	
 	/* events */
@@ -241,7 +260,7 @@ this.seb =  {
 		sw.addWin(win);
 		sb.setBrowserHandler(win);
 		if (sw.getWinType(win) == "main") {
-			mainWin = win;
+			base.mainWin = win;
 			base.initMain(win);
 		}
 	},
@@ -254,7 +273,97 @@ this.seb =  {
 		sl.debug("onclose");
 	},
 	
-	shutdown: function() {
-		sl.debug("try shutdown");		
+	quit: function(e) {
+		sl.debug("try to quit...");
+		var w = base.mainWin;
+		var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
+		if (e != null) { // catch event
+			if (base.hostForceQuit) {
+				sl.debug("host force quit");
+				return true;
+			}
+			else {
+				e.preventDefault();
+				e.stopPropagation();				
+			}
+		}
+		/*
+		if (messageServer) {
+			x.debug("shutdown should be handled by host");
+			var msg = (e) ? "seb.beforeclose.manual" : "seb.beforeclose.quiturl";
+			messageSocket.send(msg);
+			return;
+		}
+		*/			
+		
+		if (!base.allowQuit) { // on shutdown url the global variable "shutdownEnabled" is set to true
+			sl.out("no way! seb is locked :-)");
+		}
+		else {
+			if (e) { // close window event: user action or host event 
+				// first look for warning
+				let passwd = su.getConfig("hashedQuitPassword","string","");
+				
+				if (!base.quitIgnoreWarning && !passwd) {
+					var result = prompts.confirm(null, su.getLocStr("seb.quit.warning.title"), su.getLocStr("seb.quit.warning"));
+					if (!result) {
+						return;
+					}
+				}							
+				
+				if (passwd && !base.quitIgnorePassword) {				
+					var password = {value: ""}; // default the password to pass
+					var check = {value: true}; // default the checkbox to true
+					var result = prompts.promptPassword(null, su.getLocStr("seb.password.title"), su.getLocStr("seb.password.text"), password, null, check);
+					if (!result) {
+						return;
+					}
+					var check = su.getHash(password.value);
+					sl.debug(passwd + ":" + check);
+					if (check.toLowerCase() != passwd.toLowerCase()) {
+						//prompt.alert(mainWin, getLocStr("seb.title"), getLocStr("seb.url.blocked"));
+						prompt.alert(mainWin, su.getLocStr("seb.password.title"), su.getLocStr("seb.password.wrong"));
+						return;
+					}
+				}
+			}
+			else { // shutdown link: browser takes shutdown control
+				if (!base.quitIgnoreWarning) {
+					var result = prompts.confirm(null, su.getLocStr("seb.quit.warning.title"), su.getLocStr("seb.quit.warning"));
+					if (!result) {
+						return;
+					}
+				}
+				
+				let passwd = su.getConfig("hashedQuitPassword","string","");
+				
+				if (passwd && !base.quitIgnorePassword) {				
+					var password = {value: ""}; // default the password to pass
+					var check = {value: true}; // default the checkbox to true
+					var result = prompts.promptPassword(null, su.getLocStr("seb.password.title"), su.getLocStr("seb.password.text"), password, null, check);
+					if (!result) {
+						return;
+					}
+					var check = su.getHash(password.value);
+					sl.debug(passwd + ":" + check);
+					if (check.toLowerCase() != passwd.toLowerCase()) {
+						//prompt.alert(mainWin, getLocStr("seb.title"), getLocStr("seb.url.blocked"));
+						prompt.alert(mainWin, su.getLocStr("seb.password.title"), su.getLocStr("seb.password.wrong"));
+						return;
+					}
+				}
+			}
+			
+			/*
+			if (sebBinaryClient) {
+				for (var s in sebBinaryClient.streams) {
+					x.debug("close stream " + s);
+					sebBinaryClient.streams[s]._socket.close();
+				}
+			}
+			*/
+			sw.closeAllWin();
+			sl.debug("quit"); 
+		}		
 	}
 }

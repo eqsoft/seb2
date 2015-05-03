@@ -102,6 +102,17 @@ this.SebBrowser = {
 			}
 			if (aStateFlags & wpl.STATE_START) {												
 				try {
+					if (seb.quitURL === aRequest.name) {
+						aRequest.cancel(aStatus);
+						var tmpQuit = seb.allowQuit; // store default shutdownEnabled
+						var tmpIgnorePassword = seb.quitIgnorePassword; // store default quitIgnorePassword
+						seb.allowQuit = true; // set to true
+						seb.quitIgnorePassword = true;
+						seb.quit();									
+						seb.allowQuit = tmpQuit; // set default shutdownEnabled
+						seb.quitIgnorePassword = tmpIgnorePassword; // set default shutdownIgnorePassword
+						return;
+					}
 					if (aRequest && aRequest.name) {
 						let win = sw.getChromeWin(aWebProgress.DOMWindow);
 						if (!sn.isValidUrl(aRequest.name)) {

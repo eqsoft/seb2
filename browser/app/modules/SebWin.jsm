@@ -99,6 +99,18 @@ this.SebWin = {
                    .getInterface(Ci.nsIDOMWindow);
 	},
 	
+	closeAllWin : function() {
+		for (var i=base.wins.length-1;i>=0;i--) { // ich nehm Euch alle MIT!!!!
+			try {
+				sl.debug("close window ...");
+				base.wins[i].close();
+			}
+			catch(e) {
+				sl.err(e);
+			}
+		}
+	},
+	
 	loadPage : function (win,url,loadFlag) {	// only use for real http requests
 		sl.debug("try to load: " + url);	
 		if (!win.XulLibBrowser) {

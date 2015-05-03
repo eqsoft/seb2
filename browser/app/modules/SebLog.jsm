@@ -43,6 +43,7 @@ let console = Cc["@mozilla.org/consoleservice;1"].getService(Ci.nsIConsoleServic
 let os = "";
 let lf = "\n";
 let seb = null;
+let message = {};
 
 this.SebLog = {
 	init : function(obj) {

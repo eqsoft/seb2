@@ -45,6 +45,7 @@ XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","S
 
 /* ModuleGlobals */
 let 	seb = null,
+	base = null,
 	whiteListRegs =	[],
 	blackListRegs = [],
 	convertReg = /[-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g,
