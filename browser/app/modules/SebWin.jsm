@@ -57,7 +57,9 @@ const	xulFrame = "seb.iframe",
 	xulLoad	= "chrome://seb/content/load.xul",
 	errDeck	= 0,
 	loadDeck = 0,
-	contentDeck = 1;
+	contentDeck = 1,
+	serverDeck = 2,
+	messageDeck = 3;
 	
 this.SebWin = {
 	wins : [],
@@ -138,6 +140,22 @@ this.SebWin = {
 			w.document.title = w.content.document.title;
 		}
 		catch(e) {}
+		w.focus();
+		w.XulLibBrowser.focus();
+	},
+	
+	showServer : function (win) { 
+		let w = (win) ? win : base.getRecentWin();
+		sl.debug("showServer..." + base.getWinType(w));
+		base.setDeckIndex(w,serverDeck);
+		w.focus();
+		w.XulLibBrowser.focus();
+	},
+	
+	showMessage : function (win) { 
+		let w = (win) ? win : base.getRecentWin();
+		sl.debug("showMessage..." + base.getWinType(w));
+		base.setDeckIndex(w,messageDeck);
 		w.focus();
 		w.XulLibBrowser.focus();
 	},
