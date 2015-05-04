@@ -118,7 +118,7 @@ this.seb =  {
 	},
 	
 	initDebug : function() {
-		let prefFile = (base.DEBUG) ? FileUtils.getFile("CurProcD",["debug_prefs.js"], null) : FileUtils.getFile("CurProcD",["debug_reset prefs.js"], null);
+		let prefFile = (base.DEBUG) ? FileUtils.getFile("CurProcD",["debug_prefs.js"], null) : FileUtils.getFile("CurProcD",["debug_reset_prefs.js"], null);
 		if (prefFile.exists()) {
 			sl.debug("found " + prefFile.path);
 			try { 
@@ -267,6 +267,7 @@ this.seb =  {
 	
 	onunload : function(win) {
 		sl.debug("onunload");
+		sh.closeMessageSocket();
 	},
 	
 	onclose : function (win) {
@@ -321,8 +322,9 @@ this.seb =  {
 					var check = su.getHash(password.value);
 					sl.debug(passwd + ":" + check);
 					if (check.toLowerCase() != passwd.toLowerCase()) {
+						sl.debug("wrong password");
 						//prompt.alert(mainWin, getLocStr("seb.title"), getLocStr("seb.url.blocked"));
-						prompt.alert(mainWin, su.getLocStr("seb.password.title"), su.getLocStr("seb.password.wrong"));
+						prompt.alert(base.mainWin, su.getLocStr("seb.password.title"), su.getLocStr("seb.password.wrong"));
 						return;
 					}
 				}
@@ -348,7 +350,7 @@ this.seb =  {
 					sl.debug(passwd + ":" + check);
 					if (check.toLowerCase() != passwd.toLowerCase()) {
 						//prompt.alert(mainWin, getLocStr("seb.title"), getLocStr("seb.url.blocked"));
-						prompt.alert(mainWin, su.getLocStr("seb.password.title"), su.getLocStr("seb.password.wrong"));
+						prompt.alert(base.mainWin, su.getLocStr("seb.password.title"), su.getLocStr("seb.password.wrong"));
 						return;
 					}
 				}

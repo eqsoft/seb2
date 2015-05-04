@@ -129,7 +129,7 @@ this.SebHost = {
 		e.stopPropagation();
 	},
 	
-	setMessageSocketHandler(win) {
+	setMessageSocketHandler : function (win) {
 		sl.debug("setMessageSocketHandler");
 		socket = su.getConfig("browserMessagingSocket","string","");
 		if (socket == "") { 
@@ -140,6 +140,12 @@ this.SebHost = {
 		messageSocketBrowser = win.document.getElementById("message.socket");	
 		messageSocketBrowser.addEventListener("DOMContentLoaded", base.messageSocketListener, true);
 		messageSocketBrowser.setAttribute("src","chrome://seb/content/message_socket.html"); // to fire window DOMContentLoaded
+	},
+	
+	closeMessageSocket : function() {
+		if (base.messageServer) {
+			messageSocket.close();
+		}
 	},
 	
 	quitFromHost : function () {

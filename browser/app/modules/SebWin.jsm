@@ -132,30 +132,30 @@ this.SebWin = {
 		base.setDeckIndex(w,loadDeck);
 	},
 	
-	showContent : function (win) { 
+	showContent : function (win,fromkey) { 
+		sl.debug("showContent...");
+		base.showDeck(win,fromkey,contentDeck);
+	},
+	
+	showServer : function (win,fromkey) { 
+		sl.debug("showServer...");
+		base.showDeck(win,fromkey,serverDeck);
+	},
+	
+	showMessage : function (win,fromkey) { 
+		sl.debug("showMessage...");
+		base.showDeck(win,fromkey,messageDeck);
+	},
+	
+	showDeck(win,fromkey,index)  {
+		if (fromkey && ! seb.DEBUG) { return; }
 		let w = (win) ? win : base.getRecentWin();
-		sl.debug("showContent..." + base.getWinType(w));
-		base.setDeckIndex(w,contentDeck);
+		//sl.debug("showContent..." + base.getWinType(w));
+		base.setDeckIndex(w,index);
 		try {
 			w.document.title = w.content.document.title;
 		}
 		catch(e) {}
-		w.focus();
-		w.XulLibBrowser.focus();
-	},
-	
-	showServer : function (win) { 
-		let w = (win) ? win : base.getRecentWin();
-		sl.debug("showServer..." + base.getWinType(w));
-		base.setDeckIndex(w,serverDeck);
-		w.focus();
-		w.XulLibBrowser.focus();
-	},
-	
-	showMessage : function (win) { 
-		let w = (win) ? win : base.getRecentWin();
-		sl.debug("showMessage..." + base.getWinType(w));
-		base.setDeckIndex(w,messageDeck);
 		w.focus();
 		w.XulLibBrowser.focus();
 	},

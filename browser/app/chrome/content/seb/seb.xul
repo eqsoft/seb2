@@ -28,10 +28,10 @@
 		<command id="sebCmdBack" oncommand="seb.back(window);"/>
 		<command id="sebCmdForward" oncommand="seb.forward(window);"/>
 		<command id="sebCmdShowAll" oncommand="sw.showAll();"/>
-		<command id="sebCmdShowLoading" oncommand="sw.showLoading(window);"/>
-		<command id="sebCmdShowContent" oncommand="sw.showContent(window);"/>
-		<command id="sebCmdShowServer" oncommand="sw.showServer(window);"/>
-		<command id="sebCmdShowMessage" oncommand="sw.showMessage(window);"/>
+		<command id="sebCmdShowLoading" oncommand="sw.showLoading(window,true);"/>
+		<command id="sebCmdShowContent" oncommand="sw.showContent(window,true);"/>
+		<command id="sebCmdShowServer" oncommand="sw.showServer(window,true);"/>
+		<command id="sebCmdShowMessage" oncommand="sw.showMessage(window,true);"/>
 	</commandset>
 	<audio xmlns="http://www.w3.org/1999/xhtml" id="seb.snapshot" src="chrome://seb/content/sounds/snapshot.ogg" preload="auto"></audio>
 	<!-- keysets -->

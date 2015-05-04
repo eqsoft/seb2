@@ -15,8 +15,8 @@
 "startURL_":"http://www.google.com",
 "allowQuit":true,
 "quitURL":"http://seb/quit.html",
-"hashedQuitPassword":"",
-"hashedQuitPassword_" :"5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d85e",
+"hashedQuitPassword_":"",
+"hashedQuitPassword" :"5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d85e",
 "embeddedCertificates":
 [
 	{
