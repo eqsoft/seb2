@@ -162,6 +162,7 @@ this.seb =  {
 		}
 		base.initLocale();
 		sn.init(base); // needs config on init for compiled RegEx
+		sn.initProxies();
 		sh.init(base);
 	},
 	

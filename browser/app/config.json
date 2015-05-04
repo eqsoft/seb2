@@ -33,6 +33,17 @@
 ],
 "browserMessagingSocket":"ws://localhost:8706",
 "browserMessagingPingTime":120000,
+"proxies": {
+		"AutoConfigurationEnabled":true,
+		"AutoConfigurationURL":"http://bla.de/blub.pac",
+		"AutoDiscoveryEnabled_":true,
+		"HTTPEnable_" : true, 
+		"HTTPPort_" : 2345,
+		"ExceptionsList" : [
+			"*.local",
+			"169.254/16"
+		]
+},
 
 "DESCRIPTION":"*** the config params above are already migrated ****",
 
@@ -70,13 +81,6 @@
 "downloadAndOpenSebConfig":true,
 "newBrowserWindowByLinkBlockForeign":false,
 "enableBrowserWindowToolbar":true,
-"proxies": {
-		"ExceptionsList" : [
-			"*.local",
-			"169.254/16"
-		],
-		"HTTPPort" : 2345
-},
 "blockPopUpWindows":false,
 "enablePlugIns":true,
 "newBrowserWindowByScriptPolicy":2,
