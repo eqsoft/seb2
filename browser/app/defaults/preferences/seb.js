@@ -17,3 +17,4 @@ pref("network.cookie.prefsMigrated", true);
 pref("privacy.popups.firstTime", false);
 pref("privacy.popups.policy", 1);
 pref("security.default_personal_cert", "Select Automatically");
+

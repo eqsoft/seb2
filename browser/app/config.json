@@ -11,12 +11,12 @@
 "browserExamKey":"SEBKEY",
 "browserURLSalt":true,
 "browserRequestHeader":"X-SafeExamBrowser-RequestHash",
-"startURL":"https://localhost:8443/demo/index.html",
-"startURL_":"http://www.google.com",
+"startURL_":"https://localhost:8443/demo/index.html",
+"startURL":"http://www.google.com",
 "allowQuit":true,
 "quitURL":"http://seb/quit.html",
-"hashedQuitPassword_":"",
-"hashedQuitPassword" :"5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d85e",
+"hashedQuitPassword":"",
+"hashedQuitPassword_" :"5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d85e",
 "embeddedCertificates":
 [
 	{
@@ -35,11 +35,13 @@
 "browserMessagingPingTime":120000,
 "proxies": {
 		"AutoConfigurationEnabled":true,
-		"AutoConfigurationURL":"http://bla.de/blub.pac",
+		"AutoConfigurationURL":"http://www.uni-marburg.de/proxy.pac",
 		"AutoDiscoveryEnabled_":true,
 		"HTTPEnable_" : true, 
 		"HTTPPort_" : 2345,
-		"ExceptionsList" : [
+		"HTTPSEnable_" : true, 
+		"HTTPSPort_" : 2345,
+		"ExceptionsList_" : [
 			"*.local",
 			"169.254/16"
 		]

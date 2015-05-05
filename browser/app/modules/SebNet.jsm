@@ -110,116 +110,6 @@ this.SebNet = {
 		sl.out("SebNet initialized: " + seb);
 	},
 	
-	/*
-	
-	
-	function proxyHttp() {
-		if (!config["proxies"]) {
-			return null;
-		}
-		if (!config["proxies"]["HTTPProxy"]) {
-			return null;
-		}
-		return config["proxies"]["HTTPProxy"];
-	}
-	
-	function proxyHttpPort() {
-		if (!config["proxies"]) {
-			return null;
-		}
-		if (!config["proxies"]["HTTPPort"]) {
-			return null;
-		}
-		return config["proxies"]["HTTPPort"];
-	}
-	
-	function proxyHttps() {
-		if (!config["proxies"]) {
-			return null;
-		}
-		if (!config["proxies"]["HTTPSProxy"]) {
-			return null;
-		}
-		return config["proxies"]["HTTPSProxy"];
-	}
-	
-	function proxyHttpsPort() {
-		if (!config["proxies"]) {
-			return null;
-		}
-		if (!config["proxies"]["HTTPSPort"]) {
-			return null;
-		}
-		return config["proxies"]["HTTPSPort"];
-	}
-	
-	function proxyFtp() {
-		if (!config["proxies"]) {
-			return null;
-		}
-		if (!config["proxies"]["FTPProxy"]) {
-			return null;
-		}
-		return config["proxies"]["FTPProxy"];
-	}
-	
-	function proxyFtpPort() {
-		if (!config["proxies"]) {
-			return null;
-		}
-		if (!config["proxies"]["FTPPort"]) {
-			return null;
-		}
-		return config["proxies"]["FTPPort"];
-	}
-	
-	function proxySocks() {
-		if (!config["proxies"]) {
-			return null;
-		}
-		if (!config["proxies"]["SOCKSProxy"]) {
-			return null;
-		}
-		return config["proxies"]["SOCKSProxy"];
-	}
-	
-	function proxySocksPort() {
-		if (!config["proxies"]) {
-			return null;
-		}
-		if (!config["proxies"]["SOCKSPort"]) {
-			return null;
-		}
-		return config["proxies"]["SOCKSPort"];
-	}
-	
-	function proxyExceptionsList() {
-		if (!config["proxies"]) {
-			return null;
-		}
-		if (!config["proxies"]["ExceptionsList"]) {
-			return null;
-		}
-		var exceptList = config["proxies"]["ExceptionsList"];
-		//x.debug("proxyExceptionsList: " + typeof(exceptList));
-		if (typeof(exceptList) != "object") {
-			return null;
-		}
-		return config["proxies"]["ExceptionsList"].join(",") + ",localhost,127.0.0.1";
-	}
-	
-	
-						
-						"network.proxy.no_proxies_on"		:	proxyExceptionsList,
-						"network.proxy.http" 			: 	proxyHttp,
-						"network.proxy.http_port" 		: 	proxyHttpPort,
-						"network.proxy.ssl" 			: 	proxyHttps,
-						"network.proxy.ssl_port" 		: 	proxyHttpsPort,
-						"network.proxy.ftp" 			: 	proxyFtp,
-						"network.proxy.ftp_port" 		: 	proxyFtpPort,
-						"network.proxy.socks" 			: 	proxySocks,
-						"network.proxy.socks_port" 		: 	proxySocksPort,
-	*/
 	initProxies : function() {
 		if (typeof seb.config["proxies"] != "object") { sl.debug("no proxies defined."); return; }
 		let proxies = su.getConfig("proxies","object",null);
@@ -232,6 +122,52 @@ this.SebNet = {
 		if (typeof p === "string" && p != "") {
 			prefs.setCharPref("network.proxy.autoconfig_url",p);
 			sl.debug("network.proxy.autoconfig_url:"+p);
+		}
+		p = proxies["HTTPProxy"];
+		if (typeof p === "string" && p != "") {
+			prefs.setCharPref("network.proxy.http",p);
+			sl.debug("network.proxy.http:"+p);
+		}
+		p = proxies["HTTPPort"];
+		if (typeof p === "number") {
+			prefs.setIntPref("network.proxy.http_port",p);
+			sl.debug("network.proxy.http_port:"+p);
+		}
+		p = proxies["HTTPSProxy"];
+		if (typeof p === "string" && p != "") {
+			prefs.setCharPref("network.proxy.ssl",p);
+			sl.debug("network.proxy.ssl:"+p);
+		}
+		p = proxies["HTTPSPort"];
+		if (typeof p === "number") {
+			prefs.setIntPref("network.proxy.ssl_port",p);
+			sl.debug("network.proxy.ssl_port:"+p);
+		}
+		p = proxies["FTPProxy"];
+		if (typeof p === "string" && p != "") {
+			prefs.setCharPref("network.proxy.ftp",p);
+			sl.debug("network.proxy.ftp:"+p);
+		}
+		p = proxies["FTPPort"];
+		if (typeof p === "number") {
+			prefs.setIntPref("network.proxy.ftp_port",p);
+			sl.debug("network.proxy.ftp_port:"+p);
+		}
+		p = proxies["SOCKSProxy"];
+		if (typeof p === "string" && p != "") {
+			prefs.setCharPref("network.proxy.socks",p);
+			sl.debug("network.proxy.socks:"+p);
+		}
+		p = proxies["SOCKSPort"];
+		if (typeof p === "number") {
+			prefs.setIntPref("network.proxy.socks_port",p);
+			sl.debug("network.proxy.socks_port:"+p);
+		}
+		p = proxies["ExceptionsList"];
+		if (typeof p === "object" && p != null) {
+			p = p.join(",") + ",localhost,127.0.0.1";
+			prefs.setCharPref("network.proxy.no_proxies_on",p);
+			sl.debug("network.proxy.no_proxies_on:"+p);
 		}
 	},
 	
