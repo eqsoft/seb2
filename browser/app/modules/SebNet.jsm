@@ -195,11 +195,45 @@ this.SebNet = {
 		//sl.debug(typeof seb.config["urlFilterRegex"]);
 		let is_regex = (typeof seb.config["urlFilterRegex"] === "boolean") ? seb.config["urlFilterRegex"] : false;
 		sl.debug("urlFilterRegex: " + is_regex);
-		let b = (typeof seb.config["blacklistURLFilter"] === "object") ? seb.config["blacklistURLFilter"] : false;		
-		let w = (typeof seb.config["whitelistURLFilter"] === "object") ? seb.config["whitelistURLFilter"] : false;
+		
+		let b = seb.config["blacklistURLFilter"];
+		let w = seb.config["whitelistURLFilter"];
+		
+		switch (typeof b) {
+			case "string" :
+				if (b == "") {
+					b = false;
+				}
+				else {
+					b = b.split(";");
+				}
+			break;
+			case "object" :
+				// do nothing
+			break;
+			default :
+				b = false;
+		}
+		
+		switch (typeof w) {
+			case "string" :
+				if (w == "") {
+					w = false;
+				}
+				else {
+					w = w.split(";");
+				}
+			break;
+			case "object" :
+				// do nothing
+			break;
+			default :
+				w = false;
+		}
 			
 		if (b) {
 			for (var i=0;i<b.length;i++) {
+				sl.debug("Add blacklist pattern: " + b[i]);
 				if (is_regex) {
 					blackListRegs.push(new RegExp(b[i]));
 				}
@@ -210,6 +244,7 @@ this.SebNet = {
 		}
 		if (w) {
 			for (var i=0;i<w.length;i++) {
+				sl.debug("Add whitelist pattern: " + w[i]);
 				if (is_regex) {
 					whiteListRegs.push(new RegExp(w[i]));
 				}

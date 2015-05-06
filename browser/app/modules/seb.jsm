@@ -243,7 +243,9 @@ this.seb =  {
 		sn.httpRequestObserver.register();
 		sh.setMessageSocketHandler(win);
 		base.locs = win.document.getElementById("locale");	
-		base.consts = win.document.getElementById("const");
+		base.consts = win.document.getElementById("const");				
+		sw.setTitleBar(win);
+		sw.setSize(win);
 		sw.showLoading(win);
 		sw.loadPage(win,base.url);
 	},

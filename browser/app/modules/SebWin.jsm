@@ -45,11 +45,17 @@ let 	wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowM
 
 /* SebModules */
 XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","SebLog");
+XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","SebUtils");
 XPCOMUtils.defineLazyModuleGetter(this,"sb","resource://modules/SebBrowser.jsm","SebBrowser");
 
 /* ModuleGlobals */
 let 	base = null,
-	seb = null;
+	seb = null,
+	pos = {
+		0 : "left",
+		1 : "center",
+		2 : "right"
+	};
 	
 const	xulFrame = "seb.iframe",
 	xulBrowser = "seb.browser",
@@ -63,6 +69,7 @@ const	xulFrame = "seb.iframe",
 	
 this.SebWin = {
 	wins : [],
+	mainScreen : {},
 	
 	init : function(obj) {
 		base = this;
@@ -178,5 +185,111 @@ this.SebWin = {
 	getFrameElement : function (win) {
 		let w = (win) ? win : base.getRecentWin();
 		return w.document.getElementById(xulFrame);
+	},
+	
+	setMainScreen : function() {	 
+		base.mainScreen['fullsize'] = (seb.config["browserViewMode"] == 0) ? false : true;
+		base.mainScreen['width'] = seb.config["mainBrowserWindowWidth"];
+		base.mainScreen['height'] = seb.config["mainBrowserWindowHeight"];
+		base.mainScreen['position'] = pos[seb.config["mainBrowserWindowPositioning"]];
+		if (seb.config["touchOptimized"] == 1) {
+			base.mainScreen['width'] = "100%";
+			base.mainScreen['height'] = "100%";
+		}
+		return base.mainScreen;
+	},
+	
+	setSize : function(win) {
+		sl.debug("setSize: " + base.getWinType(win));
+		let scr = base.setMainScreen();
+		sl.debug("mainScreen: " + JSON.stringify(scr));
+		
+		//let offWidth = win.outerWidth - win.innerWidth;
+		//let offHeight = win.outerHeight - win.innerHeight;
+		//sl.debug("offWidth: " + offWidth);
+		//sl.debug("offHeight: " + offHeight);
+		
+		
+		let offWidth = 0;
+		let offHeight = 0;
+		
+		let swt = seb.mainWin.screen.width;
+		let sht = seb.mainWin.screen.height;
+		
+		let tb = su.getConfig("showTaskBar","boolean",false);
+		sl.debug("showTaskBar:" + tb);
+		
+		if (tb) {
+			let tbh = su.getConfig("taskBarHeight","number",45);
+			sht -= tbh;
+			sl.debug("showTaskBar: change height to " + sht);
+		}
+		
+		let stp = seb.mainWin.screen.availTop;
+		let slt = seb.mainWin.screen.availLeft;
+		
+		sl.debug("availTop: " + stp);
+		sl.debug("availLeft: " + slt);
+		let wx = 0;
+		let hx = 0;
+		if (typeof scr.width == "string" && /^\d+\%$/.test(scr.width)) {
+			let w = scr.width.replace("%","");
+			wx = (w > 0) ? ((swt / 100) * w) : swt;
+		}
+		else {
+			wx = (scr.width > 0) ? scr.width : swt;
+		}
+		sl.debug("wx: " + wx);
+		
+		if (typeof scr.height == "string" && /^\d+\%$/.test(scr.height)) {
+			var h = scr.height.replace("%","");
+			hx = (h > 0) ? ((sht / 100) * h) : sht;	
+		}
+		else {
+			hx = (scr.height > 0) ? scr.height : sht;
+		}
+		sl.debug("hx: " + hx);
+		
+		if (scr.fullsize) { // needs to be resized with offWidth and offHeight browser frames
+			sl.debug("fullsize: " + scr.fullsize);
+			if (tb) {
+				sl.debug("showTaskBar: " + tb);
+				win.resizeTo(swt+offWidth,sht+offHeight); // don't know the correct size
+				win.setTimeout(function () { this.moveTo(0,0); }, 100);
+			}
+			else { // test
+				sl.debug("fullsize: resize to: " + wx + ":" + hx);
+				win.resizeTo(wx,hx);
+				win.setTimeout(function () { setPosition(this) }, 100 );
+			}
+		}
+		else {
+			sl.debug("no fullsize: resize to: " + wx + ":" + hx);
+			win.resizeTo(wx,hx);
+			win.setTimeout(function () { setPosition(this) }, 100 );
+		}
+		
+		function setPosition(win) {
+			sl.debug("setPosition: " + scr.position);
+			switch (scr.position) {
+				case "center" :
+					win.moveTo(((swt/2)-(wx/2)),stp);
+					break;
+				case "right" :
+					win.moveTo((swt-wx),stp);
+					break;
+				case "left" :
+					win.moveTo(slt,stp);
+					break;
+				default :
+					// do nothing
+			}
+		}
+	},
+	
+	setTitleBar : function (win) {
+		let w = (win) ? win : base.getRecentWin(); 
+		w.document.getElementById("sebWindow").setAttribute("hidechrome",!su.getConfig("showTitleBar","boolean",true));
+		//x.debug("hidechrome " + w.document.getElementById("sebWindow").getAttribute("hidechrome"));
 	}
 }
