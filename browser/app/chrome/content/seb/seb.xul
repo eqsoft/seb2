@@ -14,6 +14,7 @@
 		Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 		XPCOMUtils.defineLazyModuleGetter(this,"seb","resource://modules/seb.jsm","seb");
 		XPCOMUtils.defineLazyModuleGetter(this,"sw","resource://modules/SebWin.jsm","SebWin");
+		XPCOMUtils.defineLazyModuleGetter(this,"sb","resource://modules/SebBrowser.jsm","SebBrowser");
 	</script>
 	<stringbundleset>
 		<stringbundle id="locale" src="chrome://seb/locale/seb.properties" />
@@ -22,11 +23,11 @@
 	<!-- commands -->
 	<commandset id="sebCommandSet">	
 		<command id="sebCmdShutdown" oncommand="seb.shutdown();"/>
-		<command id="sebCmdReload" oncommand="seb.reload(window);"/>
-		<command id="sebCmdLoad" oncommand="seb.load();"/>
-		<command id="sebCmdRestart" oncommand="seb.restart();"/>
-		<command id="sebCmdBack" oncommand="seb.back(window);"/>
-		<command id="sebCmdForward" oncommand="seb.forward(window);"/>
+		<command id="sebCmdReload" oncommand="sb.reload(window);"/>
+		<command id="sebCmdLoad" oncommand="sb.load();"/>
+		<command id="sebCmdRestart" oncommand="sb.restart();"/>
+		<command id="sebCmdBack" oncommand="sb.back(window);"/>
+		<command id="sebCmdForward" oncommand="sb.forward(window);"/>
 		<command id="sebCmdShowAll" oncommand="sw.showAll();"/>
 		<command id="sebCmdShowLoading" oncommand="sw.showLoading(window,true);"/>
 		<command id="sebCmdShowContent" oncommand="sw.showContent(window,true);"/>

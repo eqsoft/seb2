@@ -39,7 +39,9 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 /* Services */
 let	wpl = Ci.nsIWebProgressListener,
+	wnav = Ci.nsIWebNavigation,
 	ovs = Cc["@mozilla.org/security/certoverride;1"].getService(Ci.nsICertOverrideService);
+	
 
 /* SebGlobals */
 scriptloader.loadSubScript("resource://globals/prototypes.js");
@@ -201,6 +203,84 @@ this.SebBrowser = {
 		sl.debug("setEmbeddedCerts");
 		for (var i=0;i<certs.length;i++) {
 			base.addCert(certs[i]);
+		}
+	},
+	
+	loadPage : function (win,url,loadFlag) {	// only use for real http requests
+		sl.debug("try to load: " + url);	
+		if (!win.XulLibBrowser) {
+			sl.err("no seb.browser in ChromeWindow!");
+			return false;
+		}
+		if (typeof(loadFlag) == "undefined") {
+    			loadFlag = wnav.LOAD_FLAGS_BYPASS_HISTORY | wnav.LOAD_FLAGS_BYPASS_CACHE;
+		}
+		win.XulLibBrowser.webNavigation.loadURI(url, loadFlag, null, null, null);
+	},
+	
+	reload : function (win) {
+		sl.debug("try reload...");
+		if (!win.XulLibBrowser) {
+			sl.err("no xullib.browser in ChromeWindow!");
+			return false;
+		}
+		win.XulLibBrowser.webNavigation.reload(wnav.LOAD_FLAGS_BYPASS_CACHE);
+	},
+	
+	restart : function() {
+		if (!su.getConfig("mainBrowserRestart","boolean",true)) {
+			sl.debug("restart not allowed.");
+			return;
+		}
+		sl.debug("restart...");
+		sw.removeSecondaryWins();
+		let url = su.getUrl();
+		sw.showLoading(seb.mainWin);
+		base.loadPage(seb.mainWin,url);
+	},
+	
+	load : function() {
+		//mainBrowserLoad
+		//mainBrowserLoadReferrer
+		sl.debug("try to load from command...");
+		let loadUrl = su.getConfig("mainBrowserLoad","string","");
+		let loadReferrerInString = su.getConfig("mainBrowserLoadReferrerInString","string","");
+		if (loadUrl == "") {
+			sl.debug("no mainBrowserLoad defined.");
+			return;
+		}
+		
+		let doc = seb.mainWin.content.document;
+		
+		let loadReferrer = doc.location.href;
+		
+		if (loadReferrerInString != "") {
+			if (loadReferrer.indexOf(loadReferrerInString) > -1) {
+				base.loadPage(seb.mainWin,loadUrl);
+				// ? warm hab ich das so gemacht:
+				/*
+				if (isValidUrl(url)) {
+					x.debug("load from command " + url);
+					doc.location.href = url;
+				}
+				else {
+					prompt.alert(mainWin, getLocStr("seb.title"), getLocStr("seb.url.blocked"));
+				}
+				return false;
+				*/
+			}
+			else {
+					
+				sl.debug("loading \"" + loadUrl + "\" is only allowed if string in referrer: \"" + loadReferrerInString + "\"");
+				return false;
+				 
+			}
+		}
+		else {
+			sl.debug("load from command " + loadUrl);
+			base.loadPage(seb.mainWin,loadUrl);
+			// ? warm hab ich das so gemacht:
+			//doc.location.href = url;
 		}
 	}
 }

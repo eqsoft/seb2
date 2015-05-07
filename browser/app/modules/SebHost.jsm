@@ -78,7 +78,6 @@ this.SebHost = {
 			return; 
 		}
 		
-		
 		messageSocket.onopen = function(evt) { 			
 			sl.debug("messageSocket open: " + evt); 
 			messageSocket.send("seb.connected"); 

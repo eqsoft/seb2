@@ -120,16 +120,21 @@ this.SebWin = {
 		}
 	},
 	
-	loadPage : function (win,url,loadFlag) {	// only use for real http requests
-		sl.debug("try to load: " + url);	
-		if (!win.XulLibBrowser) {
-			sl.err("no seb.browser in ChromeWindow!");
-			return false;
+	removeSecondaryWins : function () {
+		let main = null;
+		for (var i=0;i<base.wins.length;i++) {
+			let win = base.wins[i];
+			if (base.getWinType(win) != "main") {
+				var n = (win.document && win.content) ? base.getWinType(win) + ": " + win.document.title : " empty document";
+				sl.debug("close win from array: " + n);
+				win.close();
+			} 
+			else {
+				main = win;
+			}
 		}
-		if (typeof(loadFlag) == "undefined") {
-    			loadFlag = wnav.LOAD_FLAGS_BYPASS_HISTORY | wnav.LOAD_FLAGS_BYPASS_CACHE;
-		}
-		win.XulLibBrowser.webNavigation.loadURI(url, loadFlag, null, null, null);
+		base.wins = [];
+		base.wins.push(main);
 	},
 	
 	showLoading : function (win) {
@@ -204,14 +209,12 @@ this.SebWin = {
 		let scr = base.setMainScreen();
 		sl.debug("mainScreen: " + JSON.stringify(scr));
 		
-		//let offWidth = win.outerWidth - win.innerWidth;
-		//let offHeight = win.outerHeight - win.innerHeight;
-		//sl.debug("offWidth: " + offWidth);
-		//sl.debug("offHeight: " + offHeight);
-		
-		
-		let offWidth = 0;
-		let offHeight = 0;
+		let offWidth = win.outerWidth - win.innerWidth;
+		let offHeight = win.outerHeight - win.innerHeight;
+		sl.debug("offWidth: " + offWidth);
+		sl.debug("offHeight: " + offHeight);
+		//let offWidth = 0;
+		//let offHeight = 0;
 		
 		let swt = seb.mainWin.screen.width;
 		let sht = seb.mainWin.screen.height;

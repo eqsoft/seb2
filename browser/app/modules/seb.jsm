@@ -247,7 +247,7 @@ this.seb =  {
 		sw.setTitleBar(win);
 		sw.setSize(win);
 		sw.showLoading(win);
-		sw.loadPage(win,base.url);
+		sb.loadPage(win,base.url);
 	},
 	
 	/* handler */
