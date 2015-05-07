@@ -55,10 +55,10 @@
 "mainBrowserRestart":true,
 "mainBrowserLoad":"https://localhost:8443/demo/q1.html",
 "mainBrowserLoadReferrerInString":"end.html",
+"allowBrowsingBackForward":true,
+"mainBrowserBypassCache":true,
 
 "DESCRIPTION":"*** the config params above are already migrated ****",
-
-"allowBrowsingBackForward":true,
 
 "newBrowserWindowByLinkPolicy":2,
 "newBrowserWindowByScriptPolicy":2,

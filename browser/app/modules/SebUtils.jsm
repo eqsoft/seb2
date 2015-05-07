@@ -89,7 +89,7 @@ this.SebUtils =  {
 		}		
 	},
 	
-	getJSON : function (data,callback) {		
+	getJSON : function (data,callback) {	
 		// check base64
 		if (base.checkBase64.test(data)) {
 			try {

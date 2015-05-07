@@ -55,10 +55,11 @@ XPCOMUtils.defineLazyModuleGetter(this,"sn","resource://modules/SebNet.jsm","Seb
 /* ModuleGlobals */
 let 	base = null,
 	seb = null,
-	certdb = null;
+	certdb = null,
+	loadFlag = null;
 	
 const	nsIX509CertDB = Ci.nsIX509CertDB,
-	nsX509CertDB = "@mozilla.org/security/x509certdb;1";	
+	nsX509CertDB = "@mozilla.org/security/x509certdb;1";
 
 function nsBrowserStatusHandler() {};
 nsBrowserStatusHandler.prototype = { // override functions with addBrowserXXXListener
@@ -206,16 +207,26 @@ this.SebBrowser = {
 		}
 	},
 	
-	loadPage : function (win,url,loadFlag) {	// only use for real http requests
-		sl.debug("try to load: " + url);	
+	loadPage : function (win,url,flag) {	// only use for real http requests
+		sl.debug("try to load: " + url);
+		if (loadFlag === null) {
+			if (su.getConfig("mainBrowserBypassCache","boolean",false)) {
+				loadFlag |= wnav.LOAD_FLAGS_BYPASS_CACHE;
+			}
+			if (!su.getConfig("allowBrowsingBackForward","boolean",false)) {
+				loadFlag |= wnav.LOAD_FLAGS_BYPASS_HISTORY;
+			}
+		}
+		
+		let f = (flag === "undefined") ? loadFlag : flag; 
 		if (!win.XulLibBrowser) {
 			sl.err("no seb.browser in ChromeWindow!");
 			return false;
 		}
-		if (typeof(loadFlag) == "undefined") {
-    			loadFlag = wnav.LOAD_FLAGS_BYPASS_HISTORY | wnav.LOAD_FLAGS_BYPASS_CACHE;
+		if (typeof flag == "undefined") {
+    			flag = loadFlag;
 		}
-		win.XulLibBrowser.webNavigation.loadURI(url, loadFlag, null, null, null);
+		win.XulLibBrowser.webNavigation.loadURI(url, f, null, null, null);
 	},
 	
 	reload : function (win) {
@@ -282,5 +293,31 @@ this.SebBrowser = {
 			// ? warm hab ich das so gemacht:
 			//doc.location.href = url;
 		}
-	}
+	},
+	
+	back : function(win) {
+		if (!su.getConfig("allowBrowsingBackForward","boolean",false)) { 
+			sl.debug("navigation: back not allowed")
+			return; 
+		}
+		sl.debug("navigation: back");	
+		if (!win.XulLibBrowser) {
+			sl.err("no xullib.browser in ChromeWindow!");
+			return false;
+		}
+		win.XulLibBrowser.webNavigation.goBack();
+	},
+	
+	forward : function(win) {
+		if (!su.getConfig("allowBrowsingBackForward","boolean",false)) { 
+			sl.debug("navigation: forward not allowed");	
+			return; 
+		}
+		sl.debug("navigation: forward");	
+		if (!win.XulLibBrowser) {
+			sl.err("no xullib.browser in ChromeWindow!");
+			return false;
+		}
+		win.XulLibBrowser.webNavigation.goForward();
+	} 
 }
