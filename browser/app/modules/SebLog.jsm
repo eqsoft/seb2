@@ -34,20 +34,31 @@ this.EXPORTED_SYMBOLS = ["SebLog"];
 
 /* Modules */
 const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components,
-	{ appinfo } = Cu.import("resource://gre/modules/Services.jsm").Services;
-	
+	{ appinfo } = Cu.import("resource://gre/modules/Services.jsm").Services,
+	{ OS } = Cu.import("resource://gre/modules/osfile.jsm");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 /* Services */
 let console = Cc["@mozilla.org/consoleservice;1"].getService(Ci.nsIConsoleService);
 
+/* SebModules */
+XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","SebUtils");
+
 /* ModuleGlobals */
-let os = "";
-let lf = "\n";
-let seb = null;
-let message = {};
+let 	seb = null,
+	base = null,
+	logpath = "",
+	logfileEnabled = false,
+	logfile = null,
+	logenc = null,
+ 	os = "",
+	lf = "\n",
+	message = {};
 
 this.SebLog = {
 	init : function(obj) {
 		seb = obj;
+		base = this;
+		base.initLogfile();
 		os = appinfo.OS.toUpperCase();
 		switch (os) { // line feed for dump messages
 			case "WINNT" :
@@ -69,6 +80,11 @@ this.SebLog = {
 		let str = appinfo.name + " out : " + msg;
 		console.logStringMessage(str);
 		dump(str + lf);
+		try { 
+			base.writeLogfile(str);
+		} 
+		catch(e){}
+		//sendMessage(str);
 	},
 	debug : function(msg) {
 		if (typeof seb === "object" && !seb.DEBUG) {
@@ -77,11 +93,56 @@ this.SebLog = {
 		let str = appinfo.name + " debug : " + msg;
 		console.logStringMessage(str);
 		dump(str + lf);
+		try { 
+			base.writeLogfile(str);
+		} 
+		catch(e){}
+		//sendMessage(str);
 	},
 	err : function(msg) {
 		let str = appinfo.name + " err : " + msg;
 		Cu.reportError(str);
 		dump(str + lf);
+		try { 
+			base.writeLogfile(str);
+		} 
+		catch(e){}
+		//sendMessage(str);
+	},
+	
+	initLogfile : function() {
+		logfileEnabled = su.getBool(su.getCmd("logfile"));
+		if (!logfileEnabled) { base.debug("logfile disabled."); return }
+		logpath = su.getCmd("logpath");
+		logpath = (typeof logpath == "string" && logpath != "") ? logpath : OS.Path.join(OS.Constants.Path.profileDir, appinfo.name + ".log");
+		base.debug("logpath: " + logpath);
+		logenc = new TextEncoder();
+		let promise = OS.File.open(logpath,{write:true, append:true});
+		promise = promise.then(
+			function onSuccess(file) {
+				base.debug("logfile created: " + logpath);
+				base.setLogfile(file);
+				//continueInit(file);
+			},
+			function onError(file) {
+				base.err("Error creating logfile: " + logpath);
+				//continueInit();
+			}
+		);
+	},
+	
+	setLogfile : function(file) {
+		logfile = file;
+		var d = new Date();
+		let array = logenc.encode("\n*************************************\ninitialize logfile " + d.toLocaleString() + "\n*************************************\n");
+		logfile.write(array);
+	},
+	
+	writeLogfile : function (str) {
+		if (logfile != null && logenc != null) {
+			let array = logenc.encode(str+"\n");
+			logfile.write(array);
+		}
 	}
 }
 

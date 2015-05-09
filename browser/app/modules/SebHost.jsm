@@ -175,4 +175,15 @@ this.SebHost = {
 			su.err("Error " + e);
 		}
 	}
+	
+	/*
+	sendMessage : function (str) {
+		if (socketlog && messageSocket != null) {
+			try {
+				messageSocket.send(str);
+			}
+			catch(e){};
+		}
+	}
+	*/
 }

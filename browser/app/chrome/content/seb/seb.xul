@@ -41,8 +41,8 @@
 		<key id="seb.reload" keycode="VK_F5" modifiers="control shift" command="sebCmdReload"/>
 		<key id="seb.load" keycode="VK_F6" modifiers="control shift" command="sebCmdLoad"/>
 		<key id="seb.restart" keycode="VK_F9" modifiers="control shift" command="sebCmdRestart"/>
-		<key id="seb.back" keycode="VK_LEFT" modifiers="control" command="sebCmdBack"/>
-		<key id="seb.forward" keycode="VK_RIGHT" modifiers="control" command="sebCmdForward"/>
+		<key id="seb.back" keycode="VK_LEFT" modifiers="control shift" command="sebCmdBack"/>
+		<key id="seb.forward" keycode="VK_RIGHT" modifiers="control shift" command="sebCmdForward"/>
 		<key id="seb.showall" keycode="VK_F1" command="sebCmdShowAll"/>
 		<key id="seb.showloading" key="1" modifiers="control" command="sebCmdShowLoading"/>
 		<key id="seb.showcontent" key="2" modifiers="control" command="sebCmdShowContent"/>
