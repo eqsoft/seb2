@@ -7,3 +7,12 @@ String.prototype.trim = function () {
 String.prototype.isEmpty = function () {
 	return (!this || this == "[object Null]" || this == "" || this == "undefined");
 }
+Array.prototype.contains = function(obj) {
+	var i = this.length;
+	while (i--) {
+		if (this[i] === obj) {
+			return true;
+		}
+	}	
+	return false;
+}

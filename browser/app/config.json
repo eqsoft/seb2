@@ -61,13 +61,12 @@
 "newBrowserWindowByLinkWidth":"500",
 "newBrowserWindowByLinkHeight":"500",
 "newBrowserWindowByLinkPositioning":1,
-
+"browserScreenKeyboard":true,
 
 "DESCRIPTION":"*** the config params above are already migrated ****",
 
 "newBrowserWindowByLinkPolicy":2,
 "newBrowserWindowByScriptPolicy":2,
-"browserScreenKeyboard":true,
 "allowFlashFullscreen":false,
 "enableURLContentFilter":false,
 "enableJava":false,

@@ -33,11 +33,14 @@
 this.EXPORTED_SYMBOLS = ["SebHost"];
 
 /* Modules */
-const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components;
-
+const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components,
+	{ scriptloader } = Cu.import("resource://gre/modules/Services.jsm").Services;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 /* Services */
+
+/* SebGlobals */
+scriptloader.loadSubScript("resource://globals/prototypes.js");
 
 /* SebModules */
 XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","SebLog");
@@ -51,9 +54,9 @@ let 	base = null,
 	socketlog = false,
 	messageSocketBrowser = null,
 	messageSocketWin = null,
-	messageSocket = null;
-	
-	
+	messageSocket = null,
+	textTypes = ['color','date','datetime','datetime-local','email','month','number','password','search','tel','text','time','url','week'];
+
 this.SebHost = {
 	
 	messageServer : false,
@@ -179,13 +182,64 @@ this.SebHost = {
 	},
 	
 	sendMessage : function (str) {
-		//messageSocket.send(str);
-		
 		if (socketlog && messageSocket != null) {
 			try {
 				messageSocket.send(str);
 			}
 			catch(e){};
 		}
+	},
+	
+	createScreenKeyboardController : function (win) {
+		sl.debug("createScreenKeyboardController");
+		win.document.addEventListener("click",onClick,false);
+		var elArr = new Array();
+		function onClick(evt) {
+			var el = evt.target;
+			switch (el.tagName) {
+				case "INPUT" :
+					var typ = el.getAttribute("type");
+					if (textTypes.indexOf(typ) > -1) {
+						handleClick(evt);
+					}
+				break;
+				case "TEXTAREA" :
+					handleClick(evt);
+				break;
+				default :
+					// do nothing
+			}
+			//sl.debug(evt.target.tagName);
+		}
+		function handleClick(evt) {
+			var el = evt.target;
+			if (el.getAttribute("readonly")) {
+				//sl.debug("readonly");
+				return;
+			}
+			onFocus(evt);
+			if (elArr.contains(el)) {
+				//sl.debug("input already exists in array");
+				return;
+			}
+			el.addEventListener("blur",onBlur,false);
+			elArr.push(el);
+		}
+		
+		function onFocus(evt) {
+			sl.debug("input onFocus");
+			try {
+				messageSocket.send("seb.input.focus");
+				evt.target.scrollIntoView();
+			}
+			catch(e){}
+		}
+		function onBlur(evt) {
+			sl.debug("input onBlur");
+			try {
+				messageSocket.send("seb.input.blur"); 
+			}
+			catch(e){}
+		} 
 	}
 }

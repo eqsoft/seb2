@@ -51,6 +51,7 @@ XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","S
 XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","SebLog");
 XPCOMUtils.defineLazyModuleGetter(this,"sw","resource://modules/SebWin.jsm","SebWin");
 XPCOMUtils.defineLazyModuleGetter(this,"sn","resource://modules/SebNet.jsm","SebNet");
+XPCOMUtils.defineLazyModuleGetter(this,"sh","resource://modules/SebHost.jsm","SebHost");
 
 /* ModuleGlobals */
 let 	base = null,
@@ -101,6 +102,9 @@ this.SebBrowser = {
 			if (aStateFlags & wpl.STATE_STOP) {
 				let win = sw.getChromeWin(aWebProgress.DOMWindow);
 				var w = aWebProgress.DOMWindow.wrappedJSObject;
+				if (su.getConfig("browserScreenKeyboard","boolean",false)) {
+					sh.createScreenKeyboardController(win);
+				}
 				sw.showContent(win);
 			}
 			if (aStateFlags & wpl.STATE_START) {												
