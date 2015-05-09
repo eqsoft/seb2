@@ -42,6 +42,7 @@ let console = Cc["@mozilla.org/consoleservice;1"].getService(Ci.nsIConsoleServic
 
 /* SebModules */
 XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","SebUtils");
+XPCOMUtils.defineLazyModuleGetter(this,"sh","resource://modules/SebHost.jsm","SebHost");
 
 /* ModuleGlobals */
 let 	seb = null,
@@ -84,7 +85,7 @@ this.SebLog = {
 			base.writeLogfile(str);
 		} 
 		catch(e){}
-		//sendMessage(str);
+		sh.sendMessage(str);
 	},
 	debug : function(msg) {
 		if (typeof seb === "object" && !seb.DEBUG) {
@@ -97,7 +98,7 @@ this.SebLog = {
 			base.writeLogfile(str);
 		} 
 		catch(e){}
-		//sendMessage(str);
+		sh.sendMessage(str);
 	},
 	err : function(msg) {
 		let str = appinfo.name + " err : " + msg;
@@ -107,7 +108,7 @@ this.SebLog = {
 			base.writeLogfile(str);
 		} 
 		catch(e){}
-		//sendMessage(str);
+		sh.sendMessage(str);
 	},
 	
 	initLogfile : function() {

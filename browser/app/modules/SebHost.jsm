@@ -48,6 +48,7 @@ let 	base = null,
 	seb = null,
 	socket = "",
 	pingtime = "",
+	socketlog = false,
 	messageSocketBrowser = null,
 	messageSocketWin = null,
 	messageSocket = null;
@@ -60,6 +61,7 @@ this.SebHost = {
 	init : function(obj) {
 		base = this;
 		seb = obj;
+		socketlog = su.getBool(su.getCmd("socketlog"));
 		sl.out("SebHost initialized: " + seb);
 	},
 	
@@ -174,10 +176,11 @@ this.SebHost = {
 			//prompt.alert(mainWin, "Message from Admin", e);
 			su.err("Error " + e);
 		}
-	}
+	},
 	
-	/*
 	sendMessage : function (str) {
+		//messageSocket.send(str);
+		
 		if (socketlog && messageSocket != null) {
 			try {
 				messageSocket.send(str);
@@ -185,5 +188,4 @@ this.SebHost = {
 			catch(e){};
 		}
 	}
-	*/
 }
