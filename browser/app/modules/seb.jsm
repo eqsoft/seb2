@@ -250,6 +250,10 @@ this.seb =  {
 		sb.loadPage(win,base.url);
 	},
 	
+	initSecondary : function(win) {
+		sw.setSize(win);
+	},
+	
 	/* handler */
 	setQuitHandler : function(win) {
 		sl.debug("setQuitHandler");
@@ -266,15 +270,24 @@ this.seb =  {
 			base.mainWin = win;
 			base.initMain(win);
 		}
+		else {
+			base.initSecondary(win);
+		}
 	},
 	
 	onunload : function(win) {
 		sl.debug("onunload");
-		sh.closeMessageSocket();
+		if (sw.getWinType(win) == "main") {
+			sh.closeMessageSocket();
+		}
+		else {
+			sw.removeWin(win);
+		}
 	},
 	
 	onclose : function (win) {
-		sl.debug("onclose");
+		if (sw.getWinType(win) == "main") { return; }
+		sl.debug("onclose secondary win");
 	},
 	
 	quit: function(e) {

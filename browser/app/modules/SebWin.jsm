@@ -70,6 +70,7 @@ const	xulFrame = "seb.iframe",
 this.SebWin = {
 	wins : [],
 	mainScreen : {},
+	popupScreen : {},
 	
 	init : function(obj) {
 		base = this;
@@ -116,6 +117,23 @@ this.SebWin = {
 			}
 			catch(e) {
 				sl.err(e);
+			}
+		}
+	},
+	
+	removeWin : function (win) {
+		if (base.getWinType(win) == "main") { // never remove the main window, this must be controlled by the host app 
+			return;
+		} 
+		for (var i=0;i<base.wins.length;i++) {
+			if (base.wins[i] === win) {
+				//var n = (win.document && win.content) ? getWinType(win) + ": " + win.document.title : " empty document";
+				//_debug("remove win from array: " + ;
+				sl.debug("windows count: " + base.wins.length);
+				sl.debug("remove win from array ...");
+				base.wins.splice(i,1);
+				sl.debug("windows count: " + base.wins.length);
+				break;
 			}
 		}
 	},
@@ -192,7 +210,8 @@ this.SebWin = {
 		return w.document.getElementById(xulFrame);
 	},
 	
-	setMainScreen : function() {	 
+	setMainScreen : function() {
+		if (base.mainScreen['initialized']) { return base.mainScreen; }	 
 		base.mainScreen['fullsize'] = (seb.config["browserViewMode"] == 0) ? false : true;
 		base.mainScreen['width'] = seb.config["mainBrowserWindowWidth"];
 		base.mainScreen['height'] = seb.config["mainBrowserWindowHeight"];
@@ -201,12 +220,27 @@ this.SebWin = {
 			base.mainScreen['width'] = "100%";
 			base.mainScreen['height'] = "100%";
 		}
+		base.mainScreen['initialized'] = true;
 		return base.mainScreen;
+	},
+	
+	setPopupScreen : function() {
+		if (base.popupScreen['initialized']) { return base.popupScreen; }
+		base.popupScreen['fullsize'] = false;
+		base.popupScreen['width'] = seb.config["newBrowserWindowByLinkWidth"];
+		base.popupScreen['height'] = seb.config["newBrowserWindowByLinkHeight"];
+		base.popupScreen['position'] = pos[seb.config["newBrowserWindowByLinkPositioning"]];
+		if (seb.config["touchOptimized"] == 1) {
+			base.popupScreen['width'] = "100%";
+			base.popupScreen['height'] = "100%";
+		}
+		base.popupScreen['initialized'] = true;
+		return base.popupScreen;
 	},
 	
 	setSize : function(win) {
 		sl.debug("setSize: " + base.getWinType(win));
-		let scr = base.setMainScreen();
+		let scr = (base.getWinType(win) == "main") ? base.setMainScreen() : base.setPopupScreen();
 		sl.debug("mainScreen: " + JSON.stringify(scr));
 		
 		let offWidth = win.outerWidth - win.innerWidth;

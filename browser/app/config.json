@@ -33,6 +33,7 @@
 ],
 "browserMessagingSocket":"ws://localhost:8706",
 "browserMessagingPingTime":120000,
+"browserMessagingPingTime_":5000,
 "proxies": {
 		"AutoConfigurationEnabled":true,
 		"AutoConfigurationURL":"http://bla.de/blub.pac",
@@ -44,11 +45,11 @@
 			"169.254/16"
 		]
 },
-"browserViewMode":1,
+"browserViewMode":0,
 "showTitleBar":true,
 "showTaskBar":false,
 "taskBarHeight":40,
-"touchOptimized":0,
+"touchOptimized":1,
 "mainBrowserWindowWidth":"100%",
 "mainBrowserWindowHeight":"100%",
 "mainBrowserWindowPositioning":2,
@@ -57,15 +58,15 @@
 "mainBrowserLoadReferrerInString":"end.html",
 "allowBrowsingBackForward":true,
 "mainBrowserBypassCache":true,
+"newBrowserWindowByLinkWidth":"500",
+"newBrowserWindowByLinkHeight":"500",
+"newBrowserWindowByLinkPositioning":1,
+
 
 "DESCRIPTION":"*** the config params above are already migrated ****",
 
 "newBrowserWindowByLinkPolicy":2,
 "newBrowserWindowByScriptPolicy":2,
-"newBrowserWindowByLinkWidth":"800",
-"newBrowserWindowByLinkHeight":"600",
-"newBrowserWindowByLinkPositioning":0,
-
 "browserScreenKeyboard":true,
 "allowFlashFullscreen":false,
 "enableURLContentFilter":false,
