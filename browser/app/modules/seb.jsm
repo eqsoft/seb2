@@ -48,6 +48,7 @@ XPCOMUtils.defineLazyModuleGetter(this,"sw","resource://modules/SebWin.jsm","Seb
 XPCOMUtils.defineLazyModuleGetter(this,"sb","resource://modules/SebBrowser.jsm","SebBrowser");
 XPCOMUtils.defineLazyModuleGetter(this,"sn","resource://modules/SebNet.jsm","SebNet");
 XPCOMUtils.defineLazyModuleGetter(this,"sh","resource://modules/SebHost.jsm","SebHost");
+XPCOMUtils.defineLazyModuleGetter(this,"ss","resource://modules/SebServer.jsm","SebServer");
 
 /* ModuleGlobals */
 let	base = null;
@@ -113,6 +114,7 @@ this.seb =  {
 		base.initProfile();
 		sw.init(base);
 		sb.init(base);
+		ss.init(base);
 		base.initDebug();
 		base.initConfig();
 	},
@@ -242,6 +244,7 @@ this.seb =  {
 		base.setQuitHandler(win);
 		sn.httpRequestObserver.register();
 		sh.setMessageSocketHandler(win);
+		ss.setSebserverSocketHandler(win);
 		base.locs = win.document.getElementById("locale");	
 		base.consts = win.document.getElementById("const");				
 		sw.setTitleBar(win);
@@ -304,14 +307,13 @@ this.seb =  {
 				e.stopPropagation();				
 			}
 		}
-		/*
-		if (messageServer) {
-			x.debug("shutdown should be handled by host");
+		
+		if (sh.messageServer) {
+			sl.debug("shutdown should be handled by host");
 			var msg = (e) ? "seb.beforeclose.manual" : "seb.beforeclose.quiturl";
-			messageSocket.send(msg);
+			sh.sendMessage(msg);
 			return;
 		}
-		*/			
 		
 		if (!base.allowQuit) { // on shutdown url the global variable "shutdownEnabled" is set to true
 			sl.out("no way! seb is locked :-)");

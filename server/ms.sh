@@ -1,4 +1,4 @@
 #!/bin/sh
 #forever -s -a -l server.log -o server.out -e server.err start server.js
 #node serverproc.js
-node wsserver.js
+node msserver.js

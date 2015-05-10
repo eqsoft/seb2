@@ -49,8 +49,9 @@ var conf = function conf() {
 				next();
 			}
 		});
-		app.use('/',static(__dirname));
+		//app.use('/',static(__dirname));
 		app.use('/demo',static('demo'));
+		app.use('/websocket',static('websocket'));
 		return app;
 	}
 }

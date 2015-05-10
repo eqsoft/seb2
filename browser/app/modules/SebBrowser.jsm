@@ -147,7 +147,7 @@ this.SebBrowser = {
 		sl.debug("setBrowserHandler");
 		base.addBrowserStateListener(win,base.browserStateListener); // for both types
 	},
-
+	
 	initBrowser : function (win) {
 		if (!win) {
 			sl.err("wrong arguments for initBrowser(win)");
@@ -264,15 +264,12 @@ this.SebBrowser = {
 			sl.debug("no mainBrowserLoad defined.");
 			return;
 		}
-		
 		let doc = seb.mainWin.content.document;
-		
 		let loadReferrer = doc.location.href;
-		
 		if (loadReferrerInString != "") {
 			if (loadReferrer.indexOf(loadReferrerInString) > -1) {
 				base.loadPage(seb.mainWin,loadUrl);
-				// ? warm hab ich das so gemacht:
+				// ? warum hab ich das so gemacht:
 				/*
 				if (isValidUrl(url)) {
 					x.debug("load from command " + url);
@@ -294,7 +291,7 @@ this.SebBrowser = {
 		else {
 			sl.debug("load from command " + loadUrl);
 			base.loadPage(seb.mainWin,loadUrl);
-			// ? warm hab ich das so gemacht:
+			// ? warum hab ich das so gemacht:
 			//doc.location.href = url;
 		}
 	},

@@ -85,7 +85,7 @@ this.SebLog = {
 			base.writeLogfile(str);
 		} 
 		catch(e){}
-		sh.sendMessage(str);
+		sh.sendLog(str);
 	},
 	debug : function(msg) {
 		if (typeof seb === "object" && !seb.DEBUG) {
@@ -98,7 +98,7 @@ this.SebLog = {
 			base.writeLogfile(str);
 		} 
 		catch(e){}
-		sh.sendMessage(str);
+		sh.sendLog(str);
 	},
 	err : function(msg) {
 		let str = appinfo.name + " err : " + msg;
@@ -108,7 +108,7 @@ this.SebLog = {
 			base.writeLogfile(str);
 		} 
 		catch(e){}
-		sh.sendMessage(str);
+		sh.sendLog(str);
 	},
 	
 	initLogfile : function() {
@@ -146,56 +146,3 @@ this.SebLog = {
 		}
 	}
 }
-
-/*
-this.init_log = function(obj) {
-	os = appinfo.OS.toUpperCase();
-	switch (os) { // line feed for dump messages
-		case "WINNT" :
-			lf = "\n\r";
-			break;
-		case "UNIX" :
-		case "LINUX" :
-			lf = "\n";
-			break;
-		case "DARWIN" :
-			lf = "\n";
-			break;
-		default :
-			lf = "\n";
-	}
-	seb = obj;
-	DEBUG = seb.getDebug();
-}
-
-
-this.out = function (msg,ctx) { // for app messages
-	ctx = (ctx) ? ctx : APPNAME;
-	let str = ctx + ": " + msg;
-	console.logStringMessage(str);
-	dump(str + lf);
-	//writeLogFile(str);
-	//sendMessage(str);
-}
-	
-this.debug = function (msg,ctx) { // for debugging
-	if (!DEBUG) return;	
-	ctx = (ctx) ? ctx : APPNAME;		
-	var str = ctx + ": " + msg;
-	console.logStringMessage(str);
-	//c = seb.getConfig();
-	//out("2"+seb.getConfig().startURL);
-	dump(str + lf);
-	//writeLogFile(str);
-	//sendMessage(str);
-}
-	
-this.err = function (obj,ctx) { // error messages
-	ctx = (ctx) ? ctx : APPNAME;
-	var str = ctx + ": " + obj;
-	Cu.reportError(str);
-	dump(str + lf);
-	//writeLogFile("err: "+str);
-	//sendMessage("err: "+str);
-}
-*/

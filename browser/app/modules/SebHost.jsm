@@ -181,10 +181,19 @@ this.SebHost = {
 		}
 	},
 	
-	sendMessage : function (str) {
+	sendLog : function (str) {
 		if (socketlog && messageSocket != null) {
 			try {
 				messageSocket.send(str);
+			}
+			catch(e){};
+		}
+	},
+	
+	sendMessage : function(msg) {
+		if (messageSocket != null) {
+			try {
+				messageSocket.send(msg);
 			}
 			catch(e){};
 		}
