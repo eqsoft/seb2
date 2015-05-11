@@ -6,7 +6,11 @@ var 	prot 		= "",
 	sebTable	= null,
 	sebTableHead 	= null,
 	sebTableBody 	= null,
-	ws		= null;
+	ws		= null,
+	handler		= 	{ 
+					addSeb, 
+					removeSeb 
+				};
 
 function init() {
 	msg = document.getElementById("message");
@@ -33,6 +37,11 @@ function on_close() {
 
 function on_message(e) {
 	log("on_message: " + e.data);
+	obj = JSON.parse(e.data);
+	h = handler[obj.handler];
+	if (typeof h === 'function') {
+		h.apply(undefined, [obj.opts]);
+	}
 }
 
 function on_error(e) {
@@ -52,6 +61,12 @@ function log(str) {
 	msg.innerHTML = str;
 }
 
-function add_seb() {
-	
+/* handler */
+
+function addSeb(opts) {
+	log("addSeb: " + JSON.stringify(opts));
+}
+
+function removeSeb() {
+	log("removeSeb: " + JSON.stringify(opts));
 }

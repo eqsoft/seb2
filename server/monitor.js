@@ -4,6 +4,7 @@ var 	fs 		= require('fs-extra'),
 	https 		= require('https'),
 	WebSocketServer = require('ws').Server,
 	conf		= require('./conf.js'),
+	sebs		= {},
 	out		= utils.out;
 
 const port = 8442;
@@ -50,14 +51,12 @@ function on_error(error) {
 /* seb clients */
 function on_seb_connection(socket, server) {
 	out("monitor: seb connected");
-	broadcast({"message":"seb_connected"});
-	
+	addSeb(socket);
 }
 
 function on_seb_connection_error(error, server) {
 	out("monitor: seb connection error");
 }
-
 
 function on_seb_open(socket) {
 	out("monitor: seb socket open");
@@ -81,6 +80,34 @@ function broadcast(data) { // to all connected admin clients
 		c.send(JSON.stringify(data));
 	}
 }
+
+function addSeb(socket) {
+	var ip = socket.upgradeReq.connection.remoteAddress;
+	//if { sebs[ip] } 
+	sebs["ip"] = ip;
+	broadcast( { "handler" : "addSeb", "opts" : { "ip" : ip } } );
+	//console.dir(sebs);
+	//console.dir(socket.upgradeReq.connection);
+	//out("addSeb: " + ip);
+}
+
+/*
+function encode64(str) {
+	return new Buffer(str).toString('base64');
+}
+
+function decode64(str) {
+	return new Buffer(str,'base64').toString();
+}
+
+function encodeHex(str) {
+	return new Buffer(str).toString('hex');
+}
+
+function decodeHex(str) {
+	return new Buffer(str,'hex').toString();
+}
+*/
 
 // monitor
 var monitor = function () {
