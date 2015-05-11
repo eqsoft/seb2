@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<!--
 	<script src="res/jquery-2.1.4.min.js"></script>
 	<script src="res/monitor.js"></script>
+	-->
+	<script src="res/table.js"></script>
 </head>
+
 <body>
 	<p>Welcome to the SEB WebSocket Monitor</p>
+	<p>Message:&nbsp;<span id="message"></span></p>
+	<table id="sebTable">
+		<thead id="sebTableHead">
+			<th id="id">ID</th>
+			<th id="ip">IP-Address</th>
+			<th id="shutdown">Shutdown</th>
+		</thead>
+		<tbody id="sebTableBody"></tbody>
+	</table>
 </body>
 </html>

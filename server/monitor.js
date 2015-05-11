@@ -50,6 +50,8 @@ function on_error(error) {
 /* seb clients */
 function on_seb_connection(socket, server) {
 	out("monitor: seb connected");
+	broadcast({"message":"seb_connected"});
+	
 }
 
 function on_seb_connection_error(error, server) {
@@ -71,6 +73,13 @@ function on_seb_error(error, socket) {
 
 function on_seb_message(data, flags, socket) {
 	out("monitor: seb socket message");
+}
+
+function broadcast(data) { // to all connected admin clients
+	for (var k in wss.clients) {
+		var c = wss.clients[k];
+		c.send(JSON.stringify(data));
+	}
 }
 
 // monitor
