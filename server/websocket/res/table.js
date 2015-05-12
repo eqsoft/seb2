@@ -8,9 +8,9 @@ var 	prot 		= "",
 	sebTableBody 	= null,
 	ws		= null,
 	handler		= 	{ 
-					addData,
-					addSeb, 
-					removeSeb 
+					"addData":addData,
+					"addSeb":addSeb, 
+					"removeSeb":removeSeb 
 				};
 
 function init() {
@@ -66,7 +66,7 @@ function log(str) {
 /* handler */
 
 function addData(sebs) { // pushed from monitor server
-	//log("addData: " + JSON.stringify(sebs));
+	log("addData: " + JSON.stringify(sebs));
 	for (var key in sebs) {
 		addRow(sebs[key]);
 	}
@@ -79,6 +79,7 @@ function addSeb(seb) {
 
 function removeSeb(seb) {
 	log("removeSeb: " + JSON.stringify(seb));
+	removeRow(seb);
 }
 
 /* GUI */
@@ -88,14 +89,23 @@ function resetTable() {
 function addRow(seb) {
 	log("addRow: " + JSON.stringify(seb));
 	var row = sebTableBody.insertRow(0);
+	row.setAttribute("id","row_"+seb.id);
 	var idCell = row.insertCell(0);
 	var ipCell = row.insertCell(1);
 	var sdCell = row.insertCell(2);
 	idCell.innerHTML = seb.id;
 	ipCell.innerHTML = seb.ip;
-	sdCell.innerHTML = '<input type="button" id="' + seb.id + '" value="shutdown" onclick="shutdown(this);" />';
+	sdCell.innerHTML = "<input type=\"button\" value=\"shutdown\" onclick=\"shutdown(\'" + seb.id + "\');\" />";
 }
 
-function shutdown(el) {
-	alert(el.id);
+function removeRow(seb) {
+	log("removeRow: " + JSON.stringify(seb));
+	var row = document.getElementById("row_"+seb.id);
+	if (row) {
+		row.parentNode.removeChild(row);
+	}
+}
+
+function shutdown(id) {
+	ws.send(JSON.stringify({"handler":"shutdown","opts":{"id":id}}));
 }

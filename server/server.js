@@ -22,7 +22,7 @@ console.log('Socket server for SEB Server started on port ' + port);
 
 
 function on_connection(socket) {
-	//console.dir(socket.upgradeReq);
+	//console.log(wss.clients);
 	var cn = socket.upgradeReq.connection.getPeerCertificate().subject.CN;
 	if (cn != conf.usrCN ) { // only clients with valid user certificates are allowed
 		out("invalid user CN: " + cn);

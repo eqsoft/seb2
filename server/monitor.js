@@ -5,9 +5,13 @@ var 	fs 		= require('fs-extra'),
 	https 		= require('https'),
 	WebSocketServer = require('ws').Server,
 	conf		= require('./conf.js'),
-	sebmap		= {},
-	sebs		= {},
-	out		= utils.out;
+	sebs		= {}, // public sebs with radmon key for table gui
+	_sebs		= {}, // internal sebs with socket object
+	sebmap		= {}, // mapping from wskey to key 
+	out		= utils.out,
+	handler		= {
+				"shutdown":shutdown
+			};
 
 const port = 8442;
 
@@ -58,7 +62,6 @@ function addData(socket) {
 /* seb clients */
 function on_seb_connection(socket, server) {
 	out("monitor: seb connected");
-	
 	addSeb(socket);
 }
 
@@ -111,21 +114,25 @@ function broadcast(data) { // to all connected admin clients
 }
 
 function addSeb(socket) {
+	//out("clients: " + monitor.wss.clients.length);
+	//socket.send("sdfsdfsdfsd");
 	var ip = socket.upgradeReq.connection.remoteAddress;
 	var id = crypt.randomBytes(16).toString('hex');
 	var wskey = socket.upgradeReq.headers['sec-websocket-key'];
-	sebmap[wskey] = id;
 	var seb = {"id":id,"ip":ip};
 	sebs[id] = seb;
+	_sebs[id] = {"socket":socket};
+	sebmap[wskey] = id;
 	broadcast( { "handler" : "addSeb", "opts" : seb } );
 }
 
 function removeSeb(socket) {
 	var wskey = socket.upgradeReq.headers['sec-websocket-key'];
 	var id = sebmap[wskey];
-	var seb = sebs[id];
-	broadcast( { "handler" : "removeSeb", "opts" : seb } );
+	broadcast( { "handler" : "removeSeb", "opts" : sebs[id] } );
 	delete sebs[id];
+	delete sebmap[wskey];
+	delete _sebs[id];
 }
 
 /*
@@ -145,6 +152,11 @@ function decodeHex(str) {
 	return new Buffer(str,'hex').toString();
 }
 */
+
+/* handler */
+function shutdown(seb) {
+	
+}
 
 // monitor
 var monitor = function () {
