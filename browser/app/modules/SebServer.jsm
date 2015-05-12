@@ -108,11 +108,12 @@ this.SebServer = {
 	
 	onOpen : function() {
 		sl.debug("websocket onOpen"); 
-		sebserverSocket.send("sdfsdfsdfsdfs");
+		//sebserverSocket.send("seb: onOpen");
 	},
 	
 	onClose : function() {
 		sl.debug("websocket onClose"); 
+		//sebserverSocket.send("seb: onClose");
 	},
 	
 	onError : function(error) {

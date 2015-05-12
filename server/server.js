@@ -42,23 +42,23 @@ function on_connection(socket) {
 }
 
 function on_connection_error(error) {
-	out("connection error: " + error);
+	out("server: connection error: " + error);
 }
 
 function on_open() {
-	out("on_open");
+	out("server: on_open");
 }
 
 function on_close(code, message) {
-	out("on_close");
+	out("server: on_close");
 	//console.dir(code);
 	//console.dir(message);
 }
 
 function on_message(data, flags) {
-	out("on_message: " + data + " flags: " + JSON.stringify(flags));
+	out("server: on_message: " + data + " flags: " + JSON.stringify(flags));
 }
 
 function on_error(error) {
-	out("on_error: " + error);
+	out("server: on_error: " + error);
 }

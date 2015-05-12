@@ -1,0 +1,12 @@
+
+D:\schneid3\development\seb2\server>node server.js 
+Websocket server for monitoring started on port 8442
+HTTPS server for SEB Server started on port 8443
+Socket server for SEB Server started on port 8443
+seb client connected
+monitor: seb connected
+key: zd3sZiFaFSQrtfdMJ6PfsQ==
+server: on_close
+monitor: seb socket closed
+key: zd3sZiFaFSQrtfdMJ6PfsQ==
+Batchvorgang abbrechen (J/N)? 

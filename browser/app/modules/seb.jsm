@@ -203,8 +203,11 @@ this.seb =  {
 					cf.append(entry.leafName);
 					base.profile.customFiles.push(cf);
 					if (cf.exists()) {
-						cf.remove(true);
-						sl.debug("delete existing " + cf.path);
+						try {
+							cf.remove(true);
+							sl.debug("delete existing " + cf.path);
+						}
+						catch(e) {};
 					}
 					entry.copyTo(base.profile.dirs[0],entry.leafName);
 					sl.debug("copy " + entry.leafName + " to " + base.profile.dirs[0].path);														

@@ -1,9 +1,11 @@
 var 	fs 		= require('fs-extra'),
 	util 		= require('util'),
 	utils		= require('./utils.js'),
+	crypt		= require('crypto'),
 	https 		= require('https'),
 	WebSocketServer = require('ws').Server,
 	conf		= require('./conf.js'),
+	sebmap		= {},
 	sebs		= {},
 	out		= utils.out;
 
@@ -25,6 +27,7 @@ function on_connection(socket) {
 	}
 	else {
 		out("monitor: admin connected");
+		addData(socket);
 		socket.on('open',on_open);
 		socket.on('close',on_close);
 		socket.on('message',on_message);
@@ -48,9 +51,14 @@ function on_error(error) {
 	out("admin: on_error: " + error);
 }
 
+function addData(socket) {
+	socket.send(JSON.stringify({"handler":"addData","opts":sebs}));
+}
+
 /* seb clients */
 function on_seb_connection(socket, server) {
 	out("monitor: seb connected");
+	
 	addSeb(socket);
 }
 
@@ -59,11 +67,32 @@ function on_seb_connection_error(error, server) {
 }
 
 function on_seb_open(socket) {
+	/*
+	 * http://django-websocket-redis.readthedocs.org/en/latest/heartbeats.html
+	var heartbeat_msg = '--heartbeat--', heartbeat_interval = null, missed_heartbeats = 0;
+	if (heartbeat_interval === null) {
+        missed_heartbeats = 0;
+        heartbeat_interval = setInterval(function() {
+            try {
+                missed_heartbeats++;
+                if (missed_heartbeats >= 3)
+                    throw new Error("Too many missed heartbeats.");
+                ws.send(heartbeat_msg);
+            } catch(e) {
+                clearInterval(heartbeat_interval);
+                heartbeat_interval = null;
+                console.warn("Closing connection. Reason: " + e.message);
+                ws.close();
+            }
+        }, 5000);
+    }
+    */ 
 	out("monitor: seb socket open");
 }
 
 function on_seb_close(code, message, socket) {
 	out("monitor: seb socket closed");
+	removeSeb(socket);
 }
 
 function on_seb_error(error, socket) {
@@ -83,12 +112,20 @@ function broadcast(data) { // to all connected admin clients
 
 function addSeb(socket) {
 	var ip = socket.upgradeReq.connection.remoteAddress;
-	//if { sebs[ip] } 
-	sebs["ip"] = ip;
-	broadcast( { "handler" : "addSeb", "opts" : { "ip" : ip } } );
-	//console.dir(sebs);
-	//console.dir(socket.upgradeReq.connection);
-	//out("addSeb: " + ip);
+	var id = crypt.randomBytes(16).toString('hex');
+	var wskey = socket.upgradeReq.headers['sec-websocket-key'];
+	sebmap[wskey] = id;
+	var seb = {"id":id,"ip":ip};
+	sebs[id] = seb;
+	broadcast( { "handler" : "addSeb", "opts" : seb } );
+}
+
+function removeSeb(socket) {
+	var wskey = socket.upgradeReq.headers['sec-websocket-key'];
+	var id = sebmap[wskey];
+	var seb = sebs[id];
+	broadcast( { "handler" : "removeSeb", "opts" : seb } );
+	delete sebs[id];
 }
 
 /*
