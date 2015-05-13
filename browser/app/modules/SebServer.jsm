@@ -45,6 +45,7 @@ scriptloader.loadSubScript("resource://globals/prototypes.js");
 /* SebModules */
 XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","SebLog");
 XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","SebUtils");
+XPCOMUtils.defineLazyModuleGetter(this,"sh","resource://modules/SebHost.jsm","SebHost");
 
 /* ModuleGlobals */
 let 	base = null,
@@ -56,11 +57,13 @@ let 	base = null,
 	sebserverSocket = null;
 	
 this.SebServer = {
-
+	handler : {},
+		
 	init : function(obj) {
 		base = this;
 		seb = obj;
 		sl.out("SebServer initialized: " + seb);
+		base.handler["shutdown"] = base.shutdown;
 	},
 	
 	sebserverSocketListener : function (e) {
@@ -107,20 +110,31 @@ this.SebServer = {
 	},
 	
 	onOpen : function() {
-		sl.debug("websocket onOpen"); 
+		sl.debug("socket client: onOpen"); 
 		//sebserverSocket.send("seb: onOpen");
 	},
 	
 	onClose : function() {
-		sl.debug("websocket onClose"); 
+		sl.debug("socket client: onClose"); 
 		//sebserverSocket.send("seb: onClose");
 	},
 	
 	onError : function(error) {
-		sl.debug("websocket onError: " + error); 
+		sl.debug("socket client: onError: " + error); 
 	},
 	
-	onMessage : function() {
-		sl.debug("websocket onMessage"); 
+	onMessage : function(e) {
+		sl.debug("socket client: onMessage"); 
+		//log("on_message: " + e.data);
+		let obj = JSON.parse(e.data);
+		let h = base.handler[obj.handler];
+		if (typeof h === 'function') {
+			h.apply(undefined, [obj.opts]);
+		} 	
+	},
+	
+	shutdown : function(seb) {
+		sl.debug("socket client: shutdown: " + seb.id); 
+		sh.shutdown();
 	}
 }

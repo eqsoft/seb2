@@ -7,6 +7,9 @@ var 	prot 		= "",
 	sebTableHead 	= null,
 	sebTableBody 	= null,
 	ws		= null,
+	params		= {},
+	ipFilter	= {},
+	checkIp		= null,
 	handler		= 	{ 
 					"addData":addData,
 					"addSeb":addSeb, 
@@ -16,6 +19,13 @@ var 	prot 		= "",
 function init() {
 	msg = document.getElementById("message");
 	log("init");
+	params = getParams();
+	ipFilter["local"] = /^(127\.0\.0\.1$)|(\:\:1)$/;
+	ipFilter["intern"] = /^192\.168\.0\.\d+$/;
+	if (params.filter && ipFilter[params.filter]) {
+		checkIp = ipFilter[params.filter];
+	}
+	//log("regex: "+ipFilter["local"].test("127.0.0.0"));
 	sebTable = document.getElementById("sebTable");
 	sebTableHead = document.getElementById("sebTableHead");
 	sebTableBody = document.getElementById("sebTableBody");
@@ -26,7 +36,6 @@ function init() {
 	ws.onclose = on_close;
 	ws.onmessage = on_message;
 	ws.onerror = on_error;
-	
 }
 
 function on_open() {
@@ -39,8 +48,8 @@ function on_close() {
 
 function on_message(e) {
 	//log("on_message: " + e.data);
-	obj = JSON.parse(e.data);
-	h = handler[obj.handler];
+	var obj = JSON.parse(e.data);
+	var h = handler[obj.handler];
 	if (typeof h === 'function') {
 		h.apply(undefined, [obj.opts]);
 	} 
@@ -82,20 +91,48 @@ function removeSeb(seb) {
 	removeRow(seb);
 }
 
+function getParams() {
+    if (!window.location.search) {
+        return({});   // return empty object
+    }
+    var parms = {};
+    var temp;
+    var items = window.location.search.slice(1).split("&");   // remove leading ? and split
+    for (var i = 0; i < items.length; i++) {
+        temp = items[i].split("=");
+        if (temp[0]) {
+            if (temp.length < 2) {
+                temp.push("");
+            }
+            parms[decodeURIComponent(temp[0])] = decodeURIComponent(temp[1]);        
+        }
+    }
+    return(parms);
+}
+
 /* GUI */
 function resetTable() {
 }
 
 function addRow(seb) {
 	log("addRow: " + JSON.stringify(seb));
+	if (checkIp != null && !checkIp.test(seb.ip)) {
+		log("filtered: " + seb.ip); 
+		return; 
+	};
+	
 	var row = sebTableBody.insertRow(0);
 	row.setAttribute("id","row_"+seb.id);
 	var idCell = row.insertCell(0);
+	idCell.className = "td-id";
 	var ipCell = row.insertCell(1);
+	ipCell.className = "td-ip";
 	var sdCell = row.insertCell(2);
+	sdCell.className = "td-shutdown";
+	
 	idCell.innerHTML = seb.id;
 	ipCell.innerHTML = seb.ip;
-	sdCell.innerHTML = "<input type=\"button\" value=\"shutdown\" onclick=\"shutdown(\'" + seb.id + "\');\" />";
+	sdCell.innerHTML = "<input type=\"button\" value=\"shutdown\" id=\"btn-shutdown\" onclick=\"shutdown(\'" + seb.id + "\');\" />";
 }
 
 function removeRow(seb) {
@@ -107,5 +144,6 @@ function removeRow(seb) {
 }
 
 function shutdown(id) {
+	log("shutdown: " + id);
 	ws.send(JSON.stringify({"handler":"shutdown","opts":{"id":id}}));
 }

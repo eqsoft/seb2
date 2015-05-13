@@ -1,0 +1,48 @@
+body {
+	padding: 30px;
+	font-family: courier;
+}
+
+#sebTable {
+	width : 80%;
+}
+
+th {
+	background: #aaa;
+	color: #fff;
+}
+
+tbody > tr:nth-child(even) {
+	background: #ddd;
+}
+
+tbody > tr:nth-child(odd) {
+	background: #fff;
+}
+
+td {
+	padding:3px 10px;
+}
+
+#th-id {
+	width: 40%;
+}
+
+#th-ip {
+	width: 40%;
+}
+
+#th-shutdown {
+	width: 20%;
+}
+
+.td-shutdown {
+	text-align: center;
+}
+
+#message {
+	/*display: block;
+	-moz-transform: rotate(180deg);
+	-webkit-transform: rotate(180deg);
+	*/ 
+}

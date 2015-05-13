@@ -49,6 +49,11 @@ function on_close(code, message) {
 
 function on_message(data, flags) {
 	out("admin: on_message: " + data + " flags: " + JSON.stringify(flags));
+	var obj = JSON.parse(data);
+	var h = handler[obj.handler];
+	if (typeof h === 'function') {
+		h.apply(undefined, [obj.opts, data]);
+	} 
 }
 
 function on_error(error) {
@@ -113,7 +118,7 @@ function broadcast(data) { // to all connected admin clients
 	}
 }
 
-function addSeb(socket) {
+function addSeb(socket, data) {
 	//out("clients: " + monitor.wss.clients.length);
 	//socket.send("sdfsdfsdfsd");
 	var ip = socket.upgradeReq.connection.remoteAddress;
@@ -126,7 +131,7 @@ function addSeb(socket) {
 	broadcast( { "handler" : "addSeb", "opts" : seb } );
 }
 
-function removeSeb(socket) {
+function removeSeb(socket, data) {
 	var wskey = socket.upgradeReq.headers['sec-websocket-key'];
 	var id = sebmap[wskey];
 	broadcast( { "handler" : "removeSeb", "opts" : sebs[id] } );
@@ -154,8 +159,11 @@ function decodeHex(str) {
 */
 
 /* handler */
-function shutdown(seb) {
-	
+function shutdown(seb,data) {
+	out("monitor: shutdown " + seb.id);
+	var socket = _sebs[seb.id].socket;
+	socket.send(data); // forward data (same handler and opts object expected on seb client)
+	//out("monitor: socket " + socket.send);
 }
 
 // monitor

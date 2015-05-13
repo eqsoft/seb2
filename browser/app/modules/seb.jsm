@@ -312,7 +312,7 @@ this.seb =  {
 		}
 		
 		if (sh.messageServer) {
-			sl.debug("shutdown should be handled by host");
+			sl.debug("quit should be handled by host");
 			var msg = (e) ? "seb.beforeclose.manual" : "seb.beforeclose.quiturl";
 			sh.sendMessage(msg);
 			return;

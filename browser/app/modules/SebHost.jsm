@@ -34,7 +34,7 @@ this.EXPORTED_SYMBOLS = ["SebHost"];
 
 /* Modules */
 const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components,
-	{ scriptloader } = Cu.import("resource://gre/modules/Services.jsm").Services;
+	{ appinfo, scriptloader } = Cu.import("resource://gre/modules/Services.jsm").Services;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 /* Services */
@@ -159,8 +159,9 @@ this.SebHost = {
 		seb.quit();
 	},
 	
-	quitLinuxHost : function() {
+	shutdownLinuxHost : function() {
 		// create an nsIFile for the executable
+		sl.debug("try shutdown linux host...");
 		try {
 			var file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
 			file.initWithPath("/usr/bin/sudo");
@@ -178,6 +179,24 @@ this.SebHost = {
 		catch(e) {
 			//prompt.alert(mainWin, "Message from Admin", e);
 			su.err("Error " + e);
+		}
+	},
+	
+	shutdown : function() {
+		let os = appinfo.OS.toUpperCase();
+		switch (os) { // line feed for dump messages
+			case "WINNT" :
+				sl.debug("shutdown windows host is not defined");
+				break;
+			case "UNIX" :
+			case "LINUX" :
+				base.shutdownLinuxHost();
+				break;
+			case "DARWIN" :
+				sl.debug("shutdown mac host is not defined");
+				break;
+			default :
+				// do nothing
 		}
 	},
 	
