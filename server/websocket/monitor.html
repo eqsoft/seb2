@@ -6,12 +6,16 @@
 	<script src="res/monitor.js"></script>
 	-->
 	<script src="res/table.js"></script>
+	<script>
+		var defaultFilter = "local";
+	</script>
 	<link href="res/table.css" rel="stylesheet" type="text/css" media="all">
 </head>
 
 <body>
 	<p>Welcome to the SEB WebSocket Monitor</p>
 	<p>Message:&nbsp;<span id="message"></span></p>
+	<input id="btnShutDownAll" type="button" value="shutdown all" onclick="shutdownAll();"/ >
 	<table id="sebTable">
 		<thead id="sebTableHead">
 			<th id="th-id">id</th>

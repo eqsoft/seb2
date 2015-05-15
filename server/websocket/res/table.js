@@ -1,4 +1,5 @@
 window.onload = init;
+
 var 	prot 		= "",
 	sock_url 	= "", 
 	msg		= null,
@@ -15,6 +16,7 @@ var 	prot 		= "",
 					"addSeb":addSeb, 
 					"removeSeb":removeSeb 
 				};
+				
 
 function init() {
 	msg = document.getElementById("message");
@@ -22,8 +24,18 @@ function init() {
 	params = getParams();
 	ipFilter["local"] = /^(127\.0\.0\.1$)|(\:\:1)$/;
 	ipFilter["intern"] = /^192\.168\.0\.\d+$/;
+	defaultFilter = (defaultFilter) ? defaultFilter : (params.filter) ? params.filter : null;
+	log("defaultFilter: " + defaultFilter);
+	if (defaultFilter && ipFilter[defaultFilter]) { //can be defined in html page	
+		checkIp = ipFilter[defaultFilter];
+	}
 	if (params.filter && ipFilter[params.filter]) {
-		checkIp = ipFilter[params.filter];
+		defaultFilter = params.filter;
+		checkIp = ipFilter[defaultFilter];
+	}
+	if (checkIp != null) {
+		var val = btnShutDownAll.getAttribute("value") + ": " + defaultFilter;
+		btnShutDownAll.setAttribute("value", val);
 	}
 	//log("regex: "+ipFilter["local"].test("127.0.0.0"));
 	sebTable = document.getElementById("sebTable");
@@ -114,6 +126,9 @@ function getParams() {
 function resetTable() {
 }
 
+function setFilter() {
+}
+
 function addRow(seb) {
 	log("addRow: " + JSON.stringify(seb));
 	if (checkIp != null && !checkIp.test(seb.ip)) {
@@ -132,7 +147,7 @@ function addRow(seb) {
 	
 	idCell.innerHTML = seb.id;
 	ipCell.innerHTML = seb.ip;
-	sdCell.innerHTML = "<input type=\"button\" value=\"shutdown\" id=\"btn-shutdown\" onclick=\"shutdown(\'" + seb.id + "\');\" />";
+	sdCell.innerHTML = "<input type=\"button\" value=\"shutdown\" class=\"btn-shutdown\" onclick=\"shutdown(\'" + seb.id + "\');\" />";
 }
 
 function removeRow(seb) {
@@ -145,5 +160,17 @@ function removeRow(seb) {
 
 function shutdown(id) {
 	log("shutdown: " + id);
-	ws.send(JSON.stringify({"handler":"shutdown","opts":{"id":id}}));
+	var ret = confirm("Shutdown " + id + "?");
+	if (ret) {
+		ws.send(JSON.stringify({"handler":"shutdown","opts":{"id":id}}));
+	}
 }
+
+function shutdownAll() {
+	log("shutdownAll");
+	//var ids = document.querySelector('.td-id');
+	//log(JSON.stringify(ids));
+	//var rows sebTableBody.getElementBy
+}
+
+//http://caniuse.com/#feat=queryselector
