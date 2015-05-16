@@ -168,8 +168,15 @@ function shutdown(id) {
 
 function shutdownAll() {
 	log("shutdownAll");
-	//var ids = document.querySelector('.td-id');
-	//log(JSON.stringify(ids));
+	var idNodes = sebTableBody.querySelectorAll('.td-id');
+	var ids = [];
+	for (var i=0;i<idNodes.length;i++) {
+		ids.push(idNodes[i].textContent);
+	}
+	var ret = confirm("Shutdown all " + defaultFilter + "?");
+	if (ret) {
+		ws.send(JSON.stringify({"handler":"shutdownAll","opts":{"ids":ids}}));
+	}
 	//var rows sebTableBody.getElementBy
 }
 

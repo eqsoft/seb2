@@ -161,8 +161,10 @@ this.SebHost = {
 	
 	shutdownLinuxHost : function() {
 		// create an nsIFile for the executable
-		sl.debug("try shutdown linux host...");
+		sl.out("try shutdown linux host...");
 		try {
+			// maybe controlled seb quit before?
+			base.quitFromHost(); 
 			var file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
 			file.initWithPath("/usr/bin/sudo");
 			// create an nsIProcess
@@ -182,18 +184,29 @@ this.SebHost = {
 		}
 	},
 	
+	shutdownWindowsHost : function() {
+		sl.debug("shutdown windows host is not defined, but i can shutdown seb client :-)");
+		base.quitFromHost();	
+	},
+	
+	shutdownMacHost : function() {
+		sl.debug("shutdown mac host is not defined, but i can shutdown seb client :-)");
+		base.quitFromHost();
+	},
+	
+	
 	shutdown : function() {
 		let os = appinfo.OS.toUpperCase();
 		switch (os) { // line feed for dump messages
 			case "WINNT" :
-				sl.debug("shutdown windows host is not defined");
+				base.shutdownWindowsHost();
 				break;
 			case "UNIX" :
 			case "LINUX" :
 				base.shutdownLinuxHost();
 				break;
 			case "DARWIN" :
-				sl.debug("shutdown mac host is not defined");
+				base.shutdownMacHost();
 				break;
 			default :
 				// do nothing

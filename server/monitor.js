@@ -10,7 +10,8 @@ var 	fs 		= require('fs-extra'),
 	sebmap		= {}, // mapping from wskey to key 
 	out		= utils.out,
 	handler		= {
-				"shutdown":shutdown
+				"shutdown":shutdown,
+				"shutdownAll":shutdownAll
 			};
 
 const port = 8442;
@@ -164,6 +165,14 @@ function shutdown(seb,data) {
 	var socket = _sebs[seb.id].socket;
 	socket.send(data); // forward data (same handler and opts object expected on seb client)
 	//out("monitor: socket " + socket.send);
+}
+
+function shutdownAll(seb,data) {
+	out("monitor: shutdownAll " + JSON.stringify(seb.ids));
+	for (var idx in seb.ids) {
+		var id =  seb.ids[idx];
+		shutdown({"id":id},JSON.stringify({"handler":"shutdown","opts":{"id":id}}));
+	}
 }
 
 // monitor
