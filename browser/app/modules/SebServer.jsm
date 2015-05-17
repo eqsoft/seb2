@@ -64,6 +64,7 @@ this.SebServer = {
 		seb = obj;
 		sl.out("SebServer initialized: " + seb);
 		base.handler["shutdown"] = base.shutdown;
+		base.handler["sendScreenshotData"] = base.sendScreenshotData;
 	},
 	
 	sebserverSocketListener : function (e) {
@@ -72,6 +73,7 @@ this.SebServer = {
 		const { WebSocket } = sebserverSocketWin;
 		try {
 			sebserverSocket = new WebSocket(sebserver.socket);
+			sebserverSocket.binaryType = "blob";
 			sebserverSocket.onopen = base.onOpen;
 			sebserverSocket.onclose = base.onClose;
 			sebserverSocket.onerror = base.onError;
@@ -136,5 +138,21 @@ this.SebServer = {
 	shutdown : function(seb) {
 		sl.debug("socket client: shutdown: " + seb.id); 
 		sh.shutdown();
-	}
+	},
+	
+	sendScreenshotData : function(file) {
+		sc.sendScreenshotData(file);
+	},
+	
+	send : function(obj) {
+		if (sebserverSocket != null) {
+			try {
+				//sl.debug(sebserverSocket.binaryType);
+				//sebserverSocket.extensions["test"] = JSON.stringify({"bla":"blub"});
+				sebserverSocket.send(obj);
+				
+			}
+			catch(e) { sl.err(e) }
+		}
+	} 
 }

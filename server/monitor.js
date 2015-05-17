@@ -54,7 +54,7 @@ function on_message(data, flags) {
 	var h = handler[obj.handler];
 	if (typeof h === 'function') {
 		h.apply(undefined, [obj.opts, data]);
-	} 
+	}
 }
 
 function on_error(error) {
@@ -120,8 +120,6 @@ function broadcast(data) { // to all connected admin clients
 }
 
 function addSeb(socket, data) {
-	//out("clients: " + monitor.wss.clients.length);
-	//socket.send("sdfsdfsdfsd");
 	var ip = socket.upgradeReq.connection.remoteAddress;
 	var id = crypt.randomBytes(16).toString('hex');
 	var wskey = socket.upgradeReq.headers['sec-websocket-key'];
@@ -140,24 +138,6 @@ function removeSeb(socket, data) {
 	delete sebmap[wskey];
 	delete _sebs[id];
 }
-
-/*
-function encode64(str) {
-	return new Buffer(str).toString('base64');
-}
-
-function decode64(str) {
-	return new Buffer(str,'base64').toString();
-}
-
-function encodeHex(str) {
-	return new Buffer(str).toString('hex');
-}
-
-function decodeHex(str) {
-	return new Buffer(str,'hex').toString();
-}
-*/
 
 /* handler */
 function shutdown(seb,data) {
@@ -183,8 +163,6 @@ var monitor = function () {
 	this.wss = null;
 	this.init = function(websocketserver) {
 		monitor.wss = websocketserver;
-		//init_data_table();
-		//utils.inspect(monitor.bss);
 	}
 	this.on_seb_connection = function( socket ) { on_seb_connection( socket, this ); }; // this = websocketserver?
 	this.on_seb_connection_error = function( error ) { on_seb_connection_error( error, this ); }; // this = websocketserver?
@@ -192,18 +170,6 @@ var monitor = function () {
 	this.on_seb_close = function(code, message) { on_seb_close(code, message, this); }; // this = socket?
 	this.on_seb_error = function(error) { on_seb_error(error, this); };
 	this.on_seb_message = function(data, flags) { on_seb_message(data, flags, this); }; // this = socket?
-	/*
-	this.on_seb_error = function(e) { on_seb_error(e) }; // ToDo
-	this.on_seb_close = function() { on_seb_close( this ) }; 
-	this.on_seb_message = function() { on_seb_message( this ) }; 
-	*/
-	
-	// in that context "this" is a client object (see: "client.on('close', monitor.on_client_close)" in server.js); 
-	/*
-	this.on_client_stream = function(stream, meta) { update_stream_info( this, stream, meta ) };
-	this.on_stream_data_screenshot = function (client_id) { screenshot_data( client_id, "data" ) }; // "this" is stream object 
-	this.on_stream_end_screenshot = function (client_id) { screenshot_data( client_id, "end" ) }; // "this" is stream object 
-	*/
 }
 monitor.instance = null;
 

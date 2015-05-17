@@ -67,6 +67,9 @@
 	"url"    : "https://localhost:8443/websocket/index.html",
 	"socket" : "wss://localhost:8443"
 },
+"sebScreenshot":true,
+"sebScreenshotImageType":"image/jpeg",
+"sebScreenshotSound":true,
 
 "DESCRIPTION":"*** the config params above are already migrated ****",
 

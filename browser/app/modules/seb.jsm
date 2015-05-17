@@ -49,6 +49,7 @@ XPCOMUtils.defineLazyModuleGetter(this,"sb","resource://modules/SebBrowser.jsm",
 XPCOMUtils.defineLazyModuleGetter(this,"sn","resource://modules/SebNet.jsm","SebNet");
 XPCOMUtils.defineLazyModuleGetter(this,"sh","resource://modules/SebHost.jsm","SebHost");
 XPCOMUtils.defineLazyModuleGetter(this,"ss","resource://modules/SebServer.jsm","SebServer");
+XPCOMUtils.defineLazyModuleGetter(this,"sc","resource://modules/SebScreenshot.jsm","SebScreenshot");
 
 /* ModuleGlobals */
 let	base = null;
@@ -115,6 +116,7 @@ this.seb =  {
 		sw.init(base);
 		sb.init(base);
 		ss.init(base);
+		sc.init(base);
 		base.initDebug();
 		base.initConfig();
 	},

@@ -1,10 +1,14 @@
-var 	util 		= require('util'),
+var 	fs 		= require('fs-extra'),
+	util 		= require('util'),
 	utils		= require('./utils.js'),
 	https 		= require('https'),
 	conf		= require('./conf.js'),
 	out		= utils.out,
 	WebSocketServer = require('ws').Server,
-	monitor		= require('./monitor.js');
+	monitor		= require('./monitor.js'),
+	handler		= {
+				"screenshot":screenshot
+			};
 
 const port = 8443;
 
@@ -36,6 +40,7 @@ function on_connection(socket) {
 		socket.on('close',monitor.on_seb_close);
 		socket.on('message',on_message);
 		socket.on('message',monitor.on_seb_message);
+		//socket.on('stream',on_stream);
 		socket.on('error',on_error);
 		socket.on('error',monitor.on_seb_error);
 	}
@@ -51,14 +56,34 @@ function on_open() {
 
 function on_close(code, message) {
 	out("server: on_close");
-	//console.dir(code);
-	//console.dir(message);
 }
 
 function on_message(data, flags) {
-	out("server: on_message: " + data + " flags: " + JSON.stringify(flags));
+	var obj = JSON.parse(data);
+	var h = handler[obj.handler];
+	if (typeof h === 'function') {
+		h.apply(this, [obj.opts, data]);
+	}
 }
 
 function on_error(error) {
 	out("server: on_error: " + error);
+}
+
+/* handler */
+
+function screenshot(opts, data) {
+	out("screenshot: " + opts);
+	var p = opts.file.path.join("/");
+	var filepath = __dirname + '/websocket/data/' + p;
+	out(filepath);
+	fs.mkdirs(filepath, function() {
+		var filestream = fs.createWriteStream(filepath + '/' + opts.file.filename);
+		filestream.on('finish', function () {
+  			out("file has been written");
+		});
+		var buffer = new Buffer(opts.data,'base64');
+		filestream.write(buffer);
+		filestream.end();
+	});
 }

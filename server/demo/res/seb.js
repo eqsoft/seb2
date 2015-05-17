@@ -1,7 +1,14 @@
 // add an eventlistener to the form submit event 
-$(document).ready(function() { $('form#frmQuestion').submit( function() { return screenshot(); })} );
+window.onload = init;
+var params = {};
+
+function init() {
+	params = getUrlVars();
+	document.getElementById("frmQuestion").addEventListener("submit",screenshot,false);
+}
 
 // the eventhandler
+
 function screenshot() {
 	// the screenshot component needs some data to save the question snapshot		
 	var params = getUrlVars();
@@ -11,7 +18,7 @@ function screenshot() {
 		'path'		:	[params.test_id,params.user_id],
 		'filename'	:	SEQUENCE_ID + "_" + QUESTION_ID + "_" + Date.now()
 	};
-	if (seb_ScreenShot instanceof Function) {		
+	if (typeof seb_ScreenShot == "function") {		
 		seb_ScreenShot(window,file);
 		return true;
 	}
