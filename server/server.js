@@ -6,24 +6,29 @@ var 	fs 		= require('fs-extra'),
 	out		= utils.out,
 	WebSocketServer = require('ws').Server,
 	monitor		= require('./monitor.js'),
+	demoApp		= true,
 	handler		= {
 				"screenshot":screenshot
 			};
 
-const port = 8443;
+const socketPort = 8442;
+const httpsPort = 8443;
 
-var server = https.createServer(conf.getServerOptions(), conf.getApp());
-var wss = new WebSocketServer({ server: server });
+var socketServer = https.createServer(conf.getServerOptions(), conf.getApp());
+var wss = new WebSocketServer({ server: socketServer });
 monitor.init(wss);
 wss.on('connection',on_connection);
 wss.on('connection',monitor.on_seb_connection);
 wss.on('error',on_connection_error);
 wss.on('error',monitor.on_seb_connection_error);
+socketServer.listen(socketPort);
+console.log('Websocket started on port ' + socketPort);
 
-server.listen(port);
-console.log('HTTPS server for SEB Server started on port ' + port);
-console.log('Socket server for SEB Server started on port ' + port);
-
+if (demoApp) {
+	httpsServer = https.createServer(conf.getServerOptions(), conf.getApp());
+	httpsServer.listen(httpsPort);
+	console.log('HTTPS server for seb demo app started on port ' + httpsPort);
+}
 
 function on_connection(socket) {
 	//console.log(wss.clients);

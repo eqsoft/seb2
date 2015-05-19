@@ -14,14 +14,14 @@ var 	fs 		= require('fs-extra'),
 				"shutdownAll":shutdownAll
 			};
 
-const port = 8442;
+const monitorPort = 8441;
 
-var server = https.createServer(conf.getServerOptions(), conf.getApp());
-var wss = new WebSocketServer({ server: server });
-server.listen(port);
+var monitorServer = https.createServer(conf.getServerOptions(), conf.getApp());
+var wss = new WebSocketServer({ server: monitorServer });
+monitorServer.listen(monitorPort);
 wss.on('connection', on_connection);
 
-out('Websocket server for monitoring started on port ' + port);
+out('Websocket for monitoring started on port ' + monitorPort);
 
 function on_connection(socket) {
 	//console.dir(socket.upgradeReq);
