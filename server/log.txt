@@ -1,3 +1,0 @@
-Websocket server for monitoring started on port 8442
-HTTPS server for SEB Server started on port 8443
-Socket server for SEB Server started on port 8443
