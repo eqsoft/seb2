@@ -160,7 +160,7 @@ this.seb =  {
 		}
 	},
 	
-	initAfterConfig() {
+	initAfterConfig : function() {
 		if (typeof base.config.browserPrefs == "object") {
 					su.setPrefs(base.config.browserPrefs);
 		}
