@@ -164,7 +164,7 @@ this.SebHost = {
 		sl.out("try shutdown linux host...");
 		try {
 			// maybe controlled seb quit before?
-			base.quitFromHost(); 
+			//base.quitFromHost(); no: because of application loop in netpoint
 			var file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
 			file.initWithPath("/usr/bin/sudo");
 			// create an nsIProcess
