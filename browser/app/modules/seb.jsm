@@ -52,7 +52,8 @@ XPCOMUtils.defineLazyModuleGetter(this,"ss","resource://modules/SebServer.jsm","
 XPCOMUtils.defineLazyModuleGetter(this,"sc","resource://modules/SebScreenshot.jsm","SebScreenshot");
 
 /* ModuleGlobals */
-let	base = null;
+let	base = null,
+	overrideProfile = true;
 
 this.seb =  {
 	DEBUG : false,
@@ -204,15 +205,17 @@ this.seb =  {
 					var cf = base.profile.dirs[0].clone();
 					cf.append(entry.leafName);
 					base.profile.customFiles.push(cf);
-					if (cf.exists()) {
+					if (cf.exists() && overrideProfile) {
 						try {
 							cf.remove(true);
 							sl.debug("delete existing " + cf.path);
 						}
 						catch(e) {};
 					}
-					entry.copyTo(base.profile.dirs[0],entry.leafName);
-					sl.debug("copy " + entry.leafName + " to " + base.profile.dirs[0].path);														
+					if (!cf.exists()) {
+						entry.copyTo(base.profile.dirs[0],entry.leafName);
+						sl.debug("copy " + entry.leafName + " to " + base.profile.dirs[0].path);
+					}														
 				}
 			}
 			else {

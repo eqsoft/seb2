@@ -65,7 +65,7 @@ this.SebNet = {
 				//sl.debug(subject.referrer);
 				let url = subject.URI.spec.split("#"); // url fragment is not transmitted to the server!
 				url = url[0];
-				sl.debug("request: " + url);
+				//sl.debug("request: " + url);
 				
 				if (!seb.config["urlFilterTrustedContent"]) {
 					if (!base.isValidUrl(url)) {
