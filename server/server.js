@@ -32,7 +32,16 @@ if (demoApp) {
 
 function on_connection(socket) {
 	//console.log(wss.clients);
-	var cn = socket.upgradeReq.connection.getPeerCertificate().subject.CN;
+	var cn = null;
+	try {
+		var c = socket.upgradeReq.connection.getPeerCertificate();
+		console.dir(c);
+		cn = socket.upgradeReq.connection.getPeerCertificate().subject.CN;
+	}
+	catch(e) {
+		console.log(e);
+		return;
+	}
 	if (cn != conf.usrCN ) { // only clients with valid user certificates are allowed
 		out("invalid user CN: " + cn);
 		socket.close();

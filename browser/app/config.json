@@ -1,6 +1,6 @@
 {
 "browserPrefs": {
-	"browser.zoom.full": true
+	"general.useragent.override" : "SEBKEY"
 },
 "urlFilterRegex":false,
 "urlFilterTrustedContent":true,
@@ -12,12 +12,12 @@
 "browserURLSalt":false,
 "browserRequestHeader":"X-SafeExamBrowser-RequestHash",
 "startURL":"https://localhost:8443/demo/index.html",
-"startURL_":"http://www.google.com",
+"startURL_":"http://ipxe.org",
 "allowQuit":true,
 "quitURL":"http://seb/quit.html",
 "hashedQuitPassword":"",
 "hashedQuitPassword_" :"5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d85e",
-"embeddedCertificates":
+"embeddedCertificates_":
 [
 	{
 	"certificateData":"MIIFQzCCAysCAQMwDQYJKoZIhvcNAQEFBQAwcDELMAkGA1UEBhMCREUxDzANBgNVBAgTBkhlc3NlbjEPMA0GA1UEChMGZXFzb2Z0MRIwEAYDVQQDFAllcXNvZnRfY2ExKzApBgkqhkiG9w0BCQEWHHNjaG5laWRlckBocnoudW5pLW1hcmJ1cmcuZGUwHhcNMTUwNTE5MTY1NjM3WhcNMjUwNTE2MTY1NjM3WjBfMQswCQYDVQQGEwJERTEPMA0GA1UEChMGZXFzb2Z0MRIwEAYDVQQDEwlsb2NhbGhvc3QxKzApBgkqhkiG9w0BCQEWHHNjaG5laWRlckBocnoudW5pLW1hcmJ1cmcuZGUwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDbeoV0j3VNFUPjZTER9jxQjAyE1R39Z/it6YRrwZIRQwAWwIZ7KTO+MYebyrKd/etHtroaCi3p5dJ3ssT7qZQ1p3ZcdpVTU5IkVmgwz8Yi7Xg787iVfW9XThRKa4MmlWBYgcDxCA7KdqmhyhmsgWllwiCIuvqOq6kyLPNwlGPfT+Qg93NPOP3atQDIQ6JcisYsthLTTlcFUY1A0qTOc989gQijUHCxxYBQIDyfG/7b2h0hjegRko4S52yFgDN6mnb0bBc8xr/YDceRnlLrWi0lM8hh32CONRTHavA4N2ApMhI/yE6RMJS00x4lfJBvYneOZ9kR09GeTJeepTRUL1ZErjRl7Cp2g92a3sbby65XELTmSX4j5fUECGvPtgQ+d/uphnv0sLNZBC+7FkNN8sWJG2L3WBmfUX3IqgduXeClaJIMp/lDkxAaE6CkWSP5WUiHTRKVAN8Yn511gtH2nuVSqC6qezHTb/j8xleYkRGh1mUHmF8SPPKpd1eyusrzgzm+V79CdDj065PHgRKAWFi0QyZY7m2E3tiJ06bZde6sO6SfoFSQVUPBEO5KjWa9d3cN7DXOzdPIZDfJvUjUXHpuXvlaXnFgmDObIHknQ61vE+4HVrNuJlzXGoaeIE1mwW5yvo8h6oclo/AmSolqUxY5IVw/VfClfv32UcehdheYbQIDAQABMA0GCSqGSIb3DQEBBQUAA4ICAQAwly2zRomPxmksPnTjf0znAJG9tezYrORqlbJF626maa8SZEByNitJ1oa+InesByPhl/ZI3PcI+BVASFrPYjEEOtjAs+8PFTVphMFI5mT+RQ41UVfgBuMSzZbEVKwajFd4OmPtT/9Y6IFPUwWz33a1gMGjnn9CCtaGq9f9tXpU806gIuzU9v30Ce1WbVoY+tC1bSSzYjFbCamjZt3wod8CD0y0u/dAifqEx6foqrx1jSVkyfFllOfdlXMaQEIclLWo57yB/hwh+D2D1NNXW3OcWmJWa6ooNrmgIpclGe6c+e8ODtI1uu8RTKVpH5b0qKo+bERDUHA2Ouq9WOhkGLObFdMHWHF95tKLMoodvWXaqI+57GXra0fRojKKiRtN2ApYGU656G9rtrBLLdxrLZheOwgYsLiB6R3cHTMg9yEO4x7jrz0ydAdbBg3l+2IJpp+aQIoiu2a9F5ZJ4NUNf3TGAAW8xnVOuwxYVC7KtrF+B+/VZCdPKED/c7KbR+fgZuPgLnWBXhVc6HTVzk5fscQETsSqBHZ4SuUKzDFST1igTUHFsV6vU3MOH8foHarlIMhMeELw6Add62i6lblbzDUZS7ouePZcIvm3aK7Eg6K5/x9Jy54cZtYw7h/+J+icRF+cuxvRITUbx3PGy8s3+jM84tq4/OqFfVZyvBpCbo9/SQ==", 
@@ -31,9 +31,8 @@
 	}
 ],
 "browserMessagingSocket_":"ws://localhost:8706",
-"browserMessagingSocket":"",
 "browserMessagingPingTime":120000,
-"proxies": {
+"proxies_": {
 		"AutoConfigurationEnabled":true,
 		"AutoConfigurationURL":"http://bla.de/blub.pac",
 		"AutoDiscoveryEnabled_":true,

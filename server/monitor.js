@@ -25,7 +25,16 @@ out('Websocket for monitoring started on port ' + monitorPort);
 
 function on_connection(socket) {
 	//console.dir(socket.upgradeReq);
-	var cn = socket.upgradeReq.connection.getPeerCertificate().subject.CN;
+	var cn = null;
+	try {
+		var c = socket.upgradeReq.connection.getPeerCertificate();
+		console.dir(c);
+		cn = socket.upgradeReq.connection.getPeerCertificate().subject.CN;
+	}
+	catch(e) {
+		console.log(e);
+		return;
+	}
 	if (cn != conf.admCN ) { // only clients with valid user certificates are allowed
 		out("invalid user CN: " + cn);
 		socket.close();
@@ -143,14 +152,19 @@ function removeSeb(socket, data) {
 function shutdown(seb,data) {
 	out("monitor: shutdown " + seb.id);
 	var socket = _sebs[seb.id].socket;
-	socket.send(data); // forward data (same handler and opts object expected on seb client)
+	try {
+		socket.send(data); // forward data (same handler and opts object expected on seb client)
+	}
+	catch(e) {
+		console.log(e);	
+	}
 	//out("monitor: socket " + socket.send);
 }
 
 function shutdownAll(seb,data) {
 	out("monitor: shutdownAll " + JSON.stringify(seb.ids));
 	for (var idx in seb.ids) {
-		var id =  seb.ids[idx];
+		var id = seb.ids[idx];
 		shutdown({"id":id},JSON.stringify({"handler":"shutdown","opts":{"id":id}}));
 	}
 }

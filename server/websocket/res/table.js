@@ -24,7 +24,7 @@ function init() {
 	params = getParams();
 	ipFilter["local"] = /^(127\.0\.0\.1$)|(\:\:1)$/;
 	ipFilter["intern"] = /^192\.168\.0\.\d+$/;
-	defaultFilter = (defaultFilter) ? defaultFilter : (params.filter) ? params.filter : null;
+	defaulFilter = (defaultFilter) ? defaultFilter : (params.filter) ? params.filter : null;
 	log("defaultFilter: " + defaultFilter);
 	if (defaultFilter && ipFilter[defaultFilter]) { //can be defined in html page	
 		checkIp = ipFilter[defaultFilter];
@@ -59,7 +59,7 @@ function on_close() {
 }
 
 function on_message(e) {
-	//log("on_message: " + e.data);
+	log("on_message: " + e.data);
 	var obj = JSON.parse(e.data);
 	var h = handler[obj.handler];
 	if (typeof h === 'function') {

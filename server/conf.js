@@ -4,8 +4,8 @@ var 	fs 	= require('fs-extra'),
 	directory = require('serve-index'),
 	utils	= require('./utils.js');
 
-const 	CA_CN 	= "eqsoft_ca",
-	USR_CN	= "seb.user",
+const 	CA_CN 	= "eqsoft CA",
+	USR_CN	= "seb.client",
 	ADM_CN	= "seb.admin";
 
 
@@ -20,8 +20,8 @@ var conf = function conf() {
 	
 	this.getServerOptions = function() {
 		var options = 	{
-				key:    fs.readFileSync(__dirname + '/ssl/seb.server/server.key'),
-				cert:   fs.readFileSync(__dirname + '/ssl/seb.server/server.crt'),
+				key:    fs.readFileSync(__dirname + '/ssl/server.key'),
+				cert:   fs.readFileSync(__dirname + '/ssl/server.crt'),
 				ca:     [ fs.readFileSync(__dirname + '/ssl/ca.crt') ],
 				requestCert:        true, 	// client cert is required
 				rejectUnauthorized: false 	// reject invalid client certs
