@@ -9,6 +9,7 @@ var 	fs 		= require('fs-extra'),
 	_sebs		= {}, // internal sebs with socket object
 	sebmap		= {}, // mapping from wskey to key 
 	out		= utils.out,
+	adminsExist	= false,
 	handler		= {
 				"shutdown":shutdown,
 				"shutdownAll":shutdownAll
@@ -23,16 +24,41 @@ wss.on('connection', on_connection);
 
 out('Websocket for monitoring started on port ' + monitorPort);
 
+var _checkSebConnections = setInterval(checkSebConnections,10000);
+
+function checkSebConnections() {
+	// if no admins connected return;
+	if (!adminsExist) { return };
+	// if no _sebs sockets return
+	console.log("checkSebConnections");
+	for (var k in _sebs) {
+		var sock = _sebs[k].socket;
+		switch (sock.readyState) {
+			case sock.CLOSED :
+				// check readystate of socket on hardkill OS
+				// broadcast dead socket aon admin clients
+				console.log("seb zombie!");
+			break;
+		}
+		// check socket connections
+	}
+}
+
 function on_connection(socket) {
 	//console.dir(socket.upgradeReq);
+	//console.log(socket.CONNECTING);
+	//console.log(socket.CLOSED);
 	var cn = null;
 	try {
-		var c = socket.upgradeReq.connection.getPeerCertificate();
-		console.dir(c);
+		//var c = socket.upgradeReq.connection.getPeerCertificate();
+		//console.dir(c);
 		cn = socket.upgradeReq.connection.getPeerCertificate().subject.CN;
 	}
 	catch(e) {
 		console.log(e);
+		socket.send(JSON.stringify({"handler":"socketError","opts":{"error":"failed client certificate handshake on socket connection"}}));
+		socket.close();
+		//console.dir(socket);
 		return;
 	}
 	if (cn != conf.admCN ) { // only clients with valid user certificates are allowed
@@ -41,6 +67,7 @@ function on_connection(socket) {
 	}
 	else {
 		out("monitor: admin connected");
+		adminsExist = true;
 		addData(socket);
 		socket.on('open',on_open);
 		socket.on('close',on_close);
@@ -55,6 +82,7 @@ function on_open() {
 
 function on_close(code, message) {
 	out("admin: on_close");
+	adminsExist = (wss.clients.length > 0);
 }
 
 function on_message(data, flags) {
@@ -145,7 +173,7 @@ function removeSeb(socket, data) {
 	broadcast( { "handler" : "removeSeb", "opts" : sebs[id] } );
 	delete sebs[id];
 	delete sebmap[wskey];
-	delete _sebs[id];
+	//delete _sebs[id];
 }
 
 /* handler */
@@ -178,13 +206,12 @@ var monitor = function () {
 	this.init = function(websocketserver) {
 		monitor.wss = websocketserver;
 	}
-	this.on_seb_connection = function( socket ) { on_seb_connection( socket, this ); }; // this = websocketserver?
-	this.on_seb_connection_error = function( error ) { on_seb_connection_error( error, this ); }; // this = websocketserver?
-	this.on_seb_open = function() { on_seb_open( this ); } ; // this = socket
-	this.on_seb_close = function(code, message) { on_seb_close(code, message, this); }; // this = socket?
+	this.on_seb_connection = function( socket ) { on_seb_connection( socket, this ); }; 
+	this.on_seb_connection_error = function( error ) { on_seb_connection_error( error, this ); }; 
+	this.on_seb_open = function() { on_seb_open( this ); } ;
+	this.on_seb_close = function(code, message) { on_seb_close(code, message, this); }; 
 	this.on_seb_error = function(error) { on_seb_error(error, this); };
-	this.on_seb_message = function(data, flags) { on_seb_message(data, flags, this); }; // this = socket?
-}
+	this.on_seb_message = function(data, flags) { on_seb_message(data, flags, this); }; }
 monitor.instance = null;
 
 monitor.getInstance = function(){

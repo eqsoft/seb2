@@ -36,14 +36,33 @@ var conf = function conf() {
 			// this should not be reached in productive ssl environments (rejectUnauthorized = true)
 			if (!req.connection.getPeerCertificate().subject) {
 				res.writeHead(403, {'Content-Type': 'text/plain'});
-				res.end('You need a valid client certificate!');
+				res.end('You need a valid client certificate: wrong client');
 			}
 			else {
-				//var cn = req.connection.getPeerCertificate().subject.CN;
-				var issuer = req.connection.getPeerCertificate().issuer.CN;
+				var subject = null;
+				var issuer = null;
+				// Safari has problems with client cert handshake on websocket connections!
+				try {
+					subject = req.connection.getPeerCertificate().subject.CN;
+					//console.log("server req subject CN: " + subject);
+				}
+				catch(e) {
+					res.writeHead(403, {'Content-Type': 'text/plain'});
+					res.end('SSL Error: failed to get certificate subject CN!');
+					return;
+				}
+				try {
+					issuer = req.connection.getPeerCertificate().issuer.CN;
+					//console.log("server req issuer CN: " + issuer);
+				}
+				catch(e) {
+					res.writeHead(403, {'Content-Type': 'text/plain'});
+					res.end('SSL Error: failed to get certificate issuer!');
+					return;
+				}
 				if (issuer != CA_CN) {
 					res.writeHead(403, {'Content-Type': 'text/plain'});
-					res.end('You need a valid client certificate 2!');
+					res.end('You need a valid client certificate: wrong issuer!');
 					return;
 				}
 				next();

@@ -14,7 +14,8 @@ var 	prot 		= "",
 	handler		= 	{ 
 					"addData":addData,
 					"addSeb":addSeb, 
-					"removeSeb":removeSeb 
+					"removeSeb":removeSeb,
+					"socketError":socketError
 				};
 				
 
@@ -101,6 +102,11 @@ function addSeb(seb) {
 function removeSeb(seb) {
 	log("removeSeb: " + JSON.stringify(seb));
 	removeRow(seb);
+}
+
+function socketError(opts) {
+	log(opts.error);
+	ws.close();
 }
 
 function getParams() {
