@@ -176,6 +176,9 @@ this.SebScreenshot = {
 			case 	BASE64 : 
 				//Return the screen shot as a base 64 encoded string.
 				let ret = cvs.toDataURL(mimetype,ratio).replace(/^data:image\/.*?;base64,/,"");
+				if (sound && audio) {
+					audio.play();
+				}
 				return ret;
 				break;
 			case	BINARY :

@@ -71,6 +71,7 @@ var conf = function conf() {
 		//app.use('/',static(__dirname));
 		app.use('/demo',static('demo'));
 		app.use('/websocket',static('websocket'));
+		app.use('/websocket/data',directory('websocket/data'));
 		return app;
 	}
 }
