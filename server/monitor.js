@@ -15,28 +15,26 @@ var 	fs 		= require('fs-extra'),
 				"shutdownAll":shutdownAll
 			};
 
-const monitorPort = 8441;
-
 var monitorServer = https.createServer(conf.getServerOptions(), conf.getApp());
 var wss = new WebSocketServer({ server: monitorServer });
-monitorServer.listen(monitorPort);
+monitorServer.listen(conf.monitorPort);
 wss.on('connection', on_connection);
 
-out('Websocket for monitoring started on port ' + monitorPort);
+out('Websocket for monitoring started on port ' + conf.monitorPort);
 
-var _checkSebConnections = setInterval(checkSebConnections,10000);
+//var _checkSebConnections = setInterval(checkSebConnections,10000);
 
 function checkSebConnections() {
 	// if no admins connected return;
 	if (!adminsExist) { return };
 	// if no _sebs sockets return
-	console.log("checkSebConnections");
+	//console.log("checkSebConnections");
 	for (var k in _sebs) {
 		var sock = _sebs[k].socket;
-		switch (sock.readyState) {
+		switch (sock.readyState) { // does not make sense, i have to check the socket connection with ping/pong heartbeat
 			case sock.CLOSED :
-				// check readystate of socket on hardkill OS
-				// broadcast dead socket aon admin clients
+				// check readystate of socket on hardkilled OS
+				// broadcast dead socket to admin clients?
 				console.log("seb zombie!");
 			break;
 		}
@@ -173,7 +171,7 @@ function removeSeb(socket, data) {
 	broadcast( { "handler" : "removeSeb", "opts" : sebs[id] } );
 	delete sebs[id];
 	delete sebmap[wskey];
-	//delete _sebs[id];
+	delete _sebs[id];
 }
 
 /* handler */
