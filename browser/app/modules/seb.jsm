@@ -262,6 +262,7 @@ this.seb =  {
 	},
 	
 	initSecondary : function(win) {
+		sw.setTitleBar(win);
 		sw.setSize(win);
 	},
 	

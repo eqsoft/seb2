@@ -50,6 +50,15 @@
 		<key id="seb.showmessage" key="4" modifiers="control" command="sebCmdShowMessage"/>
 	</keyset>
 	<vbox flex="1">
+		<!--
+		<toolbox>
+			<toolbar id="toolBar">
+				<toolbarbutton id="navUsers"  accesskey="U" label="Users"/>
+				<toolbarbutton id="naGroups" accesskey="p" label="Groups"/>
+				<toolbarbutton id="navEvents" accesskey="E" label="Events" disabled="true"/>
+			</toolbar>
+		</toolbox>
+		-->
 		<deck id="deckContents" selectedIndex="1" flex="1">
 			<iframe flex="1" id="seb.iframe" src="about:blank" type="content-primary"></iframe>
 			<browser flex="1" id="seb.browser" type="content-primary" src="about:blank"/>

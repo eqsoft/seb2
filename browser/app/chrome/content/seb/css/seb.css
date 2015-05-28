@@ -39,3 +39,8 @@
 	max-width: 32px;
 	max-height: 32px;
 }
+
+#toolBar {
+	background-color : #ccc;
+	height: 30px;
+}

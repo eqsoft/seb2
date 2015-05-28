@@ -212,7 +212,7 @@ this.SebWin = {
 	
 	setMainScreen : function() {
 		if (base.mainScreen['initialized']) { return base.mainScreen; }	 
-		base.mainScreen['fullsize'] = (seb.config["browserViewMode"] == 0) ? false : true;
+		//base.mainScreen['fullsize'] = (seb.config["browserViewMode"] == 0) ? false : true;
 		base.mainScreen['width'] = seb.config["mainBrowserWindowWidth"];
 		base.mainScreen['height'] = seb.config["mainBrowserWindowHeight"];
 		base.mainScreen['position'] = pos[seb.config["mainBrowserWindowPositioning"]];
@@ -226,7 +226,7 @@ this.SebWin = {
 	
 	setPopupScreen : function() {
 		if (base.popupScreen['initialized']) { return base.popupScreen; }
-		base.popupScreen['fullsize'] = false;
+		//base.popupScreen['fullsize'] = false;
 		base.popupScreen['width'] = seb.config["newBrowserWindowByLinkWidth"];
 		base.popupScreen['height'] = seb.config["newBrowserWindowByLinkHeight"];
 		base.popupScreen['position'] = pos[seb.config["newBrowserWindowByLinkPositioning"]];
@@ -243,6 +243,42 @@ this.SebWin = {
 		let scr = (base.getWinType(win) == "main") ? base.setMainScreen() : base.setPopupScreen();
 		sl.debug("mainScreen: " + JSON.stringify(scr));
 		
+		let swt = seb.mainWin.screen.width;
+		let sht = seb.mainWin.screen.height;
+		let stp = seb.mainWin.screen.top;
+		let slt = seb.mainWin.screen.left;
+		
+		sl.debug("screenWidth: " + swt);
+		sl.debug("screenHeight: " + sht);
+		sl.debug("screenTop: " + stp);
+		sl.debug("screenLeft: " + slt);
+		
+		let sawt = seb.mainWin.screen.availWidth;
+		let saht = seb.mainWin.screen.availHeight;
+		let satp = seb.mainWin.screen.availTop;
+		let salt = seb.mainWin.screen.availLeft;
+		
+		sl.debug("screenAvailWidth: " + sawt);
+		sl.debug("screenAvailHeight: " + saht);
+		sl.debug("screenAvailTop: " + satp);
+		sl.debug("screenAvailLeft: " + salt);
+		
+		let wow = win.outerWidth;
+		let wiw = win.innerWidth;
+		let woh = win.outerHeight;
+		let wih = win.innerHeight;
+		
+		sl.debug("winOuterWidth: " + wow);
+		sl.debug("winInnerWidth: " + wiw);
+		sl.debug("winOuterHeight: " + woh);
+		sl.debug("winInnerHeight: " + wih);
+		
+		let wsx = win.screenX;
+		let wsy = win.screenY;
+		
+		sl.debug("winScreenX: " + wsx);
+		sl.debug("winScreenY: " + wsy);
+		
 		let offWidth = win.outerWidth - win.innerWidth;
 		let offHeight = win.outerHeight - win.innerHeight;
 		sl.debug("offWidth: " + offWidth);
@@ -250,25 +286,19 @@ this.SebWin = {
 		//let offWidth = 0;
 		//let offHeight = 0;
 		
-		let swt = seb.mainWin.screen.width;
-		let sht = seb.mainWin.screen.height;
-		
 		let tb = su.getConfig("showTaskBar","boolean",false);
 		sl.debug("showTaskBar:" + tb);
 		
 		if (tb) {
-			let tbh = su.getConfig("taskBarHeight","number",45);
+			let defaultTbh = (sht - saht);
+			let tbh = su.getConfig("taskBarHeight","number",defaultTbh);
+			tbh = (tbh > 0) ? tbh : defaultTbh;
 			sht -= tbh;
 			sl.debug("showTaskBar: change height to " + sht);
 		}
 		
-		let stp = seb.mainWin.screen.availTop;
-		let slt = seb.mainWin.screen.availLeft;
-		
-		sl.debug("availTop: " + stp);
-		sl.debug("availLeft: " + slt);
-		let wx = 0;
-		let hx = 0;
+		let wx = swt;
+		let hx = sht;
 		if (typeof scr.width == "string" && /^\d+\%$/.test(scr.width)) {
 			let w = scr.width.replace("%","");
 			wx = (w > 0) ? ((swt / 100) * w) : swt;
@@ -287,6 +317,7 @@ this.SebWin = {
 		}
 		sl.debug("hx: " + hx);
 		
+		/*
 		if (scr.fullsize) { // needs to be resized with offWidth and offHeight browser frames
 			sl.debug("fullsize: " + scr.fullsize);
 			if (tb) {
@@ -294,29 +325,48 @@ this.SebWin = {
 				win.resizeTo(swt+offWidth,sht+offHeight); // don't know the correct size
 				win.setTimeout(function () { this.moveTo(0,0); }, 100);
 			}
+			
 			else { // test
 				sl.debug("fullsize: resize to: " + wx + ":" + hx);
 				win.resizeTo(wx,hx);
 				win.setTimeout(function () { setPosition(this) }, 100 );
-			}
+			}  
 		}
 		else {
 			sl.debug("no fullsize: resize to: " + wx + ":" + hx);
 			win.resizeTo(wx,hx);
 			win.setTimeout(function () { setPosition(this) }, 100 );
 		}
+		*/ 
+		
+		//win.resizeTo(wx,hx);
+		
+		win.resizeTo(wx,hx);
+		
+		/*
+		if (tb) {
+			win.resizeTo(swt,sht);
+			//win.resizeTo(swt+offWidth,sht+offHeight); // don't know the correct size
+			//win.setTimeout(function () { this.moveTo(0,0); }, 100);
+		}
+		else {
+			win.resizeTo(wx,hx);
+			
+		}
+		*/
+		win.setTimeout(function () { setPosition(this) }, 100 );
 		
 		function setPosition(win) {
 			sl.debug("setPosition: " + scr.position);
 			switch (scr.position) {
 				case "center" :
-					win.moveTo(((swt/2)-(wx/2)),stp);
+					win.moveTo(((swt/2)-(wx/2)),satp);
 					break;
 				case "right" :
-					win.moveTo((swt-wx),stp);
+					win.moveTo((swt-wx),satp);
 					break;
 				case "left" :
-					win.moveTo(slt,stp);
+					win.moveTo(salt,satp);
 					break;
 				default :
 					// do nothing
@@ -325,8 +375,15 @@ this.SebWin = {
 	},
 	
 	setTitleBar : function (win) {
-		let w = (win) ? win : base.getRecentWin(); 
-		w.document.getElementById("sebWindow").setAttribute("hidechrome",!su.getConfig("showTitleBar","boolean",true));
+		let w = (win) ? win : base.getRecentWin();
+		if (su.getConfig("touchOptimized","boolean",false)) { // hide title bar for main and popup windows
+			w.document.getElementById("sebWindow").setAttribute("hidechrome",true);
+		}
+		else {
+			if (base.getWinType(w) == "main") { // hide titlebar in main window if browserViewMode = 0
+				w.document.getElementById("sebWindow").setAttribute("hidechrome",(su.getConfig("browserViewMode","number",1) == 0));
+			}
+		}
 		//x.debug("hidechrome " + w.document.getElementById("sebWindow").getAttribute("hidechrome"));
 	}
 }

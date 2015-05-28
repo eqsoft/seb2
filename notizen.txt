@@ -1,0 +1,37 @@
+Notizen:
+- touchOptimized: popups ohne Rahmen
+- enableBrowserWindowToolbar boolean icons 
+- allowBrowsingBackForward
+
+Tops
+1. Redesign seb -> seb2
+
+2. Roadmap SEB 2.2
+2.1 intgration of seb2  
+2.2 Toolbar Support
+2.3 Additional Ressources
+
+
+3. Technical Issues 
+3.1. seb browser engine (compiling xulrunner for OSX?)
+3.2. seb server concept
+3.3. .NET SEB to github
+3.4. seb configuring with .seb files Linux
+
+4. Product-Marketing
+4.1. Product Visibility (ILIAS, Moodle,OpenOLAT)
+4.2. Combination with 
+4.3. Linux Support
+
+
+Donnerstag:
+
+- alle Configs abstimmen und geradeziehen
+- Toolbar 
+- urlFilter
+
+
+Config durchgehen
+javascript RNCryptor
+icons einbauen in Toolbar (size: )
+Loading Indicator
