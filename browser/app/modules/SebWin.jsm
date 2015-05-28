@@ -47,6 +47,7 @@ let 	wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowM
 XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","SebLog");
 XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","SebUtils");
 XPCOMUtils.defineLazyModuleGetter(this,"sb","resource://modules/SebBrowser.jsm","SebBrowser");
+XPCOMUtils.defineLazyModuleGetter(this,"sh","resource://modules/SebHost.jsm","SebHost");
 
 /* ModuleGlobals */
 let 	base = null,
@@ -65,7 +66,9 @@ const	xulFrame = "seb.iframe",
 	loadDeck = 0,
 	contentDeck = 1,
 	serverDeck = 2,
-	messageDeck = 3;
+	messageDeck = 3,
+	linuxWindowFrameHeight = 50,
+	linuxWindowFrameWidth = 10;
 	
 this.SebWin = {
 	wins : [],
@@ -317,55 +320,31 @@ this.SebWin = {
 		}
 		sl.debug("hx: " + hx);
 		
-		/*
-		if (scr.fullsize) { // needs to be resized with offWidth and offHeight browser frames
-			sl.debug("fullsize: " + scr.fullsize);
-			if (tb) {
-				sl.debug("showTaskBar: " + tb);
-				win.resizeTo(swt+offWidth,sht+offHeight); // don't know the correct size
-				win.setTimeout(function () { this.moveTo(0,0); }, 100);
-			}
-			
-			else { // test
-				sl.debug("fullsize: resize to: " + wx + ":" + hx);
-				win.resizeTo(wx,hx);
-				win.setTimeout(function () { setPosition(this) }, 100 );
-			}  
+		if (su.getConfig("browserViewMode","number",1) == 1) {
+			wx -= sh.getFrameWidth();
+			hx -= sh.getFrameHeight();
 		}
-		else {
-			sl.debug("no fullsize: resize to: " + wx + ":" + hx);
-			win.resizeTo(wx,hx);
-			win.setTimeout(function () { setPosition(this) }, 100 );
-		}
-		*/ 
 		
-		//win.resizeTo(wx,hx);
+		sl.debug("resizeTo: " + wx + ":" + hx);
+		win.setTimeout(function() { this.resizeTo(wx,hx); }, 100);
 		
-		win.resizeTo(wx,hx);
-		
-		/*
-		if (tb) {
-			win.resizeTo(swt,sht);
-			//win.resizeTo(swt+offWidth,sht+offHeight); // don't know the correct size
-			//win.setTimeout(function () { this.moveTo(0,0); }, 100);
-		}
-		else {
-			win.resizeTo(wx,hx);
-			
-		}
-		*/
-		win.setTimeout(function () { setPosition(this) }, 100 );
+		//setPosition(win);
+		win.setTimeout(function () { setPosition(this) }, 500 );
 		
 		function setPosition(win) {
 			sl.debug("setPosition: " + scr.position);
 			switch (scr.position) {
 				case "center" :
+					//sl.debug();
+					sl.debug("moveTo: " + ((swt/2)-(wx/2)) + ":" + satp);
 					win.moveTo(((swt/2)-(wx/2)),satp);
 					break;
 				case "right" :
+					sl.debug("moveTo: " + (swt-wx) + ":" + satp);
 					win.moveTo((swt-wx),satp);
 					break;
 				case "left" :
+					sl.debug("moveTo: " + salt + ":" + satp);
 					win.moveTo(salt,satp);
 					break;
 				default :

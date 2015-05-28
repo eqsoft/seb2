@@ -60,11 +60,12 @@ let 	base = null,
 this.SebHost = {
 	
 	messageServer : false,
-	
+	os : "",
 	init : function(obj) {
 		base = this;
 		seb = obj;
 		socketlog = su.getBool(su.getCmd("socketlog"));
+		this.os = appinfo.OS.toUpperCase();
 		sl.out("SebHost initialized: " + seb);
 	},
 	
@@ -228,6 +229,30 @@ this.SebHost = {
 				messageSocket.send(msg);
 			}
 			catch(e){};
+		}
+	},
+	
+	getFrameWidth : function() {
+		switch (this.os) {
+			case "DARWIN" :
+				return 0;
+			case "UNIX" :
+			case "LINUX" :
+				return 0;
+			case "WINNT" :
+				return 0;
+		}
+	},
+	
+	getFrameHeight : function() {
+		switch (this.os) {
+			case "DARWIN" :
+				return 0;
+			case "UNIX" :
+			case "LINUX" :
+				return 20;
+			case "WINNT" :
+				return 0;
 		}
 	},
 	

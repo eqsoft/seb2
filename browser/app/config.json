@@ -46,7 +46,7 @@
 "browserViewMode":0,
 "showTaskBar":true,
 "taskBarHeight":0,
-"touchOptimized":false,
+"touchOptimized":true,
 "mainBrowserWindowWidth":"100%",
 "mainBrowserWindowHeight":"100%",
 "mainBrowserWindowPositioning":1,
