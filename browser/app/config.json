@@ -43,10 +43,12 @@
 			"169.254/16"
 		]
 },
-"browserViewMode":0,
+"browserViewMode":1,
 "showTaskBar":true,
 "taskBarHeight":0,
-"touchOptimized":true,
+"touchOptimized":false,
+"mainBrowserWindowTitlebarEnabled":false,
+"mainBrowserWindowMaximized":true,
 "mainBrowserWindowWidth":"100%",
 "mainBrowserWindowHeight":"100%",
 "mainBrowserWindowPositioning":1,
@@ -55,6 +57,8 @@
 "mainBrowserLoadReferrerInString":"end.html",
 "allowBrowsingBackForward":true,
 "mainBrowserBypassCache":true,
+"newBrowserWindowByLinkTitlebarEnabled":true,
+"newBrowserWindowMaximized":true,
 "newBrowserWindowByLinkWidth":"500",
 "newBrowserWindowByLinkHeight":"500",
 "newBrowserWindowByLinkPositioning":1,

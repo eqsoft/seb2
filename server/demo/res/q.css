@@ -1,8 +1,12 @@
 body {
+	border: 3px solid red;
+	font-family: courier, sans-serif, system;
+}
+
+div.content, div.question {
 	margin-left: 15%;
 	margin-right: 15%;
 	margin-top: 5%;
-	font-family: courier, sans-serif, system;
 }
 
 .question {
@@ -47,7 +51,6 @@ td {
 }
 
 .scrolltest {
-	position: absolute;
 	top: 0px;
 	height: 3000px;
 }

@@ -40,7 +40,14 @@
 	max-height: 32px;
 }
 
-#toolBar {
-	background-color : #ccc;
-	height: 30px;
+#toolBox {
+	display: none;
+	background-color : red;
+	height: 36px;
 }
+
+.tbBtn {
+	cursor: pointer;
+}
+
+

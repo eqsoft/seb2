@@ -39,6 +39,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 /* Services */
 let 	wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator),
+	ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].getService(Ci.nsIWindowWatcher),
 	wpl = Ci.nsIWebProgressListener,
 	wnav = Ci.nsIWebNavigation;
 
@@ -66,9 +67,7 @@ const	xulFrame = "seb.iframe",
 	loadDeck = 0,
 	contentDeck = 1,
 	serverDeck = 2,
-	messageDeck = 3,
-	linuxWindowFrameHeight = 50,
-	linuxWindowFrameWidth = 10;
+	messageDeck = 3;
 	
 this.SebWin = {
 	wins : [],
@@ -103,6 +102,10 @@ this.SebWin = {
 		return wm.getMostRecentWindow(null);
 	},
 	
+	getWebBrowserChrome : function(w) { // only exists in firefox not in xulrunner?
+		return ww.getChromeForWindow(w);
+	},
+	
 	getChromeWin : function (w) {
 		return w.QueryInterface(Ci.nsIInterfaceRequestor)
                    .getInterface(Ci.nsIWebNavigation)
@@ -112,8 +115,26 @@ this.SebWin = {
                    .getInterface(Ci.nsIDOMWindow);
 	},
 	
+	getDOMChromeWin : function (w) {
+		return w.QueryInterface(Ci.nsIInterfaceRequestor)
+                   .getInterface(Ci.nsIWebNavigation)
+                   .QueryInterface(Ci.nsIDocShellTreeItem)
+                   .rootTreeItem
+                   .QueryInterface(Ci.nsIInterfaceRequestor)
+                   .getInterface(Ci.nsIDOMWindow)
+                   .QueryInterface(Ci.nsIDOMChromeWindow);
+	},
+	
+	getXulWin : function(w) {
+		return w.QueryInterface(Ci.nsIInterfaceRequestor)
+		      .getInterface(Ci.nsIWebNavigation)
+		      .QueryInterface(Ci.nsIDocShellTreeItem).treeOwner
+		      .QueryInterface(Ci.nsIInterfaceRequestor)
+		      .getInterface(Ci.nsIXULWindow);
+	},
+	
 	closeAllWin : function() {
-		for (var i=base.wins.length-1;i>=0;i--) { // ich nehm Euch alle MIT!!!!
+		for (var i=base.wins.length-1;i>=0;i--) { 
 			try {
 				sl.debug("close window ...");
 				base.wins[i].close();
@@ -215,13 +236,14 @@ this.SebWin = {
 	
 	setMainScreen : function() {
 		if (base.mainScreen['initialized']) { return base.mainScreen; }	 
-		//base.mainScreen['fullsize'] = (seb.config["browserViewMode"] == 0) ? false : true;
+		base.mainScreen['titlebarEnabled'] = su.getConfig("mainBrowserWindowTitlebarEnabled","boolean",false);
+		base.mainScreen['maximized'] = su.getConfig("mainBrowserWindowWidth","boolean",true);
 		base.mainScreen['width'] = seb.config["mainBrowserWindowWidth"];
 		base.mainScreen['height'] = seb.config["mainBrowserWindowHeight"];
-		base.mainScreen['position'] = pos[seb.config["mainBrowserWindowPositioning"]];
-		if (seb.config["touchOptimized"] == 1) {
-			base.mainScreen['width'] = "100%";
-			base.mainScreen['height'] = "100%";
+		base.mainScreen['position'] = pos[su.getConfig("mainBrowserWindowPositioning","number",1)];
+		if (su.getConfig("touchOptimized","boolean",true)) {
+			base.mainScreen['titlebarEnabled'] = false;
+			base.mainScreen['maximized'] = true;
 		}
 		base.mainScreen['initialized'] = true;
 		return base.mainScreen;
@@ -229,22 +251,29 @@ this.SebWin = {
 	
 	setPopupScreen : function() {
 		if (base.popupScreen['initialized']) { return base.popupScreen; }
-		//base.popupScreen['fullsize'] = false;
+		base.popupScreen['titlebarEnabled'] = su.getConfig("newBrowserWindowByLinkTitlebarEnabled","boolean",true);
+		base.popupScreen['maximized'] = su.getConfig("newBrowserWindowByLinkMaximized","boolean",false);
 		base.popupScreen['width'] = seb.config["newBrowserWindowByLinkWidth"];
 		base.popupScreen['height'] = seb.config["newBrowserWindowByLinkHeight"];
-		base.popupScreen['position'] = pos[seb.config["newBrowserWindowByLinkPositioning"]];
-		if (seb.config["touchOptimized"] == 1) {
-			base.popupScreen['width'] = "100%";
-			base.popupScreen['height'] = "100%";
+		base.popupScreen['position'] = pos[su.getConfig("newBrowserWindowByLinkPositioning","number",0)];
+		if (su.getConfig("touchOptimized","boolean",true)) {
+			base.popupScreen['titlebarEnabled'] = false;
+			base.popupScreen['maximized'] = true;
 		}
 		base.popupScreen['initialized'] = true;
 		return base.popupScreen;
+		
 	},
 	
 	setSize : function(win) {
 		sl.debug("setSize: " + base.getWinType(win));
 		let scr = (base.getWinType(win) == "main") ? base.setMainScreen() : base.setPopupScreen();
-		sl.debug("mainScreen: " + JSON.stringify(scr));
+		sl.debug("size screen: " + JSON.stringify(scr));
+		base.setTitlebar(win,scr);
+		
+		if (scr.maximized) {
+			return;
+		}
 		
 		let swt = seb.mainWin.screen.width;
 		let sht = seb.mainWin.screen.height;
@@ -353,16 +382,27 @@ this.SebWin = {
 		}
 	},
 	
-	setTitleBar : function (win) {
-		let w = (win) ? win : base.getRecentWin();
-		if (su.getConfig("touchOptimized","boolean",false)) { // hide title bar for main and popup windows
-			w.document.getElementById("sebWindow").setAttribute("hidechrome",true);
+	setTitlebar : function (win,scr) {
+		let attr = "";
+		let val = "";
+		switch (sh.os) { // line feed for dump messages
+			case "WINNT" :
+			case "DARWIN" :
+				attr = "chromemargin";
+				val = (scr.titlebarEnabled) ? "-1,-1,-1,-1" : "0,-1,-1,-1";
+				//attr = "hidechrome";
+				//val = (!scr.titlebarEnabled);
+				break;
+			case "UNIX" :
+			case "LINUX" :
+			//case "DARWIN" :
+				attr = "hidechrome";
+				val = (!scr.titlebarEnabled);
+				break;
+			default :
+				sl.err("Unknown OS: " + sh.os)
 		}
-		else {
-			if (base.getWinType(w) == "main") { // hide titlebar in main window if browserViewMode = 0
-				w.document.getElementById("sebWindow").setAttribute("hidechrome",(su.getConfig("browserViewMode","number",1) == 0));
-			}
-		}
-		//x.debug("hidechrome " + w.document.getElementById("sebWindow").getAttribute("hidechrome"));
+		sl.debug(attr + ":" + val);
+		win.document.getElementById("sebWindow").setAttribute(attr,val);
 	}
 }

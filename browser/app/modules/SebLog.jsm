@@ -56,6 +56,7 @@ let 	seb = null,
 	message = {};
 
 this.SebLog = {
+	level : '',
 	init : function(obj) {
 		seb = obj;
 		base = this;
@@ -109,6 +110,24 @@ this.SebLog = {
 		} 
 		catch(e){}
 		sh.sendLog(str);
+	},
+	
+	dir : function(val) { // does not work: infinite loop
+		//base.out(Object.prototype.toString.call(val));
+		//if (Object.prototype.toString.call(val) === '[object Object]') {
+		if (typeof val == 'object') {
+			for (var propertyName in val) {
+				if (val.hasOwnProperty(propertyName)) {
+					console.logStringMessage(base.level + propertyName + ':');
+					base.level += '  ';
+					base.dir(val[propertyName]);
+				}
+			}
+		}
+		else {
+			console.logStringMessage(base.level + val);
+			base.level = base.level.substring(0, base.level.length - 2);
+		}
 	},
 	
 	initLogfile : function() {

@@ -1,6 +1,7 @@
 pref("app.update.auto", false);
 pref("app.update.enabled", false);
 pref("toolkit.defaultChromeURI", "chrome://seb/content/seb.xul");
+pref("toolkit.defaultChromeFeatures", "chrome,dialog=no,resizable=yes,scrollbars=yes");
 pref("toolkit.singletonWindowType", "main");
 pref("accessibility.browsewithcaret_shortcut.enabled", false);
 pref("browser.chromeURL", "chrome://seb/content/seb.xul");

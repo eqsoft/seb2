@@ -254,15 +254,13 @@ this.seb =  {
 		sh.setMessageSocketHandler(win);
 		ss.setSebserverSocketHandler(win);
 		base.locs = win.document.getElementById("locale");	
-		base.consts = win.document.getElementById("const");				
-		sw.setTitleBar(win);
+		base.consts = win.document.getElementById("const");			
 		sw.setSize(win);
 		sw.showLoading(win);
 		sb.loadPage(win,base.url);
 	},
 	
 	initSecondary : function(win) {
-		sw.setTitleBar(win);
 		sw.setSize(win);
 	},
 	

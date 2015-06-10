@@ -102,6 +102,8 @@ this.SebBrowser = {
 		if(aStateFlags & wpl.STATE_IS_NETWORK) {
 			if (aStateFlags & wpl.STATE_STOP) {
 				let win = sw.getChromeWin(aWebProgress.DOMWindow);
+				//let win2 = win.QueryInterface(Ci.nsIWebBrowserChrome);
+				//sl.out(win2.chromeFlags);
 				var w = aWebProgress.DOMWindow.wrappedJSObject;
 				if (win === seb.mainWin && su.getConfig("sebScreenshot","boolean",false)) {
 					sc.createScreenshotController(w);
@@ -111,7 +113,11 @@ this.SebBrowser = {
 				}
 				sw.showContent(win);
 			}
-			if (aStateFlags & wpl.STATE_START) {												
+			if (aStateFlags & wpl.STATE_START) {
+				//sl.out("sdfsdfsdf");
+				//let domwin = sw.getDOMChromeWin(aWebProgress.DOMWindow);
+				
+				//sl.out(domwin);											
 				try {
 					if (seb.quitURL === aRequest.name) {
 						aRequest.cancel(aStatus);
@@ -162,7 +168,7 @@ this.SebBrowser = {
 		if (!br) {
 			sl.debug("no seb.browser in ChromeWindow!");
 			return false;
-		}		
+		}	
 		win.XulLibBrowser = br; // extend window property to avoid multiple getBrowser() calls
 		win.XULBrowserWindow = new nsBrowserStatusHandler();
 		// hook up UI through progress listener
