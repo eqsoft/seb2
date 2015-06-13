@@ -270,5 +270,25 @@ this.SebUtils =  {
 		var hash = ch.finish(false);
 		var s = [toHexString(hash.charCodeAt(i)) for (i in hash)].join("");
 		return s;
+	},
+	
+	isEmpty : function (obj) {
+		if (base.isArray(obj)) {
+			return (obj.length == 0);
+		}
+		if (base.isObject(obj)) {
+			return (Object.getOwnPropertyNames(obj).length == 0);
+		}
+		sl.debug("su.isEmpty() : no array or object");
+		return true;
+	},
+	
+	isArray : function(arr) {
+		return Array.isArray(arr);
+	},
+	
+	isObject : function(obj) {
+		return obj === Object(obj);
 	}
+	
 }

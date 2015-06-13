@@ -1,59 +1,36 @@
 {
-"browserPrefs": {
-	"general.useragent.override" : "SEBKEY"
-},
-"urlFilterRegex":false,
-"urlFilterTrustedContent":true,
-"blacklistURLFilter": [],
-"whitelistURLFilter": [],
-"removeProfile":true,
+"browserPrefs": {},
+"startURL":"http://ipxe.org",
 "sendBrowserExamKey":true,
-"browserExamKey":"SEBKEY",
-"browserURLSalt":false,
 "browserRequestHeader":"X-SafeExamBrowser-RequestHash",
-"startURL":"https://192.168.224.1:8443/demo/index.html",
-"startURL_":"http://ipxe.org",
+"browserExamKey":"SEBKEY",
+"browserURLSalt":true,
+"urlFilterRegex":true,
+"urlFilterTrustedContent":true,
+"blacklistURLFilter":[],
+"whitelistURLFilter":[],
+"removeProfile":true,
 "allowQuit":true,
 "quitURL":"http://seb/quit.html",
-"hashedQuitPassword":"",
-"hashedQuitPassword_" :"5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d85e",
-"embeddedCertificates":
-[
-	{
-	"certificateData":"MIIDVDCCAjygAwIBAgIEAWXr1jALBgkqhkiG9w0BAQswXzESMBAGA1UEAwwJZXFzb2Z0IENBMQ8wDQYDVQQKDAZlcXNvZnQxCzAJBgNVBAYTAkRFMSswKQYJKoZIhvcNAQkBFhxzY2huZWlkZXJAaHJ6LnVuaS1tYXJidXJnLmRlMB4XDTE1MDUyNDE5MTcyNVoXDTI1MDUyMTE5MTcyNVowXzESMBAGA1UEAwwJbG9jYWxob3N0MQ8wDQYDVQQKDAZlcXNvZnQxCzAJBgNVBAYTAkRFMSswKQYJKoZIhvcNAQkBFhxzY2huZWlkZXJAaHJ6LnVuaS1tYXJidXJnLmRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwmphqbslzE72aheED/uKYNnt2yO/ws7pMexKHMRU2S0C0TSn3o/0NJnAsKClywq8UG+fu30Q04s6tfLMeY/0knn+RyqJF/YCbNpnmI4XriYH+mGe3gcevLTfmcunbXvb69UBGcqfJtR3/r3fqv3zEpxi8Q3mOR5Y0oSEm9YDm7hmBWfFfSpIPME3QXk7xwexkFH320Zj4UZuwz+B41StAwEG9J9zoMmrLMrgsGYxntaOSFs0sj79+1K13DaxRWvxrXkyPw0QWeY4aGia0QSrqTe5VrwCV+D44epNIPAiwHhtNPq4Ej1PZhVgLaT8x+ShFTQ/vN+LGuUOhadVEXREqQIDAQABoxowGDAWBgNVHSUBAf8EDDAKBggrBgEFBQcDATANBgkqhkiG9w0BAQsFAAOCAQEAgPit+T8sv1yzh1e9GVJwdcK3UhOPlT7eNSMq02xmkwGSYy5saaKecBroTxbEwVg0XJ+51vVvmHtNfmXzAhk5Yab1wodLfJXxw7OEt7xTOFngNAH7FugXsKYX/oBV14WKtboAsGj6oMlrX/G8IDs4Mp6G1kmX7PgyacW2QdPp9NUgTEVPoEGZPKux32VCdNF6GkDWQ+nsVeyKu+KpUFbERj4OU44GaMdsPoHXxkANIdEbf/irAKcl2R1UNlzNscvMwgdtK8vyCpSynHWu1bby2JV+WNXgt4Ebvx7FaDCyxW1MFIdCR0uZng2wkvOvhMwlptp32OfgLDJwM3mOmW2Aeg==",
-	"type":0,
-	"name":"192.168.224.1:8443"
-	},
-	{
-	"certificateData":"MIIDVDCCAjygAwIBAgIEAWXr1jALBgkqhkiG9w0BAQswXzESMBAGA1UEAwwJZXFzb2Z0IENBMQ8wDQYDVQQKDAZlcXNvZnQxCzAJBgNVBAYTAkRFMSswKQYJKoZIhvcNAQkBFhxzY2huZWlkZXJAaHJ6LnVuaS1tYXJidXJnLmRlMB4XDTE1MDUyNDE5MTcyNVoXDTI1MDUyMTE5MTcyNVowXzESMBAGA1UEAwwJbG9jYWxob3N0MQ8wDQYDVQQKDAZlcXNvZnQxCzAJBgNVBAYTAkRFMSswKQYJKoZIhvcNAQkBFhxzY2huZWlkZXJAaHJ6LnVuaS1tYXJidXJnLmRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwmphqbslzE72aheED/uKYNnt2yO/ws7pMexKHMRU2S0C0TSn3o/0NJnAsKClywq8UG+fu30Q04s6tfLMeY/0knn+RyqJF/YCbNpnmI4XriYH+mGe3gcevLTfmcunbXvb69UBGcqfJtR3/r3fqv3zEpxi8Q3mOR5Y0oSEm9YDm7hmBWfFfSpIPME3QXk7xwexkFH320Zj4UZuwz+B41StAwEG9J9zoMmrLMrgsGYxntaOSFs0sj79+1K13DaxRWvxrXkyPw0QWeY4aGia0QSrqTe5VrwCV+D44epNIPAiwHhtNPq4Ej1PZhVgLaT8x+ShFTQ/vN+LGuUOhadVEXREqQIDAQABoxowGDAWBgNVHSUBAf8EDDAKBggrBgEFBQcDATANBgkqhkiG9w0BAQsFAAOCAQEAgPit+T8sv1yzh1e9GVJwdcK3UhOPlT7eNSMq02xmkwGSYy5saaKecBroTxbEwVg0XJ+51vVvmHtNfmXzAhk5Yab1wodLfJXxw7OEt7xTOFngNAH7FugXsKYX/oBV14WKtboAsGj6oMlrX/G8IDs4Mp6G1kmX7PgyacW2QdPp9NUgTEVPoEGZPKux32VCdNF6GkDWQ+nsVeyKu+KpUFbERj4OU44GaMdsPoHXxkANIdEbf/irAKcl2R1UNlzNscvMwgdtK8vyCpSynHWu1bby2JV+WNXgt4Ebvx7FaDCyxW1MFIdCR0uZng2wkvOvhMwlptp32OfgLDJwM3mOmW2Aeg==", 
-	"type":0,
-	"name":"192.168.224.1:8442"
-	}
-],
-"browserMessagingSocket_":"ws://192.168.224.1:8706",
+"hashedQuitPassword":"5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d85e",
+"embeddedCertificates":[],
+"browserMessagingSocketEnabled":false,
+"browserMessagingSocket":"ws://localhost:8706",
 "browserMessagingPingTime":120000,
-"proxies_": {
-		"AutoConfigurationEnabled":true,
-		"AutoConfigurationURL":"http://bla.de/blub.pac",
-		"AutoDiscoveryEnabled_":true,
-		"HTTPEnable_" : true, 
-		"HTTPPort_" : 2345,
-		"ExceptionsList" : [
-			"*.local",
-			"169.254/16"
-		]
-},
+"proxies": {},
 "browserViewMode":1,
-"showTaskBar":true,
+"showTaskBar":false,
 "taskBarHeight":0,
 "touchOptimized":false,
 "mainBrowserWindowTitlebarEnabled":false,
 "mainBrowserWindowMaximized":true,
+"mainBrowserWindowResizable":false,
+"mainBrowserWindowMinimizable":false,
 "mainBrowserWindowWidth":"100%",
 "mainBrowserWindowHeight":"100%",
 "mainBrowserWindowPositioning":1,
 "mainBrowserRestart":true,
-"mainBrowserLoad":"https://192.168.224.1:8443/demo/q1.html",
+"mainBrowserLoad":"https://duckduckgo.com",
 "mainBrowserLoadReferrerInString":"end.html",
 "allowBrowsingBackForward":true,
 "mainBrowserBypassCache":true,
@@ -63,14 +40,14 @@
 "newBrowserWindowByLinkHeight":"500",
 "newBrowserWindowByLinkPositioning":1,
 "browserScreenKeyboard":true,
-"sebServerEnabled":true,
+"sebServerEnabled":false,
 "sebServer": {
-	"url"    : "https://192.168.224.1:8442/websocket/index.html",
-	"socket" : "wss://192.168.224.1:8442"
+	"url"    : "https://localhost/websocket/index.html",
+	"socket" : "wss://localhost:8442"
 },
-"sebScreenshot":true,
+"sebScreenshot":false,
 "sebScreenshotImageType":"image/jpeg",
-"sebScreenshotSound":true,
+"sebScreenshotSound":false,
 
 "DESCRIPTION":"*** the config params above are already migrated ****",
 

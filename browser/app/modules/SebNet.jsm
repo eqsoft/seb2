@@ -73,11 +73,11 @@ this.SebNet = {
 					}
 				}					
 				//if (sendReqHeader && /text\/html/g.test(subject.getRequestHeader('Accept'))) { // experimental
-				if (sendBrowserExamKey) { // experimental
+				if (sendBrowserExamKey) {
 					var k;
 					if (reqSalt) {								
 						k = base.getRequestValue(url, reqKey);
-						sl.debug("get req value: " + url + " : " + reqKey + " = " + k);
+						//sl.debug("get req value: " + url + " : " + reqKey + " = " + k);
 					}
 					else {
 						k = reqKey;

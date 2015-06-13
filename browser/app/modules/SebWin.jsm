@@ -67,7 +67,11 @@ const	xulFrame = "seb.iframe",
 	loadDeck = 0,
 	contentDeck = 1,
 	serverDeck = 2,
-	messageDeck = 3;
+	messageDeck = 3,
+	STATE_MAXIMIZED = 1, 	//The window is maximized.
+	STATE_MINIMIZED = 2, 	//The window is minimized.
+	STATE_NORMAL = 3, 	//The window is normal.
+	STATE_FULLSCREEN = 4 	//The window is in full screen mode.
 	
 this.SebWin = {
 	wins : [],
@@ -385,17 +389,26 @@ this.SebWin = {
 	setTitlebar : function (win,scr) {
 		let attr = "";
 		let val = "";
+		let margintop = "0px";
+		let sebwin = win.document.getElementById("sebWindow");
 		switch (sh.os) { // line feed for dump messages
 			case "WINNT" :
-			case "DARWIN" :
+				//win.setTimeout(function() { this.fullScreen=true },1);
+				attr = "chromemargin";
+				val = (scr.titlebarEnabled) ? "-1,-1,-1,-1" : "0,-1,-1,-1";
+				margintop = (scr.titlebarEnabled) ? "0px" : "6px";
+				//attr = "hidechrome";
+				//val = (!scr.titlebarEnabled);
+				break;
+			case "DARWIN" : // maybe the best would be hidechrome and resizing
 				attr = "chromemargin";
 				val = (scr.titlebarEnabled) ? "-1,-1,-1,-1" : "0,-1,-1,-1";
 				//attr = "hidechrome";
 				//val = (!scr.titlebarEnabled);
+				//win.setTimeout(function() { this.maximize(); },1);
 				break;
 			case "UNIX" :
 			case "LINUX" :
-			//case "DARWIN" :
 				attr = "hidechrome";
 				val = (!scr.titlebarEnabled);
 				break;
@@ -403,6 +416,9 @@ this.SebWin = {
 				sl.err("Unknown OS: " + sh.os)
 		}
 		sl.debug(attr + ":" + val);
-		win.document.getElementById("sebWindow").setAttribute(attr,val);
+		sebwin.style.marginTop = margintop;
+		sebwin.setAttribute(attr,val);
+		//win.maximize();
+		//win.setTimeout(function() { this.maximize(); },1);
 	}
 }

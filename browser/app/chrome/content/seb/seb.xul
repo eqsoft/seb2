@@ -10,7 +10,7 @@
 <window id="sebWindow" 
 	title="&seb.title;" 
 	windowtype="main" 
-	sizemode="maximized" 
+	sizemode="maximized"
 	accelerated="true"
 	onload="seb.onload(this);" 
 	onunload="seb.onunload(this);" 
