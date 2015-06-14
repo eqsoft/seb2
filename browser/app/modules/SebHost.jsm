@@ -101,7 +101,7 @@ this.SebHost = {
 		}; 
 		
 		messageSocket.onmessage = function(evt) { 
-			// ToDo: message handling
+			// ToDo: message handling !!
 			switch (evt.data) {
 				case "SEB.close" :
 					sl.debug("messageSocket handled: " + evt.data); 
@@ -157,6 +157,7 @@ this.SebHost = {
 	},
 	
 	quitFromHost : function () {
+		seb.hostForceQuit = true;
 		seb.quitIgnoreWarning = true;
 		seb.quitIgnorePassord = true;
 		seb.allowQuit = true;

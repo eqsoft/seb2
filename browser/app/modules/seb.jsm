@@ -311,15 +311,22 @@ this.seb =  {
 		sl.debug("try to quit...");
 		var w = base.mainWin;
 		var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
-		if (e != null) { // catch event
-			if (base.hostForceQuit) {
-				sl.debug("host force quit");
+		if (base.hostForceQuit) {
+			sl.debug("host force quit");
+			if (e != null) {
 				return true;
 			}
 			else {
-				e.preventDefault();
-				e.stopPropagation();				
+				sw.closeAllWin();
+				sl.debug("quit"); 
+				return;
 			}
+		}
+		else {
+			if (e != null) {
+				e.preventDefault();
+				e.stopPropagation();
+			}				
 		}
 		
 		if (sh.messageServer) {
@@ -333,7 +340,7 @@ this.seb =  {
 			sl.out("no way! seb is locked :-)");
 		}
 		else {
-			if (e) { // close window event: user action or host event 
+			if (e) { // close window event: user action
 				// first look for warning
 				let passwd = su.getConfig("hashedQuitPassword","string","");
 				
