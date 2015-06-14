@@ -50,4 +50,6 @@
 	cursor: pointer;
 }
 
-
+.winHiddenChromeMargin {
+	margin-top: 6px;
+}

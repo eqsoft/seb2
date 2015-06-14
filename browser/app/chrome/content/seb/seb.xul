@@ -73,5 +73,4 @@
 			<browser flex="1" id="message.socket" src="about:blank" type="content-targetable"></browser>
 		</deck>
 	</vbox>
-	
 </window>

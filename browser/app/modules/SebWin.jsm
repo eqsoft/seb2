@@ -241,7 +241,7 @@ this.SebWin = {
 	setMainScreen : function() {
 		if (base.mainScreen['initialized']) { return base.mainScreen; }	 
 		base.mainScreen['titlebarEnabled'] = su.getConfig("mainBrowserWindowTitlebarEnabled","boolean",false);
-		base.mainScreen['maximized'] = su.getConfig("mainBrowserWindowWidth","boolean",true);
+		base.mainScreen['maximized'] = su.getConfig("mainBrowserWindowMaximized","boolean",true);
 		base.mainScreen['width'] = seb.config["mainBrowserWindowWidth"];
 		base.mainScreen['height'] = seb.config["mainBrowserWindowHeight"];
 		base.mainScreen['position'] = pos[su.getConfig("mainBrowserWindowPositioning","number",1)];
@@ -270,15 +270,14 @@ this.SebWin = {
 	},
 	
 	setSize : function(win) {
-		sl.debug("setSize: " + base.getWinType(win));
 		let scr = (base.getWinType(win) == "main") ? base.setMainScreen() : base.setPopupScreen();
-		sl.debug("size screen: " + JSON.stringify(scr));
 		base.setTitlebar(win,scr);
-		
 		if (scr.maximized) {
 			return;
 		}
 		
+		sl.debug("setSize: " + base.getWinType(win));
+		sl.debug("size screen: " + JSON.stringify(scr));
 		let swt = seb.mainWin.screen.width;
 		let sht = seb.mainWin.screen.height;
 		let stp = seb.mainWin.screen.top;
@@ -389,20 +388,24 @@ this.SebWin = {
 	setTitlebar : function (win,scr) {
 		let attr = "";
 		let val = "";
-		let margintop = "0px";
 		let sebwin = win.document.getElementById("sebWindow");
-		switch (sh.os) { // line feed for dump messages
+		switch (sh.os) {
 			case "WINNT" :
 				//win.setTimeout(function() { this.fullScreen=true },1);
 				attr = "chromemargin";
 				val = (scr.titlebarEnabled) ? "-1,-1,-1,-1" : "0,-1,-1,-1";
-				margintop = (scr.titlebarEnabled) ? "0px" : "6px";
-				//attr = "hidechrome";
-				//val = (!scr.titlebarEnabled);
+				sebwin.setAttribute(attr,val);
+				if (!scr.titlebarEnabled) {
+					sebwin.classList.add("winHiddenChromeMargin");
+				}
+				else {
+					sebwin.classList.remove("winHiddenChromeMargin");
+				}
 				break;
 			case "DARWIN" : // maybe the best would be hidechrome and resizing
 				attr = "chromemargin";
 				val = (scr.titlebarEnabled) ? "-1,-1,-1,-1" : "0,-1,-1,-1";
+				sebwin.setAttribute(attr,val);
 				//attr = "hidechrome";
 				//val = (!scr.titlebarEnabled);
 				//win.setTimeout(function() { this.maximize(); },1);
@@ -411,14 +414,11 @@ this.SebWin = {
 			case "LINUX" :
 				attr = "hidechrome";
 				val = (!scr.titlebarEnabled);
+				sebwin.setAttribute(attr,val);
 				break;
 			default :
-				sl.err("Unknown OS: " + sh.os)
+				sl.err("Unknown OS: " + sh.os);
 		}
-		sl.debug(attr + ":" + val);
-		sebwin.style.marginTop = margintop;
-		sebwin.setAttribute(attr,val);
-		//win.maximize();
 		//win.setTimeout(function() { this.maximize(); },1);
 	}
 }

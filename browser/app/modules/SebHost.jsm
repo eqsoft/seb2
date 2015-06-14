@@ -135,6 +135,9 @@ this.SebHost = {
 	},
 	
 	setMessageSocketHandler : function (win) {
+		if (!su.getConfig("browserMessagingSocketEnabled","boolean",false)) {
+			return;
+		}
 		sl.debug("setMessageSocketHandler");
 		socket = su.getConfig("browserMessagingSocket","string","");
 		if (socket == "") { 

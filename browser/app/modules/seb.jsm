@@ -249,7 +249,6 @@ this.seb =  {
 		base.allowQuit = su.getConfig("allowQuit","boolean",false);
 		base.quitURL =su.getConfig("quitURL","string","");
 		sb.setEmbeddedCerts();
-		base.setSizeModeHandler(win);
 		base.setQuitHandler(win);
 		sn.httpRequestObserver.register();
 		sh.setMessageSocketHandler(win);
@@ -270,11 +269,6 @@ this.seb =  {
 		sl.debug("setQuitHandler");
 		win.addEventListener( "close", base.quit, true); // controlled shutdown for main window
 		base.quitObserver.register();
-	},
-	
-	setSizeModeHandler : function(win) {
-		sl.debug("setSizeModeHandler");
-		win.addEventListener( "sizemodechange", base.sizeModeChange, true); // controlled sizemode for main window
 	},
 	
 	/* events */
