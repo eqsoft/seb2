@@ -391,24 +391,15 @@ this.SebWin = {
 		let sebwin = win.document.getElementById("sebWindow");
 		switch (sh.os) {
 			case "WINNT" :
-				//win.setTimeout(function() { this.fullScreen=true },1);
-				attr = "chromemargin";
-				val = (scr.titlebarEnabled) ? "-1,-1,-1,-1" : "0,-1,-1,-1";
-				sebwin.setAttribute(attr,val);
 				if (!scr.titlebarEnabled) {
+					sebwin.setAttribute("chromemargin","0,-1,-1,-1");
 					sebwin.classList.add("winHiddenChromeMargin");
-				}
-				else {
-					sebwin.classList.remove("winHiddenChromeMargin");
 				}
 				break;
 			case "DARWIN" : // maybe the best would be hidechrome and resizing
-				attr = "chromemargin";
-				val = (scr.titlebarEnabled) ? "-1,-1,-1,-1" : "0,-1,-1,-1";
-				sebwin.setAttribute(attr,val);
-				//attr = "hidechrome";
-				//val = (!scr.titlebarEnabled);
-				//win.setTimeout(function() { this.maximize(); },1);
+				if (!scr.titlebarEnabled) {
+					sebwin.setAttribute("chromemargin","0,-1,-1,-1");
+				}
 				break;
 			case "UNIX" :
 			case "LINUX" :

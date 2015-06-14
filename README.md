@@ -1,13 +1,14 @@
 Standalone Browser Component of Safe-Exam-Browser
 =================================================
-  See: http://www.safeexambrowser.org
+This is the core browser component for Safe-Exam-Browser.
+For SEB binary releases please go to http://www.safeexambrowser.org
 
 Refactored seb:
+* general code refactoring
 * splitted seb.jsm into functional modules
 * getting rid of xullib.jsm
-* refactored config mode
+* improved config mode
 * improved nodejs based seb server with native html5 support without binaryjs and jquery
-* general code refactoring
 
 ## OS Support ##
 * Windows 32/64Bit
@@ -42,7 +43,6 @@ sudo mkdir -p /Applications/Xulrunner.app/Contents/Resources
 ```
 Extract xulrunner-xx.x.x.en-US.mac.tar.bz2 and copy XUL.framework/Versions/Current/* into /Applications/Xulrunner.app/Contents/MacOS.
 Then move XUL.framework/Versions/Current/dependentlibs.list into /Applications/Xulrunner.app/Contents/Resources/ folder.
-
 
 The start scripts **must** point to an executable xulrunner binary.
 
