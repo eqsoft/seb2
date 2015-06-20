@@ -58,11 +58,18 @@ this.SebUtils =  {
 	checkCRT : /\.crt$/i,
 	checkJSON : /^\s*?\{.*\}\s*?$/,
 	checkBase64 : /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/,
+	prefsMap : {},
 	
 	init : function(obj) {
 		base = this;
 		seb = obj;
 		sl.out("SebUtils initialized: " + seb);
+		base.prefsMap["browserZoomFull"] = base.browserZoomFull;
+		base.prefsMap["zoomMaxPercent"] = base.zoomMaxPercent;
+		base.prefsMap["zoomMinPercent"] = base.zoomMinPercent;
+		base.prefsMap["pluginEnableFlash"] = base.pluginEnableFlash;
+		base.prefsMap["pluginEnableJava"] = base.pluginEnableJava;
+		base.prefsMap["spellcheckDefault"] = base.spellcheckDefault;
 	},
 	
 	getCmd : function (k) { // convert strings to data types
@@ -188,6 +195,72 @@ this.SebUtils =  {
 		}	
 	},
 	
+	setPrefsMap : function (pm) {
+		sl.debug("setPrefsMap from config object");
+		for (var k in pm) {
+			sl.debug("typeof pm: " + typeof pm[k]);
+			var v = null;
+			if (typeof pm[k] == "object" && typeof pm[k].cb == "string") {
+				if (typeof base.prefsMap[pm[k].cb] == "function") {
+					v = base.prefsMap[pm[k].cb].call(null,k);
+				}
+				else {
+					sl.debug("no prefMap function: " + pm[k].cb);
+				}
+			}
+			if (typeof pm[k] == "string") {
+				v = seb.config[pm[k]];
+			}
+				
+			switch (typeof v) {
+				case "string" :
+					sl.debug("setCharPref: " + k + ":" + v);
+					prefs.setCharPref(k,v);
+				break
+				case "number" :
+					sl.debug("setIntPref: " + k + ":" + v);
+					prefs.setIntPref(k,v);
+				break;
+				case "boolean" :
+					sl.debug("setBoolPref: " + k + ":" + v);
+					prefs.setBoolPref(k,v);
+				break;
+				default :
+					sl.debug("no pref type: " + k + ":" + v);
+			}
+		}
+	},
+	
+	browserZoomFull : function(param) {
+		var ret = (seb.config["zoomMode"] == 0) ? true : false;
+		return ret;
+	},
+	
+	zoomMaxPercent : function(param) {
+		var ret = (seb.config["enableZoomPage"] == false && seb.config["enableZoomText"] == false) ? 100 : 300;
+		return ret;
+	},
+	
+	zoomMinPercent : function(param) {
+		var ret = (seb.config["enableZoomPage"] == false && seb.config["enableZoomText"] == false) ? 100 : 30;
+		return ret;
+	},
+	
+	pluginEnableFlash : function(param) {
+		var ret = (seb.config["enablePlugIns"] == true) ? 2 : 0;
+		return ret;
+	},
+	
+	pluginEnableJava : function(param) {
+		var ret = (seb.config["enableJava"] == true) ? 2 : 0;
+		return ret;
+	},
+	
+	spellcheckDefault : function(param) {
+		var ret = (seb.config["allowSpellCheck"] == true) ? 2 : 0;
+		return ret;
+	},
+		
 	getUrl : function () {
 		let url = base.getCmd("url");
 		if (url !== null) {

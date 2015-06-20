@@ -162,8 +162,11 @@ this.seb =  {
 	},
 	
 	initAfterConfig : function() {
-		if (!su.isEmpty(base.config.browserPrefs)) {		
-			su.setPrefs(base.config.browserPrefs);
+		if (!su.isEmpty(base.config.sebPrefs)) {		
+			su.setPrefs(base.config.sebPrefs);
+		}
+		if (!su.isEmpty(base.config.sebPrefsMap)) {		
+			su.setPrefsMap(base.config.sebPrefsMap);
 		}
 		base.initLocale();
 		sn.init(base); // needs config on init for compiled RegEx
@@ -307,10 +310,25 @@ this.seb =  {
 		return;
 	},
 	
+	reload: function(win) {
+		sl.debug("try reload...");
+		win = (win === null) ? sw.getRecentWin() : win;
+		if (su.getConfig("showReloadWarning","boolean",true)) {
+			//var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
+			var result = prompt.confirm(null, su.getLocStr("seb.reload.warning.title"), su.getLocStr("seb.reload.warning"));
+			if (result) {
+				br.reload(win);
+			}
+		}
+		else {
+			br.reload(win);
+		}
+	},
+	
 	quit: function(e) {
 		sl.debug("try to quit...");
 		var w = base.mainWin;
-		var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
+		
 		if (base.hostForceQuit) {
 			sl.debug("host force quit");
 			if (e != null) {
@@ -345,7 +363,7 @@ this.seb =  {
 				let passwd = su.getConfig("hashedQuitPassword","string","");
 				
 				if (!base.quitIgnoreWarning && !passwd) {
-					var result = prompts.confirm(null, su.getLocStr("seb.quit.warning.title"), su.getLocStr("seb.quit.warning"));
+					var result = prompt.confirm(null, su.getLocStr("seb.quit.warning.title"), su.getLocStr("seb.quit.warning"));
 					if (!result) {
 						return;
 					}
@@ -354,7 +372,7 @@ this.seb =  {
 				if (passwd && !base.quitIgnorePassword) {				
 					var password = {value: ""}; // default the password to pass
 					var check = {value: true}; // default the checkbox to true
-					var result = prompts.promptPassword(null, su.getLocStr("seb.password.title"), su.getLocStr("seb.password.text"), password, null, check);
+					var result = prompt.promptPassword(null, su.getLocStr("seb.password.title"), su.getLocStr("seb.password.text"), password, null, check);
 					if (!result) {
 						return;
 					}
@@ -370,7 +388,7 @@ this.seb =  {
 			}
 			else { // shutdown link: browser takes shutdown control
 				if (!base.quitIgnoreWarning) {
-					var result = prompts.confirm(null, su.getLocStr("seb.quit.warning.title"), su.getLocStr("seb.quit.warning"));
+					var result = prompt.confirm(null, su.getLocStr("seb.quit.warning.title"), su.getLocStr("seb.quit.warning"));
 					if (!result) {
 						return;
 					}
@@ -381,7 +399,7 @@ this.seb =  {
 				if (passwd && !base.quitIgnorePassword) {				
 					var password = {value: ""}; // default the password to pass
 					var check = {value: true}; // default the checkbox to true
-					var result = prompts.promptPassword(null, su.getLocStr("seb.password.title"), su.getLocStr("seb.password.text"), password, null, check);
+					var result = prompt.promptPassword(null, su.getLocStr("seb.password.title"), su.getLocStr("seb.password.text"), password, null, check);
 					if (!result) {
 						return;
 					}

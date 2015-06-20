@@ -1,5 +1,27 @@
 {
-"browserPrefs": {},
+"sebPrefs": {},
+"sebPrefsMap": {
+	"general.useragent.override" 	: "browserUserAgent",
+	"browser.download.dir" 		: "downloadDirectoryWin",
+	"dom.disable_open_during_load" 	: "blockPopUpWindows",
+	"javascript.enabled" 		: "enableJavaScript",
+	"browser.zoom.full" 		: { "cb" : "browserZoomFull" },
+	"zoom.maxPercent" 		: { "cb" : "zoomMaxPercent" },
+	"zoom.minPercent" 		: { "cb" : "zoomMinPercent" },
+	"plugin.state.flash"		: { "cb" : "pluginEnableFlash" },
+	"plugin.state.java"		: { "cb" : "pluginEnableJava" },
+	"layout.spellcheckDefault" 	: { "cb" : "spellcheckDefault" }
+},
+"sebServerEnabled":false,
+"sebServer": {
+	"url"    : "https://localhost:8442/websocket/index.html",
+	"socket" : "wss://localhost:8442"
+},
+"sebScreenshot":false,
+"sebScreenshotImageType":"image/jpeg",
+"sebScreenshotSound":false,
+
+"browserUserAgent":"Mozilla/5.0 (Windows NT 6.3; rv:37.0) Gecko/20100101 Firefox/37.0 SEB 2.1",
 "startURL":"http://safeexambrowser.org",
 "sendBrowserExamKey":true,
 "browserRequestHeader":"X-SafeExamBrowser-RequestHash",
@@ -11,6 +33,7 @@
 "whitelistURLFilter":[],
 "removeProfile":true,
 "allowQuit":true,
+"showReloadWarning" : true,
 "quitURL":"http://seb/quit.html",
 "hashedQuitPassword":"5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d85e",
 "embeddedCertificates":[],
@@ -38,14 +61,13 @@
 "newBrowserWindowByLinkHeight":"600",
 "newBrowserWindowByLinkPositioning":1,
 "browserScreenKeyboard":false,
-"sebServerEnabled":false,
-"sebServer": {
-	"url"    : "https://localhost:8442/websocket/index.html",
-	"socket" : "wss://localhost:8442"
-},
-"sebScreenshot":false,
-"sebScreenshotImageType":"image/jpeg",
-"sebScreenshotSound":false,
+"enableJava":false,
+"enableJavaScript":true,
+"enablePlugIns":true,
+"zoomMode":0,
+"enableZoomPage":true,
+"enableZoomText":false,
+"allowSpellCheck":false,
 
 "DESCRIPTION":"*** the config params above are already migrated ****",
 
@@ -53,11 +75,9 @@
 "newBrowserWindowByScriptPolicy":2,
 "allowFlashFullscreen":false,
 "enableURLContentFilter":false,
-"enableJava":false,
 "downloadPDFFiles":false,
 "allowDownUploads":false,
 "hideBrowserWindowToolbar":true,
-"enableJavaScript":true,
 "enableURLFilter":false,
 "chooseFileToUploadPolicy":0,
 "hashedAdminPassword":"5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d85e",
@@ -66,11 +86,10 @@
 "enableLogging":false,
 "logDirectoryWIN":"",
 "monitorProcesses":false,
-"downloadDirectoryWIN":"",
+"downloadDirectoryWin":"",
 "downloadAndOpenSebConfig":true,
 "newBrowserWindowByLinkBlockForeign":false,
 "enableBrowserWindowToolbar":true,
 "blockPopUpWindows":false,
-"enablePlugIns":true,
 "openDownloads":false
 }
