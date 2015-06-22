@@ -198,7 +198,7 @@ this.SebUtils =  {
 	setPrefsMap : function (pm) {
 		sl.debug("setPrefsMap from config object");
 		for (var k in pm) {
-			sl.debug("typeof pm: " + typeof pm[k]);
+			//sl.debug("typeof pm: " + typeof pm[k]);
 			var v = null;
 			if (typeof pm[k] == "object" && typeof pm[k].cb == "string") {
 				if (typeof base.prefsMap[pm[k].cb] == "function") {

@@ -43,6 +43,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 /* SebModules */
 XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","SebUtils");
+XPCOMUtils.defineLazyModuleGetter(this,"sg","resource://modules/SebConfig.jsm","SebConfig");
 XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","SebLog");
 XPCOMUtils.defineLazyModuleGetter(this,"sw","resource://modules/SebWin.jsm","SebWin");
 XPCOMUtils.defineLazyModuleGetter(this,"sb","resource://modules/SebBrowser.jsm","SebBrowser");
@@ -111,6 +112,7 @@ this.seb =  {
 		base = this;
 		base.cmdline = cl;
 		su.init(base);
+		sg.init(base);
 		base.DEBUG = su.getBool(su.getCmd("debug"));
 		sl.init(base); 
 		base.initProfile();
@@ -119,7 +121,7 @@ this.seb =  {
 		ss.init(base);
 		sc.init(base);
 		base.initDebug();
-		base.initConfig();
+		sg.initConfig(base.initAfterConfig);
 	},
 	
 	initDebug : function() {
@@ -136,38 +138,7 @@ this.seb =  {
 		else { sl.err("could not find: " + prefFile.path); }
 	},
 	
-	initConfig : function () {
-		// default config file. ToDo configpath via cmdline and base64
-		function cb(obj) {
-			if (typeof obj == "object") {
-				sl.debug("config object found");
-				base.config = obj;
-				base.initAfterConfig();
-			}
-		}
-		let configParam = su.getCmd("config");
-		let configFile = FileUtils.getFile("CurProcD",["config.json"], null);
-		if (configParam != null) {
-			sl.debug("config param found: " + configParam);
-			su.getJSON(configParam.trim(), cb); 
-		}
-		else {
-			if (configFile.exists()) { 
-				su.getJSON(configFile.path.trim(),cb); 
-			}
-			else { 
-				sl.err("no config param and no default config.json!");
-			}
-		}
-	},
-	
 	initAfterConfig : function() {
-		if (!su.isEmpty(base.config.sebPrefs)) {		
-			su.setPrefs(base.config.sebPrefs);
-		}
-		if (!su.isEmpty(base.config.sebPrefsMap)) {		
-			su.setPrefsMap(base.config.sebPrefsMap);
-		}
 		base.initLocale();
 		sn.init(base); // needs config on init for compiled RegEx
 		sn.initProxies();
