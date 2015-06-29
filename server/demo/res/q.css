@@ -1,16 +1,26 @@
 body {
-	border: 3px solid red;
 	font-family: courier, sans-serif, system;
+	border: 3px solid #bbb;
+	height: 100%;
 }
 
-div.content, div.question {
+div.content {
 	margin-left: 15%;
 	margin-right: 15%;
 	margin-top: 5%;
+	margin-bottom: 5%;
+	border: 3px solid #ddd;
 }
 
-.question {
-	float: left;
+div.question {
+	display: inline-block;
+	vertical-align: middle;	
+}
+
+
+div.media {	
+	display: inline-block;
+	vertical-align: middle;
 }
 
 .title {
@@ -31,9 +41,6 @@ label {
 	line-height: 22pt;
 }
 
-.media {
-	float: right;
-}
 
 .submit {
 	margin-top: 18pt;
