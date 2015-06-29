@@ -50,7 +50,22 @@ var conf = function conf() {
 		
 		app.use(function(req,res,next) { // Check Auth: only SSL connection with valid client certs are allowed, otherwise ANONYMOUS (demo certs see: user.p12 and admin.p12
 			// don't request client certificates for demo web app
-			if (req.socket.server.address().port == demoPort) {
+			var port = 0;
+			if (req.socket.server && req.socket.server.address) {
+				port = req.socket.server.address().port;
+			}
+			else {
+				if (req.socket.pair && req.socket.pair.server && req.socket.pair.server.address) {
+					port = req.socket.pair.server.address().port;
+				}
+			}
+			if (port == 0) {
+				console.log('can not get port');
+				res.writeHead(403, {'Content-Type': 'text/plain'});
+				res.end('can not get port');
+			}
+			
+			if (port == demoPort) {
 				next();
 			}
 			else {
