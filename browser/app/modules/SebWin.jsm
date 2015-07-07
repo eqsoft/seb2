@@ -352,7 +352,7 @@ this.SebWin = {
 		}
 		sl.debug("hx: " + hx);
 		
-		if (su.getConfig("browserViewMode","number",1) == 1) {
+		if (su.getConfig("browserViewMode","number",1) == 0) {
 			wx -= sh.getFrameWidth();
 			hx -= sh.getFrameHeight();
 		}

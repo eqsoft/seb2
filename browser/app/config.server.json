@@ -30,7 +30,7 @@
 "browserMessagingSocket":"ws://localhost:8706",
 "browserMessagingPingTime":120000,
 "proxies": {},
-"browserViewMode":0,
+"browserViewMode":1,
 "showTaskBar":true,
 "taskBarHeight":0,
 "touchOptimized":false,
