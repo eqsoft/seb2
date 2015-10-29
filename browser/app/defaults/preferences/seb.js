@@ -3,6 +3,8 @@ pref("app.update.enabled", false);
 pref("toolkit.defaultChromeURI", "chrome://seb/content/seb.xul");
 pref("toolkit.defaultChromeFeatures", "chrome,dialog=no,resizable=yes,scrollbars=yes");
 pref("toolkit.singletonWindowType", "main");
+pref("toolkit.telemetry.enabled", false);
+pref("toolkit.telemetry.archive.enabled", false);
 pref("accessibility.browsewithcaret_shortcut.enabled", false);
 pref("browser.chromeURL", "chrome://seb/content/seb.xul");
 pref("browser.startup.homepage_override.mstone", "ignore");
@@ -18,4 +20,3 @@ pref("network.cookie.prefsMigrated", true);
 pref("privacy.popups.firstTime", false);
 pref("privacy.popups.policy", 1);
 pref("security.default_personal_cert", "Select Automatically");
-
