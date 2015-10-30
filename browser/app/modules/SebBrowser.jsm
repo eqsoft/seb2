@@ -58,7 +58,9 @@ XPCOMUtils.defineLazyModuleGetter(this,"sc","resource://modules/SebScreenshot.js
 let 	base = null,
 	seb = null,
 	certdb = null,
-	loadFlag = null;
+	loadFlag = null,
+	pdfViewer = "chrome://pdfjs/content/web/viewer.html?file=",
+	pdfViewerName = "sebPdfViewer";
 	
 const	nsIX509CertDB = Ci.nsIX509CertDB,
 	nsX509CertDB = "@mozilla.org/security/x509certdb;1";
@@ -111,13 +113,21 @@ this.SebBrowser = {
 				if (su.getConfig("browserScreenKeyboard","boolean",false)) {
 					sh.createScreenKeyboardController(win);
 				}
+				/*
+				if (su.getConfig("sebPdfJsEnabled","boolean", true)) {
+					sl.debug("registerContentHandler: application/pdf");
+					w.navigator.registerContentHandler(
+						"application/pdf",
+						"http://www.heise.de",
+						"PDFJS");
+				}
+				*/ 
 				sw.showContent(win);
 			}
 			if (aStateFlags & wpl.STATE_START) {
 				//sl.out("sdfsdfsdf");
-				//let domwin = sw.getDOMChromeWin(aWebProgress.DOMWindow);
-				
-				//sl.out(domwin);											
+				//let win = sw.getChromeWin(aWebProgress.DOMWindow);
+				//sl.debug(win);											
 				try {
 					if (seb.quitURL === aRequest.name) {
 						aRequest.cancel(aStatus);
@@ -132,11 +142,20 @@ this.SebBrowser = {
 					}
 					if (aRequest && aRequest.name) {
 						let win = sw.getChromeWin(aWebProgress.DOMWindow);
+						//sl.debug("KHKJHKJHK:"+win.content.location.href);
 						if (!sn.isValidUrl(aRequest.name)) {
 							aRequest.cancel(aStatus);
-							prompt.alert(seb.MainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
+							prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
 							return 1; // 0?
-						}									
+						}
+						// don't trigger if pdf is part of the query string: infinite loop
+						// don't trigger from pdfViewer itself: infinite loop
+						if (/^[^\?]+\.pdf$/i.test(aRequest.name) && !/^chrome\:\/\/pdfjs/.test(aRequest.name)) {
+							sl.debug("catch pdf request");
+							aRequest.cancel(aStatus);
+							seb.mainWin.open(pdfViewer+aRequest.name,pdfViewerName);
+							return 1;
+						}			
 					}				
 				}
 				catch(e) {

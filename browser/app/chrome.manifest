@@ -4,4 +4,5 @@ category command-line-handler m-xul-application @mozilla.org/commandlinehandler/
 resource modules file:modules/
 resource globals file:globals/
 manifest chrome/seb.manifest
+manifest chrome/pdfjs.manifest
 manifest chrome/branding.manifest

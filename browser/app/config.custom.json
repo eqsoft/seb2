@@ -1,6 +1,6 @@
 {
 "browserPrefs": {},
-"startURL":"https://192.168.224.1:8443/demo/index.html",
+"startURL":"https://192.168.224.1:8443/demo/end.html",
 "sendBrowserExamKey":true,
 "browserRequestHeader":"X-SafeExamBrowser-RequestHash",
 "browserExamKey":"SEBKEY",
@@ -26,7 +26,7 @@
 	"name":"192.168.224.1:8442"
 	}
 ],
-"browserMessagingSocketEnabled":true,
+"browserMessagingSocketEnabled":false,
 "browserMessagingSocket":"ws://192.168.224.1:8706",
 "browserMessagingPingTime":120000,
 "proxies": {},
@@ -58,7 +58,7 @@
 "sebScreenshot":false,
 "sebScreenshotImageType":"image/jpeg",
 "sebScreenshotSound":false,
-
+"sebPdfJsEnabled":true,
 "DESCRIPTION":"*** the config params above are already migrated ****",
 
 "newBrowserWindowByLinkPolicy":2,
