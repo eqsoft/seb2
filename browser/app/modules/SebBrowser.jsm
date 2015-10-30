@@ -150,7 +150,7 @@ this.SebBrowser = {
 						}
 						// don't trigger if pdf is part of the query string: infinite loop
 						// don't trigger from pdfViewer itself: infinite loop
-						if (/^[^\?]+\.pdf$/i.test(aRequest.name) && !/^chrome\:\/\/pdfjs/.test(aRequest.name)) {
+						if (su.getConfig("sebPdfJsEnabled","boolean", true) && /^[^\?]+\.pdf$/i.test(aRequest.name) && !/^chrome\:\/\/pdfjs/.test(aRequest.name)) {
 							sl.debug("catch pdf request");
 							aRequest.cancel(aStatus);
 							sw.openDistinctWin(pdfViewer+aRequest.name);
