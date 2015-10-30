@@ -1907,3 +1907,17 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
     display: none;
   }
 }
+
+/* seb: hide buttons */
+button.openFile {
+	visibility: hidden;
+}
+button.print {
+	visibility: hidden;
+}
+button.download {
+	visibility: hidden;
+}
+a.bookmark {
+	visibility: hidden;
+}
