@@ -95,6 +95,7 @@ this.SebWin = {
 	addWin : function (win) {
 		if (base.wins.length >= 1) { // secondary
 			base.setWinType(win,"secondary");
+			
 		}
 		sb.initBrowser(win);
 		base.wins.push(win);
@@ -181,6 +182,26 @@ this.SebWin = {
 		}
 		base.wins = [];
 		base.wins.push(main);
+	},
+	
+	openDistinctWin : function(url) {
+		for (var i=base.wins.length-1;i>=0;i--) { 
+			try {
+				if (base.wins[i].content.location.href == url) {
+					base.wins[i].focus();
+					return;
+				}
+			}
+			catch(e) {
+				sl.err(e);
+				return;
+			}
+		}
+		base.openWin(url);
+	},
+	
+	openWin : function(url) {
+		seb.mainWin.open(url);
 	},
 	
 	showLoading : function (win) {

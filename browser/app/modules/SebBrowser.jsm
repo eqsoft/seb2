@@ -153,7 +153,7 @@ this.SebBrowser = {
 						if (/^[^\?]+\.pdf$/i.test(aRequest.name) && !/^chrome\:\/\/pdfjs/.test(aRequest.name)) {
 							sl.debug("catch pdf request");
 							aRequest.cancel(aStatus);
-							seb.mainWin.open(pdfViewer+aRequest.name,pdfViewerName);
+							sw.openDistinctWin(pdfViewer+aRequest.name);
 							return 1;
 						}			
 					}				
