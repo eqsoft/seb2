@@ -283,6 +283,18 @@ this.SebBrowser = {
 		base.loadPage(seb.mainWin,url);
 	},
 	
+	hostRestartUrl : function () {
+		let url = su.getConfig("restartExamURL","string","");
+		if (url == "") {
+			sl.err("no restart url from host");
+			return;
+		}
+		sl.debug("host restart url: " + url);
+		sw.removeSecondaryWins();
+		sw.showLoading(seb.mainWin);
+		base.loadPage(seb.mainWin,url);
+	},
+	
 	load : function() {
 		//mainBrowserLoad
 		//mainBrowserLoadReferrer

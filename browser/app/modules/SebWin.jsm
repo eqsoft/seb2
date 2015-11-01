@@ -432,5 +432,12 @@ this.SebWin = {
 				sl.err("Unknown OS: " + sh.os);
 		}
 		//win.setTimeout(function() { this.maximize(); },1);
+	},
+	
+	hostDisplaySettingsChanged : function () {
+		sl.debug("host display settings changed");
+		for (i=0;i<base.wins.length;i++) {
+			base.setSize(base.wins[i]);
+		}
 	}
 }

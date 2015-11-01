@@ -70,7 +70,6 @@ this.seb =  {
 	quitIgnorePassword : false,
 	quitIgnoreWarning : false,
 	hostForceQuit : false,
-
 	toString : function() {
 		return appinfo.name;
 	},
@@ -270,6 +269,7 @@ this.seb =  {
 	},
 	
 	onclose : function (win) {
+		sl.debug("onclose");
 		if (sw.getWinType(win) == "main") { return; }
 		sl.debug("onclose secondary win");
 	},

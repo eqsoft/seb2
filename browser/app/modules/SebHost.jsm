@@ -45,6 +45,8 @@ scriptloader.loadSubScript("resource://globals/prototypes.js");
 /* SebModules */
 XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","SebLog");
 XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","SebUtils");
+XPCOMUtils.defineLazyModuleGetter(this,"sw","resource://modules/SebWin.jsm","SebWin");
+XPCOMUtils.defineLazyModuleGetter(this,"sb","resource://modules/SebBrowser.jsm","SebBrowser");
 
 /* ModuleGlobals */
 let 	base = null,
@@ -105,19 +107,24 @@ this.SebHost = {
 			switch (evt.data) {
 				case "SEB.close" :
 					sl.debug("messageSocket handled: " + evt.data); 
-					//hostForceShutdown = true;
+					seb.hostForceQuit = true;
+					sl.debug("seb.hostForceQuit: " + seb.hostForceQuit);
+					break;
+				case "SEB.shutdown" :  // only for socket debugging
+					sl.debug("messageSocket handled: " + evt.data);
+					base.shutdown();
 					break;
 				case "SEB.restartExam" :
 					sl.debug("messageSocket handled: " + evt.data);
-					//hostRestartUrl();
+					sb.hostRestartUrl();
 					break;
 				case "SEB.displaySettingsChanged" :
 					sl.debug("messageSocket handled: " + evt.data);
-					//hostDisplaySettingsChanged();
+					sw.hostDisplaySettingsChanged();
 					break;
 				case "SEB.reload" :
 					sl.debug("messageSocket handled: " + evt.data);
-					//reload(null);
+					seb.reload(null);
 					break;
 				default :
 					sl.debug("messageSocket not handled msg: " + evt.data); 
