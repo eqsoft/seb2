@@ -1,0 +1,65 @@
+<html>
+	<head>
+		<title>Send Message</title>
+		<script>
+			var ws = null;
+			var msg = {
+				"close":"SEB.close",
+				"restartExam":"SEB.restartExam",
+				"displaySettingsChanged":"SEB.displaySettingsChanged",
+				"reload":"SEB.reload",
+				"keyboardShown":"SEB.keyboardShown",
+				"shutdown":"SEB.shutdown",
+				"AdditionalResourcesUrl" :
+				{
+					"Handler": "AdditionalResources",
+					"Opts": {
+						"id": "1"
+					}
+				},
+				"AdditionalResourcesPath" :
+				{
+					"Handler": "AdditionalResources",
+					"Opts": {
+							"id": "2"
+					}
+				}
+			};
+				
+			function init() {
+				ws = new WebSocket("ws:///192.168.224.1:8706", ["protocolOne", "protocolTwo"]);
+				var sel = document.getElementById("selMsg");
+				for (var key in msg) {
+					var op = document.createElement("option");
+					op.text = key;
+					//console.log(msg[i]);
+					if (/^SEB/.test(msg[key])) {
+						op.value = msg[key];
+					}
+					else {
+						op.value = JSON.stringify(msg[key]);
+					}
+					sel.add(op);
+				}
+			}
+			function deinit() {
+				ws.close();
+			}
+			function send() {
+				var val = document.getElementById("selMsg").value;
+				if (val !== "") {
+					ws.send(val);
+				}
+			}
+		</script>
+	</head>
+	<body onload="init()" onunload="deinit()">
+		<select id="selMsg" name="selMsg">
+			<option value="">messages</option>
+			
+		</select> 
+		<br />
+		<br />
+		<button type="button" id="sendMsg" onclick="send();">Send</button>
+	</body>
+</html>
