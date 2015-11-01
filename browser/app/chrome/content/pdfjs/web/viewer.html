@@ -24,81 +24,26 @@ See https://github.com/adobe-type-tools/cmap-resources
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<!--#if GENERIC || CHROME-->
     <meta name="google" content="notranslate">
-<!--#endif-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>PDF.js viewer</title>
 
-<!--#if FIREFOX || MOZCENTRAL-->
-<!--#include viewer-snippet-firefox-extension.html-->
-<!--#endif-->
-<!--#if CHROME-->
-<!--#include viewer-snippet-chrome-extension.html-->
-<!--#endif-->
 
     <link rel="stylesheet" href="viewer.css"/>
-<!--#if !PRODUCTION-->
-    <link rel="resource" type="application/l10n" href="locale/locale.properties"/>
-<!--#endif-->
 
-<!--#if !(MOZCENTRAL || CHROME || MINIFIED)-->
     <script src="compatibility.js"></script>
-<!--#endif-->
 
-<!--#if !PRODUCTION-->
-    <script src="../external/webL10n/l10n.js"></script>
-<!--#endif-->
 
-<!--#if !PRODUCTION-->
-    <script src="../src/shared/util.js"></script>
-    <script src="../src/display/api.js"></script>
-    <script src="../src/display/metadata.js"></script>
-    <script src="../src/display/canvas.js"></script>
-    <script src="../src/display/webgl.js"></script>
-    <script src="../src/display/pattern_helper.js"></script>
-    <script src="../src/display/font_loader.js"></script>
-    <script src="../src/display/annotation_helper.js"></script>
-    <script>PDFJS.workerSrc = '../src/worker_loader.js';</script>
-<!--#endif-->
 
-<!--#if (GENERIC && !MINIFIED) -->
-<!--#include viewer-snippet.html-->
-<!--#endif-->
+<!-- This snippet is used in production (included from viewer.html) -->
+<link rel="resource" type="application/l10n" href="locale/locale.properties"/>
+<script src="l10n.js"></script>
+<script src="../build/pdf.js"></script>
 
-<!--#if !PRODUCTION-->
-    <script src="ui_utils.js"></script>
-    <script src="default_preferences.js"></script>
-    <script src="preferences.js"></script>
-    <script src="download_manager.js"></script>
-    <script src="view_history.js"></script>
-    <script src="pdf_link_service.js"></script>
-    <script src="pdf_rendering_queue.js"></script>
-    <script src="pdf_page_view.js"></script>
-    <script src="text_layer_builder.js"></script>
-    <script src="annotations_layer_builder.js"></script>
-    <script src="pdf_viewer.js"></script>
-    <script src="pdf_thumbnail_view.js"></script>
-    <script src="pdf_thumbnail_viewer.js"></script>
-    <script src="pdf_outline_view.js"></script>
-    <script src="pdf_attachment_view.js"></script>
-    <script src="pdf_find_bar.js"></script>
-    <script src="pdf_find_controller.js"></script>
-    <script src="pdf_history.js"></script>
-    <script src="secondary_toolbar.js"></script>
-    <script src="pdf_presentation_mode.js"></script>
-    <script src="grab_to_pan.js"></script>
-    <script src="hand_tool.js"></script>
-    <script src="overlay_manager.js"></script>
-    <script src="password_prompt.js"></script>
-    <script src="pdf_document_properties.js"></script>
-<!--#endif-->
 
-<!--#if !MINIFIED -->
+
     <script src="debugger.js"></script>
     <script src="viewer.js"></script>
-<!--#else-->
-<!--#include viewer-snippet-minified.html-->
-<!--#endif-->
 
   </head>
 
@@ -146,6 +91,7 @@ See https://github.com/adobe-type-tools/cmap-resources
           <label for="findHighlightAll" class="toolbarLabel" data-l10n-id="find_highlight">Highlight all</label>
           <input type="checkbox" id="findMatchCase" class="toolbarField" tabindex="95">
           <label for="findMatchCase" class="toolbarLabel" data-l10n-id="find_match_case_label">Match case</label>
+          <span id="findResultsCount" class="toolbarLabel hidden"></span>
           <span id="findMsg" class="toolbarLabel"></span>
         </div>  <!-- findbar -->
 
@@ -388,15 +334,90 @@ See https://github.com/adobe-type-tools/cmap-resources
             </div>
           </div>
         </div>
-<!--#if CHROME-->
-<!--#include viewer-snippet-chrome-overlays.html-->
-<!--#endif-->
       </div>  <!-- overlayContainer -->
 
     </div> <!-- outerContainer -->
     <div id="printContainer"></div>
-<!--#if !(FIREFOX || MOZCENTRAL)-->
-<!--#include viewer-snippet-mozPrintCallback-polyfill.html-->
-<!--#endif-->
+<div id="mozPrintCallback-shim" hidden>
+  <style>
+@media print {
+  #printContainer div {
+    page-break-after: always;
+    page-break-inside: avoid;
+  }
+}
+  </style>
+  <style scoped>
+#mozPrintCallback-shim {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 9999999;
+
+  display: block;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+#mozPrintCallback-shim[hidden] {
+  display: none;
+}
+@media print {
+  #mozPrintCallback-shim {
+    display: none;
+  }
+}
+
+#mozPrintCallback-shim .mozPrintCallback-dialog-box {
+  display: inline-block;
+  margin: -50px auto 0;
+  position: relative;
+  top: 45%;
+  left: 0;
+  min-width: 220px;
+  max-width: 400px;
+
+  padding: 9px;
+
+  border: 1px solid hsla(0, 0%, 0%, .5);
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+
+  background-color: #474747;
+
+  color: hsl(0, 0%, 85%);
+  font-size: 16px;
+  line-height: 20px;
+}
+#mozPrintCallback-shim .progress-row {
+  clear: both;
+  padding: 1em 0;
+}
+#mozPrintCallback-shim progress {
+  width: 100%;
+}
+#mozPrintCallback-shim .relative-progress {
+  clear: both;
+  float: right;
+}
+#mozPrintCallback-shim .progress-actions {
+  clear: both;
+}
+  </style>
+  <div class="mozPrintCallback-dialog-box">
+    <!-- TODO: Localise the following strings -->
+    Preparing document for printing...
+    <div class="progress-row">
+      <progress value="0" max="100"></progress>
+      <span class="relative-progress">0%</span>
+    </div>
+    <div class="progress-actions">
+      <input type="button" value="Cancel" class="mozPrintCallback-cancel">
+    </div>
+  </div>
+</div>
+
   </body>
 </html>
+

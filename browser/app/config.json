@@ -1,17 +1,5 @@
 {
 "sebPrefs": {},
-"sebPrefsMap": {
-	"general.useragent.override" 	: "browserUserAgent",
-	"browser.download.dir" 		: "downloadDirectoryWin",
-	"dom.disable_open_during_load" 	: "blockPopUpWindows",
-	"javascript.enabled" 		: "enableJavaScript",
-	"browser.zoom.full" 		: { "cb" : "browserZoomFull" },
-	"zoom.maxPercent" 		: { "cb" : "zoomMaxPercent" },
-	"zoom.minPercent" 		: { "cb" : "zoomMinPercent" },
-	"plugin.state.flash"		: { "cb" : "pluginEnableFlash" },
-	"plugin.state.java"		: { "cb" : "pluginEnableJava" },
-	"layout.spellcheckDefault" 	: { "cb" : "spellcheckDefault" }
-},
 "sebServerEnabled":false,
 "sebServer": {
 	"url"    : "https://localhost:8442/websocket/index.html",
@@ -20,7 +8,6 @@
 "sebScreenshot":false,
 "sebScreenshotImageType":"image/jpeg",
 "sebScreenshotSound":false,
-
 "browserUserAgent":"Mozilla/5.0 (Windows NT 6.3; rv:37.0) Gecko/20100101 Firefox/37.0 SEB 2.1",
 "startURL":"http://safeexambrowser.org",
 "sendBrowserExamKey":true,

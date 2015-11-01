@@ -1,5 +1,6 @@
 pref("app.update.auto", false);
 pref("app.update.enabled", false);
+pref("app.support.baseURL", "");
 pref("toolkit.defaultChromeURI", "chrome://seb/content/seb.xul");
 pref("toolkit.defaultChromeFeatures", "chrome,dialog=no,resizable=yes,scrollbars=yes");
 pref("toolkit.singletonWindowType", "main");
@@ -20,3 +21,4 @@ pref("network.cookie.prefsMigrated", true);
 pref("privacy.popups.firstTime", false);
 pref("privacy.popups.policy", 1);
 pref("security.default_personal_cert", "Select Automatically");
+pref("gecko.handlerService.allowRegisterFromDifferentHost", true);
