@@ -436,7 +436,7 @@ this.SebWin = {
 	
 	hostDisplaySettingsChanged : function () {
 		sl.debug("host display settings changed");
-		for (i=0;i<base.wins.length;i++) {
+		for (var i=0;i<base.wins.length;i++) {
 			base.setSize(base.wins[i]);
 		}
 	}
