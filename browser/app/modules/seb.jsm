@@ -288,7 +288,7 @@ this.seb =  {
 			//var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
 			var result = prompt.confirm(null, su.getLocStr("seb.reload.warning.title"), su.getLocStr("seb.reload.warning"));
 			if (result) {
-				br.reload(win);
+				sb.reload(win);
 			}
 		}
 		else {
