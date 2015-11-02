@@ -57,6 +57,7 @@ let 	base = null,
 	messageSocketBrowser = null,
 	messageSocketWin = null,
 	messageSocket = null,
+	elToScrollIntoView = null,
 	textTypes = ['color','date','datetime','datetime-local','email','month','number','password','search','tel','text','time','url','week'];
 
 this.SebHost = {
@@ -125,6 +126,17 @@ this.SebHost = {
 				case "SEB.reload" :
 					sl.debug("messageSocket handled: " + evt.data);
 					seb.reload(null);
+					break;
+				case "SEB.keyboardShown" :
+					sl.debug("messageSocket handled: " + evt.data);
+					if (base.elToScrollIntoView != null) {
+						try {
+							base.elToScrollIntoView.scrollIntoView(false);
+						}
+						catch (e) { 
+							sl.err(e);
+						}
+					}
 					break;
 				default :
 					sl.debug("messageSocket not handled msg: " + evt.data); 
@@ -307,7 +319,8 @@ this.SebHost = {
 			sl.debug("input onFocus");
 			try {
 				messageSocket.send("seb.input.focus");
-				evt.target.scrollIntoView();
+				base.elToScrollIntoView = evt.target;
+				//evt.target.scrollIntoView();
 			}
 			catch(e){}
 		}
@@ -315,6 +328,7 @@ this.SebHost = {
 			sl.debug("input onBlur");
 			try {
 				messageSocket.send("seb.input.blur"); 
+				base.elToScrollIntoView = null;
 			}
 			catch(e){}
 		} 
