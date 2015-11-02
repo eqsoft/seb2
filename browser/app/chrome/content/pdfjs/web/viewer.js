@@ -31,7 +31,7 @@ var DEFAULT_URL = 'compressed.tracemonkey-pldi-09.pdf';
 var DEFAULT_SCALE_DELTA = 1.1;
 var MIN_SCALE = 0.25;
 var MAX_SCALE = 10.0;
-var VIEW_HISTORY_MEMORY = 20;
+var VIEW_HISTORY_MEMORY = 0;
 var SCALE_SELECT_CONTAINER_PADDING = 8;
 var SCALE_SELECT_PADDING = 22;
 var PAGE_NUMBER_LOADING_INDICATOR = 'visiblePageIsLoading';
@@ -933,7 +933,7 @@ var ViewHistory = (function ViewHistoryClosure() {
         var databaseStr = JSON.stringify(this.database);
 
 
-        localStorage.setItem('database', databaseStr);
+        //localStorage.setItem('database', databaseStr);
         resolve();
       }.bind(this));
     },
@@ -941,7 +941,8 @@ var ViewHistory = (function ViewHistoryClosure() {
     _readFromStorage: function ViewHistory_readFromStorage() {
       return new Promise(function (resolve) {
 
-        resolve(localStorage.getItem('database'));
+        //resolve(localStorage.getItem('database'));
+        resolve(null);
       });
     },
 
