@@ -6,11 +6,32 @@
                    NC:value="application/pdf">
     <NC:handlerProp RDF:resource="urn:mimetype:handler:application/pdf"/>
   </RDF:Description>
-  
+  <RDF:Description RDF:about="urn:mimetype:application/x-pdf"
+                   NC:value="application/x-pdf">
+    <NC:handlerProp RDF:resource="urn:mimetype:handler:application/x-pdf"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mimetype:application/octet-stream"
+                   NC:value="octet-stream">
+    <NC:handlerProp RDF:resource="urn:mimetype:handler:octet-stream"/>
+  </RDF:Description>
   <RDF:Seq RDF:about="urn:mimetypes:root">
         <RDF:li RDF:resource="urn:mimetype:application/pdf"/>
+        <RDF:li RDF:resource="urn:mimetype:application/x-pdf"/>
+        <RDF:li RDF:resource="urn:mimetype:application/octet-stream"/>
   </RDF:Seq>
   <RDF:Description RDF:about="urn:mimetype:handler:application/pdf"
+                   NC:alwaysAsk="false"
+                   NC:saveToDisk="false"
+                   NC:useSystemDefault="false"
+                   NC:handleInternal="true">
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mimetype:handler:application/x-pdf"
+                   NC:alwaysAsk="false"
+                   NC:saveToDisk="false"
+                   NC:useSystemDefault="false"
+                   NC:handleInternal="true">
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mimetype:handler:application/octet-stream"
                    NC:alwaysAsk="false"
                    NC:saveToDisk="false"
                    NC:useSystemDefault="false"
