@@ -71,12 +71,17 @@ const	xulFrame = "seb.iframe",
 	STATE_MAXIMIZED = 1, 	//The window is maximized.
 	STATE_MINIMIZED = 2, 	//The window is minimized.
 	STATE_NORMAL = 3, 	//The window is normal.
-	STATE_FULLSCREEN = 4 	//The window is in full screen mode.
+	STATE_FULLSCREEN = 4, 	//The window is in full screen mode.
+	pdfViewer = "chrome://pdfjs/content/web/viewer.html?file=",
+	pdfViewerName = "sebPdfViewer";
 	
 this.SebWin = {
 	wins : [],
 	mainScreen : {},
 	popupScreen : {},
+	winTypesReg : {
+		pdfViewer : /^.*?\/pdfjs\/.*?viewer\.html\?file\=/
+	},
 	
 	init : function(obj) {
 		base = this;
@@ -198,6 +203,10 @@ this.SebWin = {
 			}
 		}
 		base.openWin(url);
+	},
+	
+	openPdfViewer : function(url) {
+		base.openDistinctWin(pdfViewer+url);
 	},
 	
 	openWin : function(url) {
