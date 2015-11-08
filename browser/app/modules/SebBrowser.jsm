@@ -58,9 +58,8 @@ XPCOMUtils.defineLazyModuleGetter(this,"sc","resource://modules/SebScreenshot.js
 let 	base = null,
 	seb = null,
 	certdb = null,
-	loadFlag = null,
-	pdfViewer = "chrome://pdfjs/content/web/viewer.html?file=",
-	pdfViewerName = "sebPdfViewer";
+	loadFlag = null;
+	
 	
 const	nsIX509CertDB = Ci.nsIX509CertDB,
 	nsX509CertDB = "@mozilla.org/security/x509certdb;1";
@@ -101,11 +100,76 @@ this.SebBrowser = {
 	},
 	
 	browserStateListener : function(aWebProgress, aRequest, aStateFlags, aStatus) {
+		const DOCUMENT_BLOCKER = "about:document-onload-blocker";
+		var startFlags = wpl.STATE_IS_REQUEST | wpl.STATE_IS_DOCUMENT | wpl.STATE_START;
+		var stopFlags = wpl.STATE_IS_WINDOW | wpl.STATE_STOP;
+		
+		if ((aStateFlags & startFlags) == startFlags) { // start document request event
+			sl.debug("DOCUMENT REQUEST START: " + aRequest.name);
+			let win = sw.getChromeWin(aWebProgress.DOMWindow);
+			if (seb.quitURL === aRequest.name) {
+				aRequest.cancel(aStatus);
+				var tmpQuit = seb.allowQuit; // store default shutdownEnabled
+				var tmpIgnorePassword = seb.quitIgnorePassword; // store default quitIgnorePassword
+				seb.allowQuit = true; // set to true
+				seb.quitIgnorePassword = true;
+				seb.quit();									
+				seb.allowQuit = tmpQuit; // set default shutdownEnabled
+				seb.quitIgnorePassword = tmpIgnorePassword; // set default shutdownIgnorePassword
+				return;
+			}
+			if (!sn.isValidUrl(aRequest.name)) {
+				aRequest.cancel(aStatus);
+				prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
+				return 1; // 0?
+			}
+			// PDF Handling
+			// don't trigger if pdf is part of the query string: infinite loop
+			// don't trigger from pdfViewer itself: infinite loop
+			if (su.getConfig("sebPdfJsEnabled","boolean", true) && /^[^\?]+\.pdf$/i.test(aRequest.name) && !sw.winTypesReg.pdfViewer.test(aRequest.name)) {
+				sl.debug("pdf start request");
+				aRequest.cancel(aStatus);
+				sw.openPdfViewer(aRequest.name);
+				return;
+			}
+		}
+		if ((aStateFlags & stopFlags) == stopFlags) { // stop document request event
+			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name);
+			let win = sw.getChromeWin(aWebProgress.DOMWindow);
+			var w = aWebProgress.DOMWindow.wrappedJSObject;
+			if (win === seb.mainWin && su.getConfig("sebScreenshot","boolean",false)) {
+				sc.createScreenshotController(w);
+			}
+			if (su.getConfig("browserScreenKeyboard","boolean",false)) {
+				sh.createScreenKeyboardController(win);
+			}
+			sw.showContent(win);
+		}
+		/*
+		if (aStateFlags &= (wpl.STATE_IS_REQUEST | wpl.STATE_IS_WINDOW | wpl.STATE_STOP)) { // stop document requests
+			if (aRequest.name != DOCUMENT_BLOCKER) {
+				sl.debug("XXX DOCUMENT REQUEST STOP: " + aRequest.name);
+			}
+		}
+		*/ 
+		/*
+		if (aStateFlags & (wpl.STATE_IS_WINDOW | wpl.STATE_IS_DOCUMENT | wpl.STATE_IS_REQUEST)) {
+			sl.debug("XXXXX: window");
+			if (aStateFlags & wpl.STATE_START) {
+				sl.debug("XXXXX: start " + aRequest.name);
+			}
+			if (aStateFlags & wpl.STATE_STOP) {
+				sl.debug("XXXXX: stop " + aRequest.name);
+			}
+		}
+		*/
+		/*
 		if(aStateFlags & wpl.STATE_IS_NETWORK) {
 			if (aStateFlags & wpl.STATE_STOP) {
 				let win = sw.getChromeWin(aWebProgress.DOMWindow);
 				//let win2 = win.QueryInterface(Ci.nsIWebBrowserChrome);
 				//sl.out(win2.chromeFlags);
+				
 				var w = aWebProgress.DOMWindow.wrappedJSObject;
 				if (win === seb.mainWin && su.getConfig("sebScreenshot","boolean",false)) {
 					sc.createScreenshotController(w);
@@ -113,7 +177,7 @@ this.SebBrowser = {
 				if (su.getConfig("browserScreenKeyboard","boolean",false)) {
 					sh.createScreenKeyboardController(win);
 				}
-				/*
+				
 				if (su.getConfig("sebPdfJsEnabled","boolean", true)) {
 					sl.debug("registerContentHandler: application/pdf");
 					w.navigator.registerContentHandler(
@@ -121,7 +185,7 @@ this.SebBrowser = {
 						"http://www.heise.de",
 						"PDFJS");
 				}
-				*/ 
+				 
 				sw.showContent(win);
 			}
 			if (aStateFlags & wpl.STATE_START) {
@@ -142,20 +206,12 @@ this.SebBrowser = {
 					}
 					if (aRequest && aRequest.name) {
 						let win = sw.getChromeWin(aWebProgress.DOMWindow);
-						//sl.debug("KHKJHKJHK:"+win.content.location.href);
 						if (!sn.isValidUrl(aRequest.name)) {
 							aRequest.cancel(aStatus);
 							prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
 							return 1; // 0?
 						}
-						// don't trigger if pdf is part of the query string: infinite loop
-						// don't trigger from pdfViewer itself: infinite loop
-						if (su.getConfig("sebPdfJsEnabled","boolean", true) && /^[^\?]+\.pdf$/i.test(aRequest.name) && !/^chrome\:\/\/pdfjs/.test(aRequest.name)) {
-							sl.debug("catch pdf request");
-							aRequest.cancel(aStatus);
-							sw.openDistinctWin(pdfViewer+aRequest.name);
-							return 1;
-						}			
+								
 					}				
 				}
 				catch(e) {
@@ -163,8 +219,10 @@ this.SebBrowser = {
 					return 0;
 				}
 			}
+			
 			return 0;
 		}
+		*/ 
 	},
 	
 	getBrowser : function (win) {
@@ -310,17 +368,6 @@ this.SebBrowser = {
 		if (loadReferrerInString != "") {
 			if (loadReferrer.indexOf(loadReferrerInString) > -1) {
 				base.loadPage(seb.mainWin,loadUrl);
-				// ? warum hab ich das so gemacht:
-				/*
-				if (isValidUrl(url)) {
-					x.debug("load from command " + url);
-					doc.location.href = url;
-				}
-				else {
-					prompt.alert(mainWin, getLocStr("seb.title"), getLocStr("seb.url.blocked"));
-				}
-				return false;
-				*/
 			}
 			else {
 					
@@ -332,8 +379,6 @@ this.SebBrowser = {
 		else {
 			sl.debug("load from command " + loadUrl);
 			base.loadPage(seb.mainWin,loadUrl);
-			// ? warum hab ich das so gemacht:
-			//doc.location.href = url;
 		}
 	},
 	
