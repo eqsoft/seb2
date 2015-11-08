@@ -42,12 +42,17 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 /* SebModules */
 XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","SebLog");
 XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","SebUtils");
+XPCOMUtils.defineLazyModuleGetter(this,"sw","resource://modules/SebWin.jsm","SebWin");
 
 /* ModuleGlobals */
 let 	seb = null,
 	base = null,
 	whiteListRegs =	[],
 	blackListRegs = [],
+	mimeTypesRegs = {
+		flash : new RegExp(/^application\/x-shockwave-flash/),
+		pdf : new RegExp(/^application\/(x-)?pdf/)
+	},
 	convertReg = /[-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g,
 	wildcardReg = /\*/g,
 	reqHeader = "",
@@ -58,35 +63,39 @@ let 	seb = null,
 this.SebNet = {
 	httpRequestObserver : {
 		observe	: function(subject, topic, data) {
-			if (topic == "http-on-modify-request") {
+			if (topic == "http-on-modify-request" && subject instanceof Ci.nsIHttpChannel) {
 				//sl.debug(data);
-				subject.QueryInterface(Ci.nsIHttpChannel);
+				//subject.QueryInterface(Ci.nsIHttpChannel);
 				//sl.debug(subject.getRequestHeader('Accept'));
 				//sl.debug(subject.referrer);
-				let url = subject.URI.spec.split("#"); // url fragment is not transmitted to the server!
-				url = url[0];
-				//sl.debug("request: " + url);
-				
-				if (!seb.config["urlFilterTrustedContent"]) {
-					if (!base.isValidUrl(url)) {
-						subject.cancel(Cr.NS_BINDING_ABORTED);
+				let url = "";
+				try {
+					url = subject.URI.spec.split("#"); // url fragment is not transmitted to the server!
+					url = url[0];
+					sl.debug("request: " + url);
+					let urlTrusted = su.getConfig("urlFilterTrustedContent","boolean",true);
+					if (!urlTrusted) {
+						if (!base.isValidUrl(url)) {
+							subject.cancel(Cr.NS_BINDING_ABORTED);
+						}
+					}					
+					//if (sendReqHeader && /text\/html/g.test(subject.getRequestHeader('Accept'))) { // experimental
+					if (sendBrowserExamKey) {
+						var k;
+						if (reqSalt) {								
+							k = base.getRequestValue(url, reqKey);
+							//sl.debug("get req value: " + url + " : " + reqKey + " = " + k);
+						}
+						else {
+							k = reqKey;
+						}
+						subject.setRequestHeader(reqHeader, k, false);
 					}
-				}					
-				//if (sendReqHeader && /text\/html/g.test(subject.getRequestHeader('Accept'))) { // experimental
-				if (sendBrowserExamKey) {
-					var k;
-					if (reqSalt) {								
-						k = base.getRequestValue(url, reqKey);
-						//sl.debug("get req value: " + url + " : " + reqKey + " = " + k);
-					}
-					else {
-						k = reqKey;
-					}
-					subject.setRequestHeader(reqHeader, k, false);
 				}
-				// ToDo: MimeType and file extension detection: if handler exists, hook into the request
-			} 
-			
+				catch (e) {
+					sl.debug(e + "\nurl: " + url);
+				}
+			}
 		},
 
 		get observerService() {  
@@ -100,6 +109,41 @@ this.SebNet = {
 		unregister: function()  {  
 			this.observerService.removeObserver(this, "http-on-modify-request");  
 		}  
+	},
+	
+	httpResponseObserver : { // experimental
+		observe	: function(subject, topic, data) {
+			if (topic == ("http-on-examine-response" || "http-on-examine-cached-response") && subject instanceof Ci.nsIHttpChannel) {
+				let mimeType = "";
+				let url = "";
+				try {
+					url = subject.URI.spec;
+					mimeType = subject.getResponseHeader("Content-Type");
+					sl.debug("response: " + url + "\nmimetype: " + mimeType);
+					if (mimeTypesRegs.pdf.test(mimeType) && !/\.pdf$/i.test(url) && su.getConfig("sebPdfJsEnabled","boolean", true)) { // pdf file requests should already catched by SebBrowser
+						subject.cancel(Cr.NS_BINDING_ABORTED);
+						sw.openPdfViewer(url);
+					}
+				}
+				catch (e) {
+					//sl.debug(e + "\nurl: " + url + "\nmimetype: " + mimeType);
+				}
+			} 
+		},
+
+		get observerService() {  
+			return Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);  
+		},
+	  
+		register: function() {  
+			this.observerService.addObserver(this, "http-on-examine-response", false);
+			this.observerService.addObserver(this, "http-on-examine-cached-response", false);
+		},  
+	  
+		unregister: function()  { 
+			this.observerService.removeObserver(this, "http-on-examine-response", false);
+			this.observerService.removeObserver(this, "http-on-examine-cached-response", false); 
+		}
 	},
 	
 	init : function(obj) {
