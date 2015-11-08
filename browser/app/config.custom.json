@@ -6,7 +6,7 @@
 "browserRequestHeader":"X-SafeExamBrowser-RequestHash",
 "browserExamKey":"SEBKEY",
 "browserURLSalt":false,
-"urlFilterRegex":true,
+"urlFilterRegex":false,
 "urlFilterTrustedContent":true,
 "blacklistURLFilter":[],
 "whitelistURLFilter":[],
@@ -51,14 +51,13 @@
 	"resourceDataFilename": "TestImage.jpg",
 	"resourceDataLauncher": 0
 	},
-	{
+		{
 	"identifier": "1",
 	"additionalResources": [],
 	"active": true,
 	"autoOpen": false,
-	"title": "Test Url",
-	"url": "www.google.ch",
-	"resourceDataFilename": "",
+	"title": "Test PDF (Mac)",
+	"resourceDataFilename": "compressed.tracemonkey-pldi-09.pdf",
 	"resourceDataLauncher": 0
 	},
 	{
@@ -66,9 +65,18 @@
 	"additionalResources": [],
 	"active": true,
 	"autoOpen": false,
-	"title": "Test Folder with HTML",
-	"url": "",
-	"resourceDataFilename": "index.html",
+	"title": "Test PDF (Windows)",
+	"resourceDataFilename": "test.pdf",
+	"resourceDataLauncher": 0
+	},
+	{
+	"identifier": "3",
+	"additionalResources": [],
+	"active": true,
+	"autoOpen": false,
+	"title": "",
+	"url": "http://async5.org/moz/pdfjs.pdf",
+	"resourceDataFilename": "",
 	"resourceDataLauncher": 0
 	}
 ],
