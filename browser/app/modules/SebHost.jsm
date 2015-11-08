@@ -59,17 +59,55 @@ let 	base = null,
 	messageSocket = null,
 	elToScrollIntoView = null,
 	textTypes = ['color','date','datetime','datetime-local','email','month','number','password','search','tel','text','time','url','week'];
-
+	
 this.SebHost = {
 	
 	messageServer : false,
 	os : "",
+	ars : {},
+	msgHandler : {},
+
 	init : function(obj) {
 		base = this;
 		seb = obj;
 		socketlog = su.getBool(su.getCmd("socketlog"));
 		this.os = appinfo.OS.toUpperCase();
+		base.msgHandler = {
+			"AdditionalResources" : base.handleArs
+		};
+		base.initAdditionalResources();
 		sl.out("SebHost initialized: " + seb);
+	},
+	
+	initAdditionalResources : function (obj) {
+		//var ar = {};
+		if (obj === undefined) { // initial load
+			obj = su.getConfig("additionalResources","object",null);
+			if (obj !== undefined && obj !== null) {
+				base.initAdditionalResources(obj);
+				return;
+			}
+			
+		}
+		else { // object param
+			for (var i=0;i<obj.length;i++) { // ars array
+				var ar = obj[i];
+				var data = {};
+				var sub = null;
+				for (var key in ar) { // plain object structure without hierarchy
+					if (key !== "additionalResources") {
+						data[key] = ar[key];
+					}
+					else {
+						
+						if (ar[key] !== undefined && ar[key] !== null) {
+							base.initAdditionalResources(ar[key]);
+						}
+					}
+				}
+				base.ars[data["identifier"]] = data;
+			}
+		}
 	},
 	
 	messageSocketListener : function (e) {
@@ -105,41 +143,64 @@ this.SebHost = {
 		
 		messageSocket.onmessage = function(evt) { 
 			// ToDo: message handling !!
-			switch (evt.data) {
-				case "SEB.close" :
-					sl.debug("messageSocket handled: " + evt.data); 
-					seb.hostForceQuit = true;
-					sl.debug("seb.hostForceQuit: " + seb.hostForceQuit);
-					break;
-				case "SEB.shutdown" :  // only for socket debugging
-					sl.debug("messageSocket handled: " + evt.data);
-					base.shutdown();
-					break;
-				case "SEB.restartExam" :
-					sl.debug("messageSocket handled: " + evt.data);
-					sb.hostRestartUrl();
-					break;
-				case "SEB.displaySettingsChanged" :
-					sl.debug("messageSocket handled: " + evt.data);
-					sw.hostDisplaySettingsChanged();
-					break;
-				case "SEB.reload" :
-					sl.debug("messageSocket handled: " + evt.data);
-					seb.reload(null);
-					break;
-				case "SEB.keyboardShown" :
-					sl.debug("messageSocket handled: " + evt.data);
-					if (base.elToScrollIntoView != null) {
-						try {
-							base.elToScrollIntoView.scrollIntoView(false);
+			if (/^SEB\./.test(evt.data)) { // old string messages
+			
+				switch (evt.data) {
+					case "SEB.close" :
+						sl.debug("messageSocket handled: " + evt.data); 
+						seb.hostForceQuit = true;
+						sl.debug("seb.hostForceQuit: " + seb.hostForceQuit);
+						break;
+					case "SEB.shutdown" :  // only for socket debugging
+						sl.debug("messageSocket handled: " + evt.data);
+						base.shutdown();
+						break;
+					case "SEB.restartExam" :
+						sl.debug("messageSocket handled: " + evt.data);
+						sb.hostRestartUrl();
+						break;
+					case "SEB.displaySettingsChanged" :
+						sl.debug("messageSocket handled: " + evt.data);
+						sw.hostDisplaySettingsChanged();
+						break;
+					case "SEB.reload" :
+						sl.debug("messageSocket handled: " + evt.data);
+						seb.reload(null);
+						break;
+					case "SEB.keyboardShown" :
+						sl.debug("messageSocket handled: " + evt.data);
+						if (base.elToScrollIntoView != null) {
+							try {
+								base.elToScrollIntoView.scrollIntoView(false);
+							}
+							catch (e) { 
+								sl.err(e);
+							}
 						}
-						catch (e) { 
+						break;
+					default :
+						sl.debug("messageSocket: not handled msg: " + evt.data); 
+				}
+			}
+			else { // new object handler
+				try {
+					var msgObj = JSON.parse(evt.data);
+					if (typeof msgObj === "object") {
+						try {
+							//sl.debug(JSON.stringify(msgObj)); 
+							base.msgHandler[msgObj["Handler"]].call(base,msgObj["Opts"]);
+						}
+						catch(e) {
 							sl.err(e);
 						}
 					}
-					break;
-				default :
-					sl.debug("messageSocket not handled msg: " + evt.data); 
+					else {
+						sl.debug("messageSocket: not handled msg: " + evt.data); 
+					}
+				}
+				catch(e) {
+					sl.debug("messageSocket: not handled msg: " + evt.data); 
+				}
 			}
 		};
 		 
@@ -172,6 +233,30 @@ this.SebHost = {
 	closeMessageSocket : function() {
 		if (base.messageServer) {
 			messageSocket.close();
+		}
+	},
+	
+	handleArs : function(opts) {
+		try {
+			var url = "";
+			if (base.ars[opts.id].url) {
+				url = base.ars[opts.id].url;
+			}
+			else {
+				url = "file://" + opts.path + base.ars[opts.id].resourceDataFilename.replace("\\\\","/");
+			}
+			if (url != "") {
+				sl.debug("try to open additional resource: " + url);
+				if (/\.pdf$/i.test(url)) {
+					sw.openPdfViewer(url);
+				}
+				else { // ToDo: mimetype handling
+					sw.openDistinctWin(url);
+				}
+			}
+		}
+		catch(e) {
+			sl.err(e);
 		}
 	},
 	
