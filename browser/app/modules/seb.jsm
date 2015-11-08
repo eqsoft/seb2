@@ -223,7 +223,6 @@ this.seb =  {
 		base.quitURL =su.getConfig("quitURL","string","");
 		sb.setEmbeddedCerts();
 		base.setQuitHandler(win);
-		sn.httpRequestObserver.register();
 		sh.setMessageSocketHandler(win);
 		ss.setSebserverSocketHandler(win);
 		base.locs = win.document.getElementById("locale");	
@@ -249,6 +248,8 @@ this.seb =  {
 		sl.debug("onload");
 		sw.addWin(win);
 		sb.setBrowserHandler(win);
+		sn.httpRequestObserver.register();
+		sn.httpResponseObserver.register();
 		if (sw.getWinType(win) == "main") {
 			base.mainWin = win;
 			base.initMain(win);
