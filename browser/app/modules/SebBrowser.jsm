@@ -58,11 +58,15 @@ XPCOMUtils.defineLazyModuleGetter(this,"sc","resource://modules/SebScreenshot.js
 let 	base = null,
 	seb = null,
 	certdb = null,
-	loadFlag = null;
-	
+	loadFlag = null,
+	startDocumentFlags = wpl.STATE_IS_REQUEST | wpl.STATE_IS_DOCUMENT | wpl.STATE_START,
+	stopDocumentFlags = wpl.STATE_IS_WINDOW | wpl.STATE_STOP,
+	startNetworkFlags = wpl.STATE_IS_NETWORK | wpl.STATE_IS_DOCUMENT | wpl.STATE_START,
+	stopNetworkFlags = wpl.STATE_IS_NETWORK | wpl.STATE_IS_WINDOW | wpl.STATE_STOP;
 	
 const	nsIX509CertDB = Ci.nsIX509CertDB,
-	nsX509CertDB = "@mozilla.org/security/x509certdb;1";
+	nsX509CertDB = "@mozilla.org/security/x509certdb;1",
+	DOCUMENT_BLOCKER = "about:document-onload-blocker";
 
 function nsBrowserStatusHandler() {};
 nsBrowserStatusHandler.prototype = { // override functions with addBrowserXXXListener
@@ -100,15 +104,21 @@ this.SebBrowser = {
 	},
 	
 	browserStateListener : function(aWebProgress, aRequest, aStateFlags, aStatus) {
-		const DOCUMENT_BLOCKER = "about:document-onload-blocker";
-		var startFlags = wpl.STATE_IS_REQUEST | wpl.STATE_IS_DOCUMENT | wpl.STATE_START;
-		var stopFlags = wpl.STATE_IS_WINDOW | wpl.STATE_STOP;
+		/*
+		if ((aStateFlags & startNetworkFlags) == startNetworkFlags) { // start document network event
+			sl.debug("DOCUMENT NETWORK START: " + aRequest.name);
+			let win = sw.getChromeWin(aWebProgress.DOMWindow);
+			base.startLoading(win);
+		}
+		*/
 		
-		if ((aStateFlags & startFlags) == startFlags) { // start document request event
+		if ((aStateFlags & startDocumentFlags) == startDocumentFlags) { // start document request event
 			sl.debug("DOCUMENT REQUEST START: " + aRequest.name);
 			let win = sw.getChromeWin(aWebProgress.DOMWindow);
+			base.startLoading(win);
 			if (seb.quitURL === aRequest.name) {
 				aRequest.cancel(aStatus);
+				base.stopLoading();
 				var tmpQuit = seb.allowQuit; // store default shutdownEnabled
 				var tmpIgnorePassword = seb.quitIgnorePassword; // store default quitIgnorePassword
 				seb.allowQuit = true; // set to true
@@ -120,6 +130,7 @@ this.SebBrowser = {
 			}
 			if (!sn.isValidUrl(aRequest.name)) {
 				aRequest.cancel(aStatus);
+				base.stopLoading();
 				prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
 				return 1; // 0?
 			}
@@ -130,12 +141,14 @@ this.SebBrowser = {
 				sl.debug("pdf start request");
 				aRequest.cancel(aStatus);
 				sw.openPdfViewer(aRequest.name);
+				base.stopLoading();
 				return;
 			}
 		}
-		if ((aStateFlags & stopFlags) == stopFlags) { // stop document request event
+		if ((aStateFlags & stopDocumentFlags) == stopDocumentFlags) { // stop document request event
 			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name);
 			let win = sw.getChromeWin(aWebProgress.DOMWindow);
+			base.stopLoading();
 			var w = aWebProgress.DOMWindow.wrappedJSObject;
 			if (win === seb.mainWin && su.getConfig("sebScreenshot","boolean",false)) {
 				sc.createScreenshotController(w);
@@ -145,6 +158,8 @@ this.SebBrowser = {
 			}
 			sw.showContent(win);
 		}
+		
+		
 		/*
 		if (aStateFlags &= (wpl.STATE_IS_REQUEST | wpl.STATE_IS_WINDOW | wpl.STATE_STOP)) { // stop document requests
 			if (aRequest.name != DOCUMENT_BLOCKER) {
@@ -381,6 +396,27 @@ this.SebBrowser = {
 			base.loadPage(seb.mainWin,loadUrl);
 		}
 	},
+	
+	startLoading : function(win) {
+		try {
+			win = (win) ? win : seb.mainWin;
+			win.document.getElementById('loadingBox').className = "visible";
+		}
+		catch (e) {
+			sl.debug("error startLoading: " + e);
+		}
+	},
+	
+	stopLoading : function() { // stop loading on all windows 
+		try {
+			for (var i=0;i<sw.wins.length;i++) {
+				sw.wins[i].document.getElementById('loadingBox').className = "hidden";
+			}	
+		}
+		catch (e) {
+			sl.debug("error stopLoading: " + e);
+		}
+	}, 
 	
 	back : function(win) {
 		if (!su.getConfig("allowBrowsingBackForward","boolean",false)) { 

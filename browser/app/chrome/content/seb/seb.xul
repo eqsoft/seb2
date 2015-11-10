@@ -56,21 +56,29 @@
 		<key id="seb.showserver" key="3" modifiers="control" command="sebCmdShowServer"/>
 		<key id="seb.showmessage" key="4" modifiers="control" command="sebCmdShowMessage"/>
 	</keyset>
-	<vbox flex="1">
-		<toolbox id="toolBox">
-			<toolbar id="toolBar">
-				<toolbarbutton class="tbBtn" id="btnQuit" image="chrome://seb/content/images/quit.png" command="sebCmdQuit" />
-				<toolbarbutton class="tbBtn" id="btnRestart" image="chrome://seb/content/images/restart.png" command="sebCmdRestart" />
-				<toolbarbutton class="tbBtn" id="btnReload" image="chrome://seb/content/images/reload.png" command="sebCmdReload" />
-				<toolbarbutton class="tbBtn" id="btnBack" image="chrome://seb/content/images/back.png" command="sebCmdBack" />
-				<toolbarbutton class="tbBtn" id="btnForward" image="chrome://seb/content/images/forward.png" command="sebCmdForward" />
-			</toolbar>
-		</toolbox>
-		<deck id="deckContents" selectedIndex="1" flex="1">
-			<iframe flex="1" id="seb.iframe" src="about:blank" type="content-primary"></iframe>
-			<browser flex="1" id="seb.browser" type="content-primary" src="about:blank"/>
-			<browser flex="1" id="sebserver.socket" src="about:blank" type="content-targetable"></browser>
-			<browser flex="1" id="message.socket" src="about:blank" type="content-targetable"></browser>
-		</deck>
-	</vbox>
+	<stack id="browser.stack" flex="1">
+		<vbox flex="1">
+			<toolbox id="toolBox">
+				<toolbar id="toolBar">
+					<toolbarbutton class="tbBtn" id="btnQuit" image="chrome://seb/content/images/quit.png" command="sebCmdQuit" />
+					<toolbarbutton class="tbBtn" id="btnRestart" image="chrome://seb/content/images/restart.png" command="sebCmdRestart" />
+					<toolbarbutton class="tbBtn" id="btnReload" image="chrome://seb/content/images/reload.png" command="sebCmdReload" />
+					<toolbarbutton class="tbBtn" id="btnBack" image="chrome://seb/content/images/back.png" command="sebCmdBack" />
+					<toolbarbutton class="tbBtn" id="btnForward" image="chrome://seb/content/images/forward.png" command="sebCmdForward" />
+				</toolbar>
+			</toolbox>
+			<deck id="deckContents" selectedIndex="1" flex="1">
+				<iframe flex="1" id="seb.iframe" src="about:blank" type="content-primary"></iframe>
+				<browser flex="100" id="seb.browser" type="content-primary" src="about:blank" />
+				<browser flex="1" id="sebserver.socket" src="about:blank" type="content-targetable"></browser>
+				<browser flex="1" id="message.socket" src="about:blank" type="content-targetable"></browser>
+			</deck>
+		</vbox>
+		<vbox id="loadingBox" class="hidden">
+			<hbox>
+				<spacer></spacer>
+				<image id="loadingImage" src="chrome://seb/content/images/loading.gif" />
+			</hbox>
+		</vbox>
+	</stack>
 </window>
