@@ -72,7 +72,7 @@ this.SebNet = {
 				try {
 					url = subject.URI.spec.split("#"); // url fragment is not transmitted to the server!
 					url = url[0];
-					sl.debug("request: " + url);
+					//sl.debug("request: " + url);
 					let urlTrusted = su.getConfig("urlFilterTrustedContent","boolean",true);
 					if (!urlTrusted) {
 						if (!base.isValidUrl(url)) {
@@ -119,7 +119,7 @@ this.SebNet = {
 				try {
 					url = subject.URI.spec;
 					mimeType = subject.getResponseHeader("Content-Type");
-					sl.debug("response: " + url + "\nmimetype: " + mimeType);
+					//sl.debug("response: " + url + "\nmimetype: " + mimeType);
 					if (mimeTypesRegs.pdf.test(mimeType) && !/\.pdf$/i.test(url) && su.getConfig("sebPdfJsEnabled","boolean", true)) { // pdf file requests should already catched by SebBrowser
 						subject.cancel(Cr.NS_BINDING_ABORTED);
 						sw.openPdfViewer(url);
