@@ -22,24 +22,6 @@
 	background-position: 50% 50%;
 }
 
-#imgLoader {
-	list-style-image: url("chrome://seb/content/images/loader.gif");
-	margin-top: 3px;
-	margin-bottom: 3px;
-	margin-right: 10px;
-	max-width: 32px;
-	max-height: 32px;
-}
-
-#imgLoaderStop {
-	list-style-image: url("chrome://seb/content/images/loader_stop.gif");
-	margin-top: 3px;
-	margin-bottom: 3px;
-	margin-right: 10px;
-	max-width: 32px;
-	max-height: 32px;
-}
-
 #toolBox {
 	display: none;
 	background-color : red;
