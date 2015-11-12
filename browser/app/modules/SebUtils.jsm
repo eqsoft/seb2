@@ -39,7 +39,8 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 /* Services */
 const 	hph = io.getProtocolHandler("http").QueryInterface(Ci.nsIHttpProtocolHandler),
-	fph = io.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
+	fph = io.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler),
+	reg = Cc['@mozilla.org/chrome/chrome-registry;1'].getService();
 
 /* SebModules */
 XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","SebLog");
@@ -271,6 +272,25 @@ this.SebUtils =  {
 			return url;
 		}
 		return false;
+	},
+	
+	getUri : function (url) {
+		try {
+			return io.newURI(url,null,null);
+		}
+		catch (e) {
+			sl.err("Error in getUri: " + e);
+		}
+	},
+	
+	getUriFromChrome : function(url) {
+		try {
+			sl.debug(reg);
+			return reg.convertChromeURL(base.getUri(url))
+		}
+		catch(e) {
+			sl.err("Error in getUriFromChrome: " + e);
+		}
 	},
 	
 	getConfig : function(v,t,d) { // val, type, default

@@ -62,14 +62,31 @@ let 	base = null,
 	startDocumentFlags = wpl.STATE_IS_REQUEST | wpl.STATE_IS_DOCUMENT | wpl.STATE_START,
 	stopDocumentFlags = wpl.STATE_IS_WINDOW | wpl.STATE_STOP,
 	startNetworkFlags = wpl.STATE_IS_NETWORK | wpl.STATE_IS_DOCUMENT | wpl.STATE_START,
-	stopNetworkFlags = wpl.STATE_IS_NETWORK | wpl.STATE_IS_WINDOW | wpl.STATE_STOP;
+	stopNetworkFlags = wpl.STATE_IS_NETWORK | wpl.STATE_IS_WINDOW | wpl.STATE_STOP,
+	wplFlag = { //nsIWebProgressListener state transition flags
+	    STATE_START: wpl.STATE_START,
+	    STATE_STOP: wpl.STATE_STOP,
+	    STATE_REDIRECTING: wpl.STATE_REDIRECTING,
+	    STATE_TRANSFERRING: wpl.STATE_TRANSFERRING,
+	    STATE_NEGOTIATING: wpl.STATE_NEGOTIATING,
+	    STATE_IS_REQUEST: wpl.STATE_IS_REQUEST,
+	    STATE_IS_DOCUMENT: wpl.STATE_IS_DOCUMENT,
+	    STATE_IS_NETWORK: wpl.STATE_IS_NETWORK,
+	    STATE_RESTORING: wpl.STATE_RESTORING,
+	    LOCATION_CHANGE_SAME_DOCUMENT: wpl.LOCATION_CHANGE_SAME_DOCUMENT,
+	    LOCATION_CHANGE_ERROR_PAGE: wpl.LOCATION_CHANGE_ERROR_PAGE,
+	},
+	mimeTypesRegs = {
+		flash : new RegExp(/^application\/x-shockwave-flash/),
+		pdf : new RegExp(/^application\/(x-)?pdf/)
+	};
 	
 const	nsIX509CertDB = Ci.nsIX509CertDB,
 	nsX509CertDB = "@mozilla.org/security/x509certdb;1",
 	DOCUMENT_BLOCKER = "about:document-onload-blocker";
 
 function nsBrowserStatusHandler() {};
-nsBrowserStatusHandler.prototype = { // override functions with addBrowserXXXListener
+nsBrowserStatusHandler.prototype = {
 	onStateChange : function(aWebProgress, aRequest, aStateFlags, aStatus) {},
 	onStatusChange : function(aWebProgress, aRequest, aStatus, aMessage) {},
 	onProgressChange : function(aWebProgress, aRequest, aCurSelfProgress,
@@ -103,7 +120,50 @@ this.SebBrowser = {
 		sl.out("SebBrowser initialized: " + seb);
 	},
 	
-	browserStateListener : function(aWebProgress, aRequest, aStateFlags, aStatus) {
+	/*
+	browserListener : {
+		QueryInterface: XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
+		
+		onStateChange: function(aWebProgress, aRequest, aFlag, aStatus) {
+		// If you use myListener for more than one tab/window, use
+		// aWebProgress.DOMWindow to obtain the tab/window which triggers the state change
+		if (aFlag) {
+			    for (var f in wplFlag) {
+				if (wplFlag[f] & aFlag) {
+				    Cu.reportError('onStateChange -> wplFlag present = ' + f);
+				}
+			    }
+			}
+		},
+
+		onLocationChange: function(aProgress, aRequest, aURI, aFlag) {
+		// This fires when the location bar changes; that is load event is confirmed
+		// or when the user switches tabs. If you use myListener for more than one tab/window,
+		// use aProgress.DOMWindow to obtain the tab/window which triggered the change.
+		if (aFlag) {
+			for (var f in wplFlag) {
+				if (wplFlag[f] & aFlag) {
+				    Cu.reportError('onLocationChange -> wplFlag present = ' + f);
+				}
+			    }
+			}
+		},
+
+		// For definitions of the remaining functions see related documentation
+		onProgressChange: function(aWebProgress, aRequest, curSelf, maxSelf, curTot, maxTot) {},
+		onStatusChange: function(aWebProgress, aRequest, aStatus, aMessage) {
+			if (aStatus) {
+			    Cu.reportError('onStatusChange -> aStatus = ' + aStatus);
+			}
+			if (aStatus) {
+			    Cu.reportError('onStatusChange -> aMessage = ' + aMessage);
+			}
+		},
+		onSecurityChange: function(aWebProgress, aRequest, aState) {}
+	},
+	*/
+	
+	stateListener : function(aWebProgress, aRequest, aStateFlags, aStatus) {
 		/*
 		if ((aStateFlags & startNetworkFlags) == startNetworkFlags) { // start document network event
 			sl.debug("DOCUMENT NETWORK START: " + aRequest.name);
@@ -111,7 +171,20 @@ this.SebBrowser = {
 			base.startLoading(win);
 		}
 		*/
-		
+		/*
+		if ((aStateFlags & stopNetworkFlags) == stopNetworkFlags) { // stop network event 
+			sl.debug("status: " + aStatus);
+		}
+		*/
+		/*
+		if (aStateFlags) {
+			for (var f in wplFlag) {
+				if (wplFlag[f] & aStateFlags) {
+				    sl.debug('onStateChange -> wplFlag present = ' + f);
+				}
+			}
+		}
+		*/
 		if ((aStateFlags & startDocumentFlags) == startDocumentFlags) { // start document request event
 			sl.debug("DOCUMENT REQUEST START: " + aRequest.name);
 			let win = sw.getChromeWin(aWebProgress.DOMWindow);
@@ -146,8 +219,37 @@ this.SebBrowser = {
 			}
 		}
 		if ((aStateFlags & stopDocumentFlags) == stopDocumentFlags) { // stop document request event
-			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name);
+			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name + " - status: " + aStatus); 
 			let win = sw.getChromeWin(aWebProgress.DOMWindow);
+			if (aStatus > 0) { // error: experimental!!!
+				sl.debug("Error document loading: " + aStatus);
+				base.stopLoading();
+				try {
+					try {
+						aRequest.QueryInterface(Ci.nsIHttpChannel); // no pdf mimetype handling
+						let mimeType = aRequest.getResponseHeader("Content-Type");
+						if (mimeTypesRegs.pdf.test(mimeType) && !/\.pdf$/i.test(aRequest.name) && su.getConfig("sebPdfJsEnabled","boolean", true)) { // pdf file requests should already catched by SebBrowser
+							return 0;
+						}	
+					}
+					catch (e) {
+						sl.debug(e);
+						return 0;
+					}
+					aRequest.cancel(aStatus);
+					let f = wnav.LOAD_FLAGS_ERROR_PAGE|wnav.LOAD_FLAGS_BYPASS_HISTORY;
+					//chrome://global/content/netError.xhtml
+					win.XulLibBrowser.webNavigation.loadURI("about:neterror", f, null, null, null);
+					return 0;
+				}
+				catch(e) {
+					sl.debug(e);
+					aRequest.cancel(aStatus);
+				}
+				//aRequest.cancel(aStatus);
+				return 1;
+			}
+			
 			base.stopLoading();
 			var w = aWebProgress.DOMWindow.wrappedJSObject;
 			if (win === seb.mainWin && su.getConfig("sebScreenshot","boolean",false)) {
@@ -158,87 +260,17 @@ this.SebBrowser = {
 			}
 			sw.showContent(win);
 		}
-		
-		
-		/*
-		if (aStateFlags &= (wpl.STATE_IS_REQUEST | wpl.STATE_IS_WINDOW | wpl.STATE_STOP)) { // stop document requests
-			if (aRequest.name != DOCUMENT_BLOCKER) {
-				sl.debug("XXX DOCUMENT REQUEST STOP: " + aRequest.name);
-			}
-		}
-		*/ 
-		/*
-		if (aStateFlags & (wpl.STATE_IS_WINDOW | wpl.STATE_IS_DOCUMENT | wpl.STATE_IS_REQUEST)) {
-			sl.debug("XXXXX: window");
-			if (aStateFlags & wpl.STATE_START) {
-				sl.debug("XXXXX: start " + aRequest.name);
-			}
-			if (aStateFlags & wpl.STATE_STOP) {
-				sl.debug("XXXXX: stop " + aRequest.name);
-			}
-		}
-		*/
-		/*
-		if(aStateFlags & wpl.STATE_IS_NETWORK) {
-			if (aStateFlags & wpl.STATE_STOP) {
-				let win = sw.getChromeWin(aWebProgress.DOMWindow);
-				//let win2 = win.QueryInterface(Ci.nsIWebBrowserChrome);
-				//sl.out(win2.chromeFlags);
-				
-				var w = aWebProgress.DOMWindow.wrappedJSObject;
-				if (win === seb.mainWin && su.getConfig("sebScreenshot","boolean",false)) {
-					sc.createScreenshotController(w);
-				}
-				if (su.getConfig("browserScreenKeyboard","boolean",false)) {
-					sh.createScreenKeyboardController(win);
-				}
-				
-				if (su.getConfig("sebPdfJsEnabled","boolean", true)) {
-					sl.debug("registerContentHandler: application/pdf");
-					w.navigator.registerContentHandler(
-						"application/pdf",
-						"http://www.heise.de",
-						"PDFJS");
-				}
-				 
-				sw.showContent(win);
-			}
-			if (aStateFlags & wpl.STATE_START) {
-				//sl.out("sdfsdfsdf");
-				//let win = sw.getChromeWin(aWebProgress.DOMWindow);
-				//sl.debug(win);											
-				try {
-					if (seb.quitURL === aRequest.name) {
-						aRequest.cancel(aStatus);
-						var tmpQuit = seb.allowQuit; // store default shutdownEnabled
-						var tmpIgnorePassword = seb.quitIgnorePassword; // store default quitIgnorePassword
-						seb.allowQuit = true; // set to true
-						seb.quitIgnorePassword = true;
-						seb.quit();									
-						seb.allowQuit = tmpQuit; // set default shutdownEnabled
-						seb.quitIgnorePassword = tmpIgnorePassword; // set default shutdownIgnorePassword
-						return;
-					}
-					if (aRequest && aRequest.name) {
-						let win = sw.getChromeWin(aWebProgress.DOMWindow);
-						if (!sn.isValidUrl(aRequest.name)) {
-							aRequest.cancel(aStatus);
-							prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
-							return 1; // 0?
-						}
-								
-					}				
-				}
-				catch(e) {
-					sl.err(e);
-					return 0;
-				}
-			}
-			
-			return 0;
-		}
-		*/ 
 	},
+	
+	locationListener : function(aProgress, aRequest, aURI, aFlag) {},
+	
+	progressListener : function(aWebProgress, aRequest, curSelf, maxSelf, curTot, maxTot) {},
+	
+	statusListener : function(aWebProgress, aRequest, aStatus, aMessage) {
+		//sl.debug("status: " + aStatus + " : " + aMessage);
+	},
+	
+	securityListener : function(aWebProgress, aRequest, aState) {},
 	
 	getBrowser : function (win) {
 		try { return win.document.getElementById("seb.browser"); }
@@ -247,7 +279,16 @@ this.SebBrowser = {
 	
 	setBrowserHandler : function setBrowserHandler(win) { // Event handler for both wintypes
 		sl.debug("setBrowserHandler");
-		base.addBrowserStateListener(win,base.browserStateListener); // for both types
+		try {
+			win.XULBrowserWindow.onStateChange = base.stateListener;
+			win.XULBrowserWindow.onLocationChange = base.locationListener;
+			win.XULBrowserWindow.onProgressChange = base.progressListener;
+			win.XULBrowserWindow.onStatusChange = base.statusListener;
+			win.XULBrowserWindow.onSecurityChange = base.securityListener;
+		}
+		catch(e) {
+			sl.err("Error in setBrowserListener: " + e);
+		}
 	},
 	
 	initBrowser : function (win) {
@@ -268,22 +309,6 @@ this.SebBrowser = {
 		var webProgress = interfaceRequestor.getInterface(Ci.nsIWebProgress);
 		webProgress.addProgressListener(win.XULBrowserWindow, Ci.nsIWebProgress.NOTIFY_ALL);
 		sl.debug("initBrowser");
-	},
-	
-	addBrowserStateListener : function (win,listener) {
-		if (!win.XulLibBrowser) {
-			sl.err("no win.browser in ChromeWindow!");
-			return false;
-		}
-		win.XULBrowserWindow.onStateChange = listener;
-	},
-
-	addBrowserStatusListener : function (win,listener) {
-		if (!win.XulLibBrowser) {
-			sl.err("no xullib.browser in ChromeWindow!");
-			return false;
-		}
-		win.XULBrowserWindow.onStatusChange = listener;
 	},
 	
 	addCert : function(cert) {
@@ -388,7 +413,6 @@ this.SebBrowser = {
 					
 				sl.debug("loading \"" + loadUrl + "\" is only allowed if string in referrer: \"" + loadReferrerInString + "\"");
 				return false;
-				 
 			}
 		}
 		else {
@@ -424,10 +448,6 @@ this.SebBrowser = {
 			return; 
 		}
 		sl.debug("navigation: back");	
-		if (!win.XulLibBrowser) {
-			sl.err("no xullib.browser in ChromeWindow!");
-			return false;
-		}
 		win.XulLibBrowser.webNavigation.goBack();
 	},
 	
@@ -437,10 +457,6 @@ this.SebBrowser = {
 			return; 
 		}
 		sl.debug("navigation: forward");	
-		if (!win.XulLibBrowser) {
-			sl.err("no xullib.browser in ChromeWindow!");
-			return false;
-		}
 		win.XulLibBrowser.webNavigation.goForward();
 	} 
 }
