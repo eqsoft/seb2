@@ -2,11 +2,6 @@
 	background-color : #3A6EA5;
 }
 
-#toolbar {
-	max-height: 38px;
-	min-height: 38px;
-}
-
 #sebWindow {
 	background-color : #3A6EA5;
 } 
@@ -26,7 +21,7 @@
 	width: 18px;
 	height: 18px;
 	position: fixed;
-	top: 4px;
+	top: 10px;
 	right: 4px;
 }
 
@@ -44,9 +39,14 @@
 }
 
 #toolBox {
-	display: none;
-	background-color : red;
+	background-color : green;
 	height: 36px;
+}
+
+#toolBar {
+	background-color : red;
+	max-height: 38px;
+	min-height: 38px;
 }
 
 .tbBtn {
