@@ -65,16 +65,15 @@ this.SebConfig =  {
 	},
 	
 	initConfig : function (initAfterConfig) {
-		// default config file. ToDo configpath via cmdline and base64
 		function cb(obj) {
 			if (typeof obj == "object") {
 				sl.debug("config object found");
 				seb.config = obj;
 				if (!su.isEmpty(seb.config.sebPrefs)) {		
-					su.setPrefs(seb.config.sebPrefs);
+					base.setPrefs(seb.config.sebPrefs);
 				}
 				if (!su.isEmpty(seb.config.sebPrefsMap)) {		
-					su.setPrefsMap(seb.config.sebPrefsMap);
+					base.setPrefsMap(seb.config.sebPrefsMap);
 				}
 				initAfterConfig.call(null);
 			}
@@ -91,6 +90,65 @@ this.SebConfig =  {
 			}
 			else { 
 				sl.err("no config param and no default config.json!");
+			}
+		}
+	},
+	
+	setPrefs : function (ps) {
+		sl.debug("setPrefs from config object");
+		for (var k in ps) {
+			var v = ps[k];
+			switch (typeof v) {
+				case "string" :
+					sl.debug("setCharPref: " + k + ":" + v);
+					prefs.setCharPref(k,v);
+				break
+				case "number" :
+					sl.debug("setIntPref: " + k + ":" + v);
+					prefs.setIntPref(k,v);
+				break;
+				case "boolean" :
+					sl.debug("setBoolPref: " + k + ":" + v);
+					prefs.setBoolPref(k,v);
+				break;
+				default :
+					sl.debug("no pref type: " + k + ":" + v);
+			}
+		}	
+	},
+	
+	setPrefsMap : function (pm) {
+		sl.debug("setPrefsMap from config object");
+		for (var k in pm) {
+			//sl.debug("typeof pm: " + typeof pm[k]);
+			var v = null;
+			if (typeof pm[k] == "object" && typeof pm[k].cb == "string") {
+				if (typeof base.prefsMap[pm[k].cb] == "function") {
+					v = base.prefsMap[pm[k].cb].call(null,k);
+				}
+				else {
+					sl.debug("no prefMap function: " + pm[k].cb);
+				}
+			}
+			if (typeof pm[k] == "string") {
+				v = seb.config[pm[k]];
+			}
+				
+			switch (typeof v) {
+				case "string" :
+					sl.debug("setCharPref: " + k + ":" + v);
+					prefs.setCharPref(k,v);
+				break
+				case "number" :
+					sl.debug("setIntPref: " + k + ":" + v);
+					prefs.setIntPref(k,v);
+				break;
+				case "boolean" :
+					sl.debug("setBoolPref: " + k + ":" + v);
+					prefs.setBoolPref(k,v);
+				break;
+				default :
+					sl.debug("no pref type: " + k + ":" + v);
 			}
 		}
 	},
