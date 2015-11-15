@@ -36,7 +36,6 @@
 		<command id="sebCmdBack" oncommand="sb.back(window);"/>
 		<command id="sebCmdForward" oncommand="sb.forward(window);"/>
 		<command id="sebCmdShowAll" oncommand="sw.showAll();"/>
-		<command id="sebCmdShowLoading" oncommand="sw.showLoading(window,true);"/>
 		<command id="sebCmdShowContent" oncommand="sw.showContent(window,true);"/>
 		<command id="sebCmdShowServer" oncommand="sw.showServer(window,true);"/>
 		<command id="sebCmdShowMessage" oncommand="sw.showMessage(window,true);"/>
@@ -51,25 +50,28 @@
 		<key id="seb.back" keycode="VK_LEFT" modifiers="control shift" command="sebCmdBack"/>
 		<key id="seb.forward" keycode="VK_RIGHT" modifiers="control shift" command="sebCmdForward"/>
 		<key id="seb.showall" keycode="VK_F1" command="sebCmdShowAll"/>
-		<key id="seb.showloading" key="1" modifiers="control" command="sebCmdShowLoading"/>
-		<key id="seb.showcontent" key="2" modifiers="control" command="sebCmdShowContent"/>
-		<key id="seb.showserver" key="3" modifiers="control" command="sebCmdShowServer"/>
-		<key id="seb.showmessage" key="4" modifiers="control" command="sebCmdShowMessage"/>
+		<key id="seb.showcontent" key="1" modifiers="control" command="sebCmdShowContent"/>
+		<key id="seb.showserver" key="2" modifiers="control" command="sebCmdShowServer"/>
+		<key id="seb.showmessage" key="3" modifiers="control" command="sebCmdShowMessage"/>
 	</keyset>
 	<stack id="browser.stack" flex="1">
 		<vbox flex="1">
-			<toolbox id="toolBox">
-				<toolbar id="toolBar">
+			<toolbox id="toolBox" class="hidden">
+				<toolbar id="toolBar" flex="1">
 					<toolbarbutton class="tbBtn" id="btnQuit" image="chrome://seb/content/images/quit.png" command="sebCmdQuit" />
+					<spacer flex="1"></spacer>
 					<toolbarbutton class="tbBtn" id="btnRestart" image="chrome://seb/content/images/restart.png" command="sebCmdRestart" />
+					<spacer flex="1"></spacer>
 					<toolbarbutton class="tbBtn" id="btnReload" image="chrome://seb/content/images/reload.png" command="sebCmdReload" />
+					<spacer flex="1"></spacer>
 					<toolbarbutton class="tbBtn" id="btnBack" image="chrome://seb/content/images/back.png" command="sebCmdBack" />
+					<spacer flex="1"></spacer>
 					<toolbarbutton class="tbBtn" id="btnForward" image="chrome://seb/content/images/forward.png" command="sebCmdForward" />
 				</toolbar>
 			</toolbox>
-			<deck id="deckContents" selectedIndex="1" flex="1">
-				<iframe flex="1" id="seb.iframe" src="about:blank" type="content-primary"></iframe>
-				<browser flex="100" id="seb.browser" type="content-primary" src="about:blank" />
+			<spacer></spacer>
+			<deck id="deckContents" selectedIndex="0" flex="1">
+				<browser flex="1" id="seb.browser" type="content-primary" />
 				<browser flex="1" id="sebserver.socket" src="about:blank" type="content-targetable"></browser>
 				<browser flex="1" id="message.socket" src="about:blank" type="content-targetable"></browser>
 			</deck>

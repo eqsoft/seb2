@@ -226,9 +226,10 @@ this.seb =  {
 		sh.setMessageSocketHandler(win);
 		ss.setSebserverSocketHandler(win);
 		base.locs = win.document.getElementById("locale");	
-		base.consts = win.document.getElementById("const");			
+		base.consts = win.document.getElementById("const");
+		sw.setToolbox(win);			
 		sw.setSize(win);
-		sw.showLoading(win);
+		sw.showContent(win);
 		sb.loadPage(win,base.url);
 	},
 	

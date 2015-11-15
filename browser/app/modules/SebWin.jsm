@@ -63,11 +63,11 @@ const	xulFrame = "seb.iframe",
 	xulBrowser = "seb.browser",
 	xulErr = "chrome://seb/content/err.xul",
 	xulLoad	= "chrome://seb/content/load.xul",
-	errDeck	= 0,
-	loadDeck = 0,
-	contentDeck = 1,
-	serverDeck = 2,
-	messageDeck = 3,
+	//errDeck	= 0,
+	//loadDeck = 0,
+	contentDeck = 0,
+	serverDeck = 1,
+	messageDeck = 2,
 	STATE_MAXIMIZED = 1, 	//The window is maximized.
 	STATE_MINIMIZED = 2, 	//The window is minimized.
 	STATE_NORMAL = 3, 	//The window is normal.
@@ -213,11 +213,19 @@ this.SebWin = {
 		seb.mainWin.open(url);
 	},
 	
+	/*
 	showLoading : function (win) {
 		let w = (win) ? win : base.getRecentWin();
 		sl.debug("showLoading...");
 		base.getFrameElement(w).setAttribute("src",xulLoad);
 		base.setDeckIndex(w,loadDeck);
+	},
+	*/
+	
+	setToolbox : function (win) {
+		if (su.getConfig("enableBrowserWindowToolbar", "boolean", false)) {
+			win.document.getElementById("toolBox").className = "visible";
+		}
 	},
 	
 	showContent : function (win,fromkey) { 

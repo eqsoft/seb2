@@ -186,7 +186,7 @@ this.SebBrowser = {
 		}
 		*/
 		if ((aStateFlags & startDocumentFlags) == startDocumentFlags) { // start document request event
-			sl.debug("DOCUMENT REQUEST START: " + aRequest.name);
+			sl.debug("DOCUMENT REQUEST START: " + aRequest.name + " status: " + aStatus);
 			let win = sw.getChromeWin(aWebProgress.DOMWindow);
 			base.startLoading(win);
 			if (seb.quitURL === aRequest.name) {
@@ -233,13 +233,17 @@ this.SebBrowser = {
 						}	
 					}
 					catch (e) {
-						sl.debug(e);
-						return 0;
+						switch (e.name) {
+							case "NS_ERROR_NOT_AVAILABLE" :
+								sl.debug("handled: NS_ERROR_NOT_AVAILABLE");
+								break;
+							default: 
+								sl.debug("not handled: " + e);
+						}
 					}
 					aRequest.cancel(aStatus);
 					let f = wnav.LOAD_FLAGS_ERROR_PAGE|wnav.LOAD_FLAGS_BYPASS_HISTORY;
-					//chrome://global/content/netError.xhtml
-					win.XulLibBrowser.webNavigation.loadURI("about:neterror", f, null, null, null);
+					win.XulLibBrowser.webNavigation.loadURI("chrome://seb/content/error.xhtml?req=" + btoa(aRequest.name), f, null, null, null);
 					return 0;
 				}
 				catch(e) {
@@ -258,7 +262,6 @@ this.SebBrowser = {
 			if (su.getConfig("browserScreenKeyboard","boolean",false)) {
 				sh.createScreenKeyboardController(win);
 			}
-			sw.showContent(win);
 		}
 	},
 	
@@ -340,6 +343,9 @@ this.SebBrowser = {
 	
 	loadPage : function (win,url,flag) {	// only use for real http requests
 		sl.debug("try to load: " + url);
+		//win.XulLibBrowser.setAttribute("src", url);
+		win.content.document.location.href = url;
+		/*
 		if (loadFlag === null) {
 			if (su.getConfig("mainBrowserBypassCache","boolean",false)) {
 				loadFlag |= wnav.LOAD_FLAGS_BYPASS_CACHE;
@@ -357,7 +363,8 @@ this.SebBrowser = {
 		if (typeof flag == "undefined") {
     			flag = loadFlag;
 		}
-		win.XulLibBrowser.webNavigation.loadURI(url, f, null, null, null);
+		*/ 
+		//win.XulLibBrowser.webNavigation.loadURI(url, wnav.LOAD_FLAGS_REPLACE_HISTORY, null, null, null); 
 	},
 	
 	reload : function (win) {
@@ -377,7 +384,7 @@ this.SebBrowser = {
 		sl.debug("restart...");
 		sw.removeSecondaryWins();
 		let url = su.getUrl();
-		sw.showLoading(seb.mainWin);
+		//sw.showLoading(seb.mainWin);
 		base.loadPage(seb.mainWin,url);
 	},
 	
@@ -389,7 +396,7 @@ this.SebBrowser = {
 		}
 		sl.debug("host restart url: " + url);
 		sw.removeSecondaryWins();
-		sw.showLoading(seb.mainWin);
+		//sw.showLoading(seb.mainWin);
 		base.loadPage(seb.mainWin,url);
 	},
 	
