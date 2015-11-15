@@ -135,6 +135,7 @@
 "sebScreenshotImageType":"image/jpeg",
 "sebScreenshotSound":false,
 "sebPdfJsEnabled":true,
+"enableBrowserWindowToolbar":false,
 
 "DESCRIPTION":"*** the config params above are already migrated ****",
 
@@ -157,7 +158,6 @@
 "downloadDirectoryWIN":"",
 "downloadAndOpenSebConfig":true,
 "newBrowserWindowByLinkBlockForeign":false,
-"enableBrowserWindowToolbar":false,
 "blockPopUpWindows":false,
 "enablePlugIns":true,
 "openDownloads":false

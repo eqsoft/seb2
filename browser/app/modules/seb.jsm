@@ -227,7 +227,7 @@ this.seb =  {
 		ss.setSebserverSocketHandler(win);
 		base.locs = win.document.getElementById("locale");	
 		base.consts = win.document.getElementById("const");
-		sw.setToolbox(win);			
+		sw.setToolbar(win);			
 		sw.setSize(win);
 		sw.showContent(win);
 		sb.loadPage(win,base.url);

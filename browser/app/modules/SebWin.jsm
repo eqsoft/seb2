@@ -222,9 +222,10 @@ this.SebWin = {
 	},
 	*/
 	
-	setToolbox : function (win) {
+	setToolbar : function (win) {
 		if (su.getConfig("enableBrowserWindowToolbar", "boolean", false)) {
-			win.document.getElementById("toolBox").className = "visible";
+			sl.debug("setToolbar visible");
+			win.document.getElementById("toolBar").className = "visible";
 		}
 	},
 	

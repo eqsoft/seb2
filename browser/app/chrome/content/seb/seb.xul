@@ -56,19 +56,18 @@
 	</keyset>
 	<stack id="browser.stack" flex="1">
 		<vbox flex="1">
-			<toolbox id="toolBox" class="hidden">
-				<toolbar id="toolBar" flex="1">
-					<toolbarbutton class="tbBtn" id="btnQuit" image="chrome://seb/content/images/quit.png" command="sebCmdQuit" />
-					<spacer flex="1"></spacer>
-					<toolbarbutton class="tbBtn" id="btnRestart" image="chrome://seb/content/images/restart.png" command="sebCmdRestart" />
-					<spacer flex="1"></spacer>
-					<toolbarbutton class="tbBtn" id="btnReload" image="chrome://seb/content/images/reload.png" command="sebCmdReload" />
-					<spacer flex="1"></spacer>
-					<toolbarbutton class="tbBtn" id="btnBack" image="chrome://seb/content/images/back.png" command="sebCmdBack" />
-					<spacer flex="1"></spacer>
-					<toolbarbutton class="tbBtn" id="btnForward" image="chrome://seb/content/images/forward.png" command="sebCmdForward" />
-				</toolbar>
-			</toolbox>
+			<hbox id="toolBar" class="visible">
+				<image class="tbBtn" id="btnQuit" src="chrome://seb/content/images/quit.png" command="sebCmdQuit" onclick="seb.quit();" />
+				<spacer flex="1"></spacer>
+				<image class="tbBtn" id="btnRestart" src="chrome://seb/content/images/restart.png" command="sebCmdRestart" onclick="sb.restart();" />
+				<spacer flex="1"></spacer>
+				<image class="tbBtn" id="btnReload" src="chrome://seb/content/images/reload.png" command="sebCmdReload" onclick="sb.reload(window);"/>
+				<spacer flex="1"></spacer>
+				<image class="tbBtn" id="btnBack" src="chrome://seb/content/images/back.png" command="sebCmdBack" onclick="sb.back(window);"/>
+				<spacer flex="1"></spacer>
+				<image class="tbBtn" id="btnForward" src="chrome://seb/content/images/forward.png" command="sebCmdForward" onclick="sb.forward(window);"/>
+				<spacer flex="1"></spacer>
+			</hbox>
 			<spacer></spacer>
 			<deck id="deckContents" selectedIndex="0" flex="1">
 				<browser flex="1" id="seb.browser" type="content-primary" />
