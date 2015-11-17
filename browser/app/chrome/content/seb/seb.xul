@@ -56,17 +56,13 @@
 	</keyset>
 	<stack id="browser.stack" flex="1">
 		<vbox flex="1">
-			<hbox id="toolBar" class="visible">
-				<image class="tbBtn" id="btnQuit" src="chrome://seb/content/images/quit.png" command="sebCmdQuit" onclick="seb.quit();" />
-				<spacer flex="1"></spacer>
-				<image class="tbBtn" id="btnRestart" src="chrome://seb/content/images/restart.png" command="sebCmdRestart" onclick="sb.restart();" />
-				<spacer flex="1"></spacer>
-				<image class="tbBtn" id="btnReload" src="chrome://seb/content/images/reload.png" command="sebCmdReload" onclick="sb.reload(window);"/>
-				<spacer flex="1"></spacer>
-				<image class="tbBtn" id="btnBack" src="chrome://seb/content/images/back.png" command="sebCmdBack" onclick="sb.back(window);"/>
-				<spacer flex="1"></spacer>
-				<image class="tbBtn" id="btnForward" src="chrome://seb/content/images/forward.png" command="sebCmdForward" onclick="sb.forward(window);"/>
-				<spacer flex="1"></spacer>
+			<hbox id="toolBar" class="hidden">
+				<image class="tbBtn" id="btnQuit" src="chrome://seb/content/images/quit.png" onclick="seb.quit();" />
+				<image class="tbBtn" id="btnRestart" src="chrome://seb/content/images/restart.png" onclick="sb.restart();" />
+				<image class="tbBtn" id="btnReload" src="chrome://seb/content/images/reload.png" onclick="sb.reload(window);"/>
+				<image class="tbBtn disabled" id="btnBack" src="chrome://seb/content/images/back.png" />
+				<image class="tbBtn disabled" id="btnForward" src="chrome://seb/content/images/forward.png" />
+				<textbox class="hidden" id="locationBar" type="autocomplete" flex="1" placeholder="location" autocompletesearch="history"></textbox>
 			</hbox>
 			<spacer></spacer>
 			<deck id="deckContents" selectedIndex="0" flex="1">

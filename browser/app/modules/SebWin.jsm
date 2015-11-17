@@ -63,8 +63,6 @@ const	xulFrame = "seb.iframe",
 	xulBrowser = "seb.browser",
 	xulErr = "chrome://seb/content/err.xul",
 	xulLoad	= "chrome://seb/content/load.xul",
-	//errDeck	= 0,
-	//loadDeck = 0,
 	contentDeck = 0,
 	serverDeck = 1,
 	messageDeck = 2,
@@ -226,6 +224,17 @@ this.SebWin = {
 		if (su.getConfig("enableBrowserWindowToolbar", "boolean", false)) {
 			sl.debug("setToolbar visible");
 			win.document.getElementById("toolBar").className = "visible";
+			if (!su.getConfig("allowBrowsingBackForward","boolean",false)) {
+				win.document.getElementById("btnBack").className = "hidden";
+				win.document.getElementById("btnForward").className = "hidden";
+			}
+			if (!su.getConfig("mainBrowserRestart","boolean",false)) {
+				win.document.getElementById("btnRestart").className = "hidden";
+			}
+			if (!su.getConfig("allowQuit","boolean",false)) {
+				win.document.getElementById("btnQuit").className = "hidden";
+			}
+			sb.refreshNavigation(win);	
 		}
 	},
 	

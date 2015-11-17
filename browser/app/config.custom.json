@@ -26,7 +26,7 @@
 "blacklistURLFilter":[],
 "whitelistURLFilter":[],
 "removeProfile":true,
-"allowQuit":true,
+"allowQuit":false,
 "quitURL":"http://seb/quit.html",
 "hashedQuitPassword":"",
 "embeddedCertificates":
@@ -72,7 +72,7 @@
 	"active": true,
 	"autoOpen": false,
 	"title": "Test PDF (Mac)",
-	"resourceDataFilename": "compressed.tracemonkey-pldi-09.pdf",
+	"resourceDataFilename": "pdfjs.pdf",
 	"resourceDataLauncher": 0
 	},
 	{
@@ -108,10 +108,10 @@
 "mainBrowserWindowWidth":"100%",
 "mainBrowserWindowHeight":"100%",
 "mainBrowserWindowPositioning":1,
-"mainBrowserRestart":true,
+"mainBrowserRestart":false,
 "mainBrowserLoad":"https://duckduckgo.com",
 "mainBrowserLoadReferrerInString":"end.html",
-"allowBrowsingBackForward":true,
+"allowBrowsingBackForward":false,
 "mainBrowserBypassCache":true,
 "newBrowserWindowByLinkTitlebarEnabled":true,
 "newBrowserWindowMaximized":false,
@@ -135,7 +135,7 @@
 "sebScreenshotImageType":"image/jpeg",
 "sebScreenshotSound":false,
 "sebPdfJsEnabled":true,
-"enableBrowserWindowToolbar":false,
+"enableBrowserWindowToolbar":true,
 
 "DESCRIPTION":"*** the config params above are already migrated ****",
 

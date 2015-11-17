@@ -42,6 +42,7 @@
 	background-color : #eee;
 	max-height: 24px;
 	min-height: 24px;
+	white-space: nowrap;
 }
 
 .tbBtn {
@@ -55,6 +56,25 @@
 	
 }
 
+#locationBar {
+	border: none;
+	font-size: 0.8em;
+	vertical-align: top;
+	margin-left: 10px;
+	margin-right: 20px;
+	width: 400px;
+}
+
 .winHiddenChromeMargin {
 	margin-top: 6px;
+}
+
+.disabled  {
+	opacity : 0.3;
+	cursor : default;
+}
+
+.enabled {
+	opacity : 1;
+	cursor : pointer;
 }

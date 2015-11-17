@@ -58,6 +58,7 @@ XPCOMUtils.defineLazyModuleGetter(this,"sc","resource://modules/SebScreenshot.js
 let 	base = null,
 	seb = null,
 	certdb = null,
+	nav = null,
 	loadFlag = null,
 	startDocumentFlags = wpl.STATE_IS_REQUEST | wpl.STATE_IS_DOCUMENT | wpl.STATE_START,
 	stopDocumentFlags = wpl.STATE_IS_WINDOW | wpl.STATE_STOP,
@@ -76,6 +77,7 @@ let 	base = null,
 	    LOCATION_CHANGE_SAME_DOCUMENT: wpl.LOCATION_CHANGE_SAME_DOCUMENT,
 	    LOCATION_CHANGE_ERROR_PAGE: wpl.LOCATION_CHANGE_ERROR_PAGE,
 	},
+	isStarted = false;
 	mimeTypesRegs = {
 		flash : new RegExp(/^application\/x-shockwave-flash/),
 		pdf : new RegExp(/^application\/(x-)?pdf/)
@@ -185,7 +187,9 @@ this.SebBrowser = {
 			}
 		}
 		*/
+		
 		if ((aStateFlags & startDocumentFlags) == startDocumentFlags) { // start document request event
+			isStarted = true;
 			sl.debug("DOCUMENT REQUEST START: " + aRequest.name + " status: " + aStatus);
 			let win = sw.getChromeWin(aWebProgress.DOMWindow);
 			base.startLoading(win);
@@ -216,7 +220,7 @@ this.SebBrowser = {
 				sw.openPdfViewer(aRequest.name);
 				base.stopLoading();
 				return;
-			}
+			} 
 		}
 		if ((aStateFlags & stopDocumentFlags) == stopDocumentFlags) { // stop document request event
 			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name + " - status: " + aStatus); 
@@ -229,10 +233,12 @@ this.SebBrowser = {
 						aRequest.QueryInterface(Ci.nsIHttpChannel); // no pdf mimetype handling
 						let mimeType = aRequest.getResponseHeader("Content-Type");
 						if (mimeTypesRegs.pdf.test(mimeType) && !/\.pdf$/i.test(aRequest.name) && su.getConfig("sebPdfJsEnabled","boolean", true)) { // pdf file requests should already catched by SebBrowser
+							sl.debug("request already aborted by httpResponseObserver, no error page!");
+							isStarted = false;
 							return 0;
 						}	
 					}
-					catch (e) {
+					catch (e) { // there is no getResponseHeader function
 						switch (e.name) {
 							case "NS_ERROR_NOT_AVAILABLE" :
 								sl.debug("handled: NS_ERROR_NOT_AVAILABLE");
@@ -242,22 +248,34 @@ this.SebBrowser = {
 						}
 					}
 					aRequest.cancel(aStatus);
-					let f = wnav.LOAD_FLAGS_ERROR_PAGE|wnav.LOAD_FLAGS_BYPASS_HISTORY;
-					win.XulLibBrowser.webNavigation.loadURI("chrome://seb/content/error.xhtml?req=" + btoa(aRequest.name), f, null, null, null);
+					win.setTimeout(function() {
+						if (!isStarted) { // no new start request until now (capturing double clicks on links: experimental)
+							let flags = wnav.LOAD_FLAGS_BYPASS_HISTORY; // does not work??? why???
+							//win.content.document.location.assign("chrome://seb/content/error.xhtml?req=" + btoa(aRequest.name));
+							win.XulLibBrowser.webNavigation.loadURI("chrome://seb/content/error.xhtml?req=" + btoa(aRequest.name), flags, null, null, null);
+							isStarted = false;
+						}
+					}, 100);
 					return 0;
 				}
 				catch(e) {
 					sl.debug(e);
-					aRequest.cancel(aStatus);
 				}
-				//aRequest.cancel(aStatus);
-				return 1;
+				finally {
+					aRequest.cancel(aStatus);
+					isStarted = false;
+					return 1;
+				}
 			}
 			
 			base.stopLoading();
+			isStarted = false;
 			var w = aWebProgress.DOMWindow.wrappedJSObject;
 			if (win === seb.mainWin && su.getConfig("sebScreenshot","boolean",false)) {
 				sc.createScreenshotController(w);
+			}
+			if (win === seb.mainWin && su.getConfig("enableBrowserWindowToolbar","boolean",false)) {
+				base.refreshNavigation();
 			}
 			if (su.getConfig("browserScreenKeyboard","boolean",false)) {
 				sh.createScreenKeyboardController(win);
@@ -270,7 +288,9 @@ this.SebBrowser = {
 	progressListener : function(aWebProgress, aRequest, curSelf, maxSelf, curTot, maxTot) {},
 	
 	statusListener : function(aWebProgress, aRequest, aStatus, aMessage) {
-		//sl.debug("status: " + aStatus + " : " + aMessage);
+		if (aStatus) {
+			sl.debug("status: " + aStatus + " : " + aMessage);
+		}	
 	},
 	
 	securityListener : function(aWebProgress, aRequest, aState) {},
@@ -311,6 +331,7 @@ this.SebBrowser = {
 		var interfaceRequestor = win.XulLibBrowser.docShell.QueryInterface(Ci.nsIInterfaceRequestor);
 		var webProgress = interfaceRequestor.getInterface(Ci.nsIWebProgress);
 		webProgress.addProgressListener(win.XULBrowserWindow, Ci.nsIWebProgress.NOTIFY_ALL);
+		nav = win.XulLibBrowser.webNavigation;
 		sl.debug("initBrowser");
 	},
 	
@@ -343,6 +364,7 @@ this.SebBrowser = {
 	
 	loadPage : function (win,url,flag) {	// only use for real http requests
 		sl.debug("try to load: " + url);
+		//win.XulLibBrowser.webNavigation.loadURI(url, wnav.LOAD_FLAGS_BYPASS_HISTORY, null, null, null);
 		//win.XulLibBrowser.setAttribute("src", url);
 		win.content.document.location.href = url;
 		/*
@@ -449,21 +471,51 @@ this.SebBrowser = {
 		}
 	}, 
 	
-	back : function(win) {
-		if (!su.getConfig("allowBrowsingBackForward","boolean",false)) { 
+	back : function() {
+		if (!su.getConfig("allowBrowsingBackForward","boolean",false)) {
 			sl.debug("navigation: back not allowed")
 			return; 
 		}
-		sl.debug("navigation: back");	
-		win.XulLibBrowser.webNavigation.goBack();
+		if (nav.canGoBack) {
+			sl.debug("navigation: back");	
+			nav.goBack();
+		}
 	},
 	
-	forward : function(win) {
+	forward : function() {
 		if (!su.getConfig("allowBrowsingBackForward","boolean",false)) { 
 			sl.debug("navigation: forward not allowed");	
 			return; 
 		}
-		sl.debug("navigation: forward");	
-		win.XulLibBrowser.webNavigation.goForward();
-	} 
+		if (nav.canGoForward) {
+			sl.debug("navigation: forward");	
+			nav.goForward();
+		}		
+	},
+	
+	refreshNavigation : function() {
+		sl.debug("refreshNavigation");
+		if (su.getConfig("allowBrowsingBackForward","boolean",false)) { // should be visible
+			var back = seb.mainWin.document.getElementById("btnBack");
+			var forward = seb.mainWin.document.getElementById("btnForward");
+			if (nav.canGoBack) {
+				sl.debug("canGoBack");
+				back.className = "tbBtn enabled";
+				back.addEventListener("click",base.back,false);
+			}
+			else {
+				back.className = "tbBtn disabled";
+				back.removeEventListener("click",base.back,false);
+			}
+			if (nav.canGoForward) {
+				sl.debug("canGoForward");
+				forward.className = "tbBtn enabled";
+				forward.addEventListener("click",base.forward,false);
+			}
+			else {
+				forward.className = "tbBtn disabled";
+				forward.removeEventListener("click",base.forward,false);
+			}
+		}
+	}
 }

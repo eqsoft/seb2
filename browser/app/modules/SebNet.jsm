@@ -119,15 +119,14 @@ this.SebNet = {
 				try {
 					url = subject.URI.spec;
 					mimeType = subject.getResponseHeader("Content-Type");
-					//sl.debug("response: " + url + "\nmimetype: " + mimeType);
-					if (mimeTypesRegs.pdf.test(mimeType) && !/\.pdf$/i.test(url) && su.getConfig("sebPdfJsEnabled","boolean", true)) { // pdf file requests should already catched by SebBrowser
+					if (mimeTypesRegs.pdf.test(mimeType) && !/\.pdf$/i.test(url) && su.getConfig("sebPdfJsEnabled","boolean", true)) { // pdf file requests should already be captured by SebBrowser
 						subject.cancel(Cr.NS_BINDING_ABORTED);
 						sw.openPdfViewer(url);
 					}
 				}
 				catch (e) {
 					//sl.debug(e + "\nurl: " + url + "\nmimetype: " + mimeType);
-				}
+				} 
 			} 
 		},
 
