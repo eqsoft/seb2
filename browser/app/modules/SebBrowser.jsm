@@ -58,7 +58,6 @@ XPCOMUtils.defineLazyModuleGetter(this,"sc","resource://modules/SebScreenshot.js
 let 	base = null,
 	seb = null,
 	certdb = null,
-	nav = null,
 	loadFlag = null,
 	startDocumentFlags = wpl.STATE_IS_REQUEST | wpl.STATE_IS_DOCUMENT | wpl.STATE_START,
 	stopDocumentFlags = wpl.STATE_IS_WINDOW | wpl.STATE_STOP,
@@ -77,7 +76,6 @@ let 	base = null,
 	    LOCATION_CHANGE_SAME_DOCUMENT: wpl.LOCATION_CHANGE_SAME_DOCUMENT,
 	    LOCATION_CHANGE_ERROR_PAGE: wpl.LOCATION_CHANGE_ERROR_PAGE,
 	},
-	isStarted = false;
 	mimeTypesRegs = {
 		flash : new RegExp(/^application\/x-shockwave-flash/),
 		pdf : new RegExp(/^application\/(x-)?pdf/)
@@ -89,6 +87,9 @@ const	nsIX509CertDB = Ci.nsIX509CertDB,
 
 function nsBrowserStatusHandler() {};
 nsBrowserStatusHandler.prototype = {
+	isStarted : false,
+	win : null,
+	baseurl : null,
 	onStateChange : function(aWebProgress, aRequest, aStateFlags, aStatus) {},
 	onStatusChange : function(aWebProgress, aRequest, aStatus, aMessage) {},
 	onProgressChange : function(aWebProgress, aRequest, aCurSelfProgress,
@@ -114,6 +115,7 @@ nsBrowserStatusHandler.prototype = {
 
 let base = null;
 
+
 this.SebBrowser = {
 	//lastDocumentUrl : null,
 	init : function(obj) {
@@ -123,82 +125,24 @@ this.SebBrowser = {
 		sl.out("SebBrowser initialized: " + seb);
 	},
 	
-	/*
-	browserListener : {
-		QueryInterface: XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
-		
-		onStateChange: function(aWebProgress, aRequest, aFlag, aStatus) {
-		// If you use myListener for more than one tab/window, use
-		// aWebProgress.DOMWindow to obtain the tab/window which triggers the state change
-		if (aFlag) {
-			    for (var f in wplFlag) {
-				if (wplFlag[f] & aFlag) {
-				    Cu.reportError('onStateChange -> wplFlag present = ' + f);
-				}
-			    }
-			}
-		},
-
-		onLocationChange: function(aProgress, aRequest, aURI, aFlag) {
-		// This fires when the location bar changes; that is load event is confirmed
-		// or when the user switches tabs. If you use myListener for more than one tab/window,
-		// use aProgress.DOMWindow to obtain the tab/window which triggered the change.
-		if (aFlag) {
-			for (var f in wplFlag) {
-				if (wplFlag[f] & aFlag) {
-				    Cu.reportError('onLocationChange -> wplFlag present = ' + f);
-				}
-			    }
-			}
-		},
-
-		// For definitions of the remaining functions see related documentation
-		onProgressChange: function(aWebProgress, aRequest, curSelf, maxSelf, curTot, maxTot) {},
-		onStatusChange: function(aWebProgress, aRequest, aStatus, aMessage) {
-			if (aStatus) {
-			    Cu.reportError('onStatusChange -> aStatus = ' + aStatus);
-			}
-			if (aStatus) {
-			    Cu.reportError('onStatusChange -> aMessage = ' + aMessage);
-			}
-		},
-		onSecurityChange: function(aWebProgress, aRequest, aState) {}
-	},
-	*/
-	
 	stateListener : function(aWebProgress, aRequest, aStateFlags, aStatus) {
-		/*
-		if ((aStateFlags & startNetworkFlags) == startNetworkFlags) { // start document network event
-			sl.debug("DOCUMENT NETWORK START: " + aRequest.name);
-			let win = sw.getChromeWin(aWebProgress.DOMWindow);
-			base.startLoading(win);
-		}
-		*/
-		/*
-		if ((aStateFlags & stopNetworkFlags) == stopNetworkFlags) { // stop network event 
-			sl.debug("status: " + aStatus);
-		}
-		*/
-		/*
-		if (aStateFlags) {
-			for (var f in wplFlag) {
-				if (wplFlag[f] & aStateFlags) {
-				    sl.debug('onStateChange -> wplFlag present = ' + f);
-				}
-			}
-		}
-		*/
-		
 		if ((aStateFlags & startDocumentFlags) == startDocumentFlags) { // start document request event
-			isStarted = true;
+			this.isStarted = true;
+			this.win = sw.getChromeWin(aWebProgress.DOMWindow);
+			this.baseurl = btoa(aRequest.name);
+			
+			//this.win = sw.lastWin;
+			
+			/*
+			if (this.win !== sw.getChromeWin(aWebProgress.DOMWindow)) {
+				sl.debug("strange: this.win != sw.getChromeWin(aWebProgress.DOMWindow");
+			}
+			*/
+			 
 			sl.debug("DOCUMENT REQUEST START: " + aRequest.name + " status: " + aStatus);
-			//base.lastDocumentUrl = btoa(aRequest.name);
-			//sl.debug("lastDocumentUrl: " + base.lastDocumentUrl);
-			let win = sw.getChromeWin(aWebProgress.DOMWindow); // maybe sw.lastWin is valid in any case?
-			let baseurl = btoa(aRequest.name);
-			sl.debug("baseurl: " + baseurl);
-			sw.lastWin.document.getElementsByTagName("window")[0].setAttribute("baseurl",baseurl);
-			base.startLoading(win);
+			sl.debug("baseurl: " + this.baseurl);
+			//this.win.document.getElementsByTagName("window")[0].setAttribute("baseurl",baseurl);
+			base.startLoading(this.win);
 			if (seb.quitURL === aRequest.name) {
 				aRequest.cancel(aStatus);
 				base.stopLoading();
@@ -230,9 +174,6 @@ this.SebBrowser = {
 		}
 		if ((aStateFlags & stopDocumentFlags) == stopDocumentFlags) { // stop document request event
 			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name + " - status: " + aStatus); 
-			let win = sw.getChromeWin(aWebProgress.DOMWindow);
-			let baseurl = sw.lastWin.document.getElementsByTagName("window")[0].getAttribute("baseurl");
-			sl.debug("baseurl: " + baseurl);
 			if (aStatus > 0 && aStatus != 2152398850) { // error: experimental!!! ToDo: look at status codes!!
 				sl.debug("Error document loading: " + aStatus);
 				base.stopLoading();
@@ -242,7 +183,7 @@ this.SebBrowser = {
 						let mimeType = aRequest.getResponseHeader("Content-Type");
 						if (mimeTypesRegs.pdf.test(mimeType) && !/\.pdf$/i.test(aRequest.name) && su.getConfig("sebPdfJsEnabled","boolean", true)) { // pdf file requests should already catched by SebBrowser
 							sl.debug("request already aborted by httpResponseObserver, no error page!");
-							isStarted = false;
+							this.isStarted = false;
 							return 0;
 						}	
 					}
@@ -256,12 +197,13 @@ this.SebBrowser = {
 						}
 					}
 					aRequest.cancel(aStatus);
-					win.setTimeout(function() {
-						if (!isStarted) { // no new start request until now (capturing double clicks on links: experimental)
+					
+					this.win.setTimeout(function() {
+						if (!this.isStarted) { // no new start request until now (capturing double clicks on links: experimental)
 							let flags = wnav.LOAD_FLAGS_BYPASS_HISTORY; // does not work??? why???
 							//win.content.document.location.assign("chrome://seb/content/error.xhtml?req=" + btoa(aRequest.name));
-							win.XulLibBrowser.webNavigation.loadURI("chrome://seb/content/error.xhtml?req=" + btoa(aRequest.name), flags, null, null, null);
-							isStarted = false;
+							this.XulLibBrowser.webNavigation.loadURI("chrome://seb/content/error.xhtml?req=" + btoa(aRequest.name), flags, null, null, null);
+							this.XULBrowserWindow.isStarted = false;
 						}
 					}, 100);
 					return 0;
@@ -271,28 +213,28 @@ this.SebBrowser = {
 				}
 				finally {
 					aRequest.cancel(aStatus);
-					isStarted = false;
+					this.isStarted = false;
 					return 1;
 				}
 			}
 			
 			base.stopLoading();
-			isStarted = false;
+			this.isStarted = false;
 			var w = aWebProgress.DOMWindow.wrappedJSObject;
 			try {
-				win.document.title = win.content.document.title;
+				this.win.document.title = this.win.content.document.title;
 			}
 			catch(e) {
 				sl.debug(e);
 			}
-			if (win === seb.mainWin && su.getConfig("sebScreenshot","boolean",false)) {
+			if (this.win === seb.mainWin && su.getConfig("sebScreenshot","boolean",false)) {
 				sc.createScreenshotController(w);
 			}
 			if (su.getConfig("enableBrowserWindowToolbar","boolean",false)) {
-				base.refreshNavigation(win);
+				base.refreshNavigation(this.win);
 			}
 			if (su.getConfig("browserScreenKeyboard","boolean",false)) {
-				sh.createScreenKeyboardController(win);
+				sh.createScreenKeyboardController(this.win);
 			}
 		}
 	},
@@ -345,7 +287,7 @@ this.SebBrowser = {
 		var interfaceRequestor = win.XulLibBrowser.docShell.QueryInterface(Ci.nsIInterfaceRequestor);
 		var webProgress = interfaceRequestor.getInterface(Ci.nsIWebProgress);
 		webProgress.addProgressListener(win.XULBrowserWindow, Ci.nsIWebProgress.NOTIFY_ALL);
-		nav = win.XulLibBrowser.webNavigation;
+		//nav = win.XulLibBrowser.webNavigation;
 		sl.debug("initBrowser");
 	},
 	
@@ -485,7 +427,8 @@ this.SebBrowser = {
 		}
 	}, 
 	
-	back : function() {
+	back : function(win) {
+		var nav = win.XulLibBrowser.webNavigation;
 		if (!su.getConfig("allowBrowsingBackForward","boolean",false)) {
 			sl.debug("navigation: back not allowed")
 			return; 
@@ -496,7 +439,8 @@ this.SebBrowser = {
 		}
 	},
 	
-	forward : function() {
+	forward : function(win) {
+		var nav = win.XulLibBrowser.webNavigation;
 		if (!su.getConfig("allowBrowsingBackForward","boolean",false)) { 
 			sl.debug("navigation: forward not allowed");	
 			return; 
@@ -509,26 +453,27 @@ this.SebBrowser = {
 	
 	refreshNavigation : function(win) {
 		sl.debug("refreshNavigation");
+		var nav = win.XulLibBrowser.webNavigation;
 		if (su.getConfig("allowBrowsingBackForward","boolean",false)) { // should be visible
 			var back = win.document.getElementById("btnBack");
 			var forward = win.document.getElementById("btnForward");
 			if (nav.canGoBack) {
 				sl.debug("canGoBack");
 				back.className = "tbBtn enabled";
-				back.addEventListener("click",base.back,false);
+				//back.addEventListener("click",base.back,false);
 			}
 			else {
 				back.className = "tbBtn disabled";
-				back.removeEventListener("click",base.back,false);
+				//back.removeEventListener("click",base.back,false);
 			}
 			if (nav.canGoForward) {
 				sl.debug("canGoForward");
 				forward.className = "tbBtn enabled";
-				forward.addEventListener("click",base.forward,false);
+				//forward.addEventListener("click",base.forward,false);
 			}
 			else {
 				forward.className = "tbBtn disabled";
-				forward.removeEventListener("click",base.forward,false);
+				//forward.removeEventListener("click",base.forward,false);
 			}
 		}
 	}

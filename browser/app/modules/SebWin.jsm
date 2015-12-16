@@ -194,11 +194,12 @@ this.SebWin = {
 	openDistinctWin : function(url) {
 		sl.debug("openDistinctWin");
 		for (var i=base.wins.length-1;i>=0;i--) { 
-			sl.debug(url + " = " + atob(base.wins[i].document.getElementsByTagName("window")[0].getAttribute("baseurl")));
+			//sl.debug(url + " = " + atob(base.wins[i].document.getElementsByTagName("window")[0].getAttribute("baseurl")));
+			sl.debug(url + " = " + atob(base.wins[i].XULBrowserWindow.baseurl));
 			try {
 				let a = btoa(url);
 				let b = btoa(url+"/"); // aRequest object adds a slash to urls
-				let c = base.wins[i].document.getElementsByTagName("window")[0].getAttribute("baseurl");
+				let c = base.wins[i].XULBrowserWindow.baseurl;
 				// // pdf viewer "chrome:" url is transformed to "file:" url by aRequest, so i have to pick up the ?file=.* part to compare
 				if (base.winTypesReg.pdfViewer.test(url) && base.winTypesReg.pdfViewer.test(atob(c))) {
 					a = b = btoa(url.split('?file=')[1]); // only compare file part of pdf viewer
