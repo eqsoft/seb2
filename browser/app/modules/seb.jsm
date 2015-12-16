@@ -234,6 +234,7 @@ this.seb =  {
 	},
 	
 	initSecondary : function(win) {
+		sw.setToolbar(win);
 		sw.setSize(win);
 	},
 	

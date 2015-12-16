@@ -10,6 +10,7 @@
 <window id="sebWindow" 
 	title="&seb.title;" 
 	windowtype="main" 
+	baseurl=""
 	sizemode="maximized"
 	accelerated="true"
 	onload="seb.onload(this);" 
@@ -56,7 +57,7 @@
 	</keyset>
 	<stack id="browser.stack" flex="1">
 		<vbox flex="1">
-			<hbox id="toolBar" class="hidden">
+			<hbox id="toolBar" class="hidden tbDesktop">
 				<image class="tbBtn" id="btnQuit" src="chrome://seb/content/images/quit.png" onclick="seb.quit();" />
 				<image class="tbBtn" id="btnRestart" src="chrome://seb/content/images/restart.png" onclick="sb.restart();" />
 				<image class="tbBtn" id="btnReload" src="chrome://seb/content/images/reload.png" onclick="sb.reload(window);"/>

@@ -115,6 +115,7 @@ nsBrowserStatusHandler.prototype = {
 let base = null;
 
 this.SebBrowser = {
+	//lastDocumentUrl : null,
 	init : function(obj) {
 		base = this;
 		seb = obj;
@@ -191,7 +192,12 @@ this.SebBrowser = {
 		if ((aStateFlags & startDocumentFlags) == startDocumentFlags) { // start document request event
 			isStarted = true;
 			sl.debug("DOCUMENT REQUEST START: " + aRequest.name + " status: " + aStatus);
-			let win = sw.getChromeWin(aWebProgress.DOMWindow);
+			//base.lastDocumentUrl = btoa(aRequest.name);
+			//sl.debug("lastDocumentUrl: " + base.lastDocumentUrl);
+			let win = sw.getChromeWin(aWebProgress.DOMWindow); // maybe sw.lastWin is valid in any case?
+			let baseurl = btoa(aRequest.name);
+			sl.debug("baseurl: " + baseurl);
+			sw.lastWin.document.getElementsByTagName("window")[0].setAttribute("baseurl",baseurl);
 			base.startLoading(win);
 			if (seb.quitURL === aRequest.name) {
 				aRequest.cancel(aStatus);
@@ -225,7 +231,9 @@ this.SebBrowser = {
 		if ((aStateFlags & stopDocumentFlags) == stopDocumentFlags) { // stop document request event
 			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name + " - status: " + aStatus); 
 			let win = sw.getChromeWin(aWebProgress.DOMWindow);
-			if (aStatus > 0) { // error: experimental!!!
+			let baseurl = sw.lastWin.document.getElementsByTagName("window")[0].getAttribute("baseurl");
+			sl.debug("baseurl: " + baseurl);
+			if (aStatus > 0 && aStatus != 2152398850) { // error: experimental!!! ToDo: look at status codes!!
 				sl.debug("Error document loading: " + aStatus);
 				base.stopLoading();
 				try {
@@ -280,8 +288,8 @@ this.SebBrowser = {
 			if (win === seb.mainWin && su.getConfig("sebScreenshot","boolean",false)) {
 				sc.createScreenshotController(w);
 			}
-			if (win === seb.mainWin && su.getConfig("enableBrowserWindowToolbar","boolean",false)) {
-				base.refreshNavigation();
+			if (su.getConfig("enableBrowserWindowToolbar","boolean",false)) {
+				base.refreshNavigation(win);
 			}
 			if (su.getConfig("browserScreenKeyboard","boolean",false)) {
 				sh.createScreenKeyboardController(win);
@@ -295,7 +303,7 @@ this.SebBrowser = {
 	
 	statusListener : function(aWebProgress, aRequest, aStatus, aMessage) {
 		if (aStatus) {
-			sl.debug("status: " + aStatus + " : " + aMessage);
+			//sl.debug("status: " + aStatus + " : " + aMessage);
 		}	
 	},
 	
@@ -499,11 +507,11 @@ this.SebBrowser = {
 		}		
 	},
 	
-	refreshNavigation : function() {
+	refreshNavigation : function(win) {
 		sl.debug("refreshNavigation");
 		if (su.getConfig("allowBrowsingBackForward","boolean",false)) { // should be visible
-			var back = seb.mainWin.document.getElementById("btnBack");
-			var forward = seb.mainWin.document.getElementById("btnForward");
+			var back = win.document.getElementById("btnBack");
+			var forward = win.document.getElementById("btnForward");
 			if (nav.canGoBack) {
 				sl.debug("canGoBack");
 				back.className = "tbBtn enabled";

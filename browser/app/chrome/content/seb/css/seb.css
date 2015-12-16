@@ -38,22 +38,39 @@
 	display: block;
 }
 
-#toolBar {
-	background-color : #eee;
+.tbTouch {
+	max-height: 48px;
+	min-height: 48px;
+}
+
+.tbDesktop {
 	max-height: 24px;
 	min-height: 24px;
+}
+
+#toolBar {
+	background-color : #eee;
 	white-space: nowrap;
 }
 
-.tbBtn {
-	cursor: pointer;
+.tbTouch > .tbBtn	{
+	height: 32px;
+	width: 32px;
+}
+
+.tbDesktop > .tbBtn	{
 	height: 20px;
 	width: 20px;
+}
+
+
+
+.tbBtn {
+	cursor: pointer;
 	border: none;
 	background-color: #eee;
 	margin-top: 2px;
-	margin-left: 10px;
-	
+	margin-left: 10px;	
 }
 
 #locationBar {
