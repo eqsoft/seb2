@@ -58,6 +58,7 @@ XPCOMUtils.defineLazyModuleGetter(this,"sc","resource://modules/SebScreenshot.js
 let 	base = null,
 	seb = null,
 	certdb = null,
+	certdb2 = null,
 	loadFlag = null,
 	startDocumentFlags = wpl.STATE_IS_REQUEST | wpl.STATE_IS_DOCUMENT | wpl.STATE_START,
 	stopDocumentFlags = wpl.STATE_IS_WINDOW | wpl.STATE_STOP,
@@ -82,8 +83,12 @@ let 	base = null,
 	};
 	
 const	nsIX509CertDB = Ci.nsIX509CertDB,
+	nsIX509CertDB2 = Ci.nsIX509CertDB2,
 	nsX509CertDB = "@mozilla.org/security/x509certdb;1",
-	DOCUMENT_BLOCKER = "about:document-onload-blocker";
+	DOCUMENT_BLOCKER = "about:document-onload-blocker",
+	CERT_SSL = 0,
+	CERT_CA = 1,
+	CERT_EMAIL = 2;
 
 function nsBrowserStatusHandler() {};
 nsBrowserStatusHandler.prototype = {
@@ -122,6 +127,7 @@ this.SebBrowser = {
 		base = this;
 		seb = obj;
 		certdb = Cc[nsX509CertDB].getService(nsIX509CertDB);
+		//base.disableBuiltInCerts();
 		sl.out("SebBrowser initialized: " + seb);
 	},
 	
@@ -291,8 +297,9 @@ this.SebBrowser = {
 		sl.debug("initBrowser");
 	},
 	
-	addCert : function(cert) {
+	addSSLCert : function(cert) {
 		try {
+			sl.debug("add SSL Cert");
 			let flags = ovs.ERROR_UNTRUSTED | ovs.ERROR_MISMATCH | ovs.ERROR_TIME;
 			let x509 = certdb.constructX509FromBase64(cert.certificateData);
 			//certlist.addCert(x509); // maybe needed for type 1 Identity Certs
@@ -306,7 +313,21 @@ this.SebBrowser = {
 			ovs.rememberValidityOverride(host,port,x509,flags,true);
 			sl.debug("add cert: " + host + ":" + port + "\n" + cert.certificateData);
 		}
-		catch (e) { sl.err(e); s}
+		catch (e) { sl.err(e); }
+	},
+	
+	addCACert : function(cert) {
+		try {
+			sl.debug("add CA Cert");
+			var cdb = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
+			var certdb2 = cdb;
+			try {
+				certdb2 = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB2);
+			} catch (e) {}
+			certdb2.addCertFromBase64(cert.certificateData, "C,C,C", cert.certificateData);
+			//certdb2.addCertFromBase64(cert.certificateData, "TCu,Cu,Tu", cert.certificateData);
+		}
+		catch (e) { sl.err(e); }
 	},
 	
 	setEmbeddedCerts : function() {
@@ -314,7 +335,14 @@ this.SebBrowser = {
 		if ( typeof certs != "object") { return; }
 		sl.debug("setEmbeddedCerts");
 		for (var i=0;i<certs.length;i++) {
-			base.addCert(certs[i]);
+			switch (certs[i].type) {
+				case CERT_SSL :
+					base.addSSLCert(certs[i]);
+					break;
+				case CERT_CA :
+					base.addCACert(certs[i]);
+					break;
+			}
 		}
 	},
 	
@@ -475,6 +503,26 @@ this.SebBrowser = {
 				forward.className = "tbBtn disabled";
 				//forward.removeEventListener("click",base.forward,false);
 			}
+		}
+	},
+	
+	disableBuiltInCerts : function () {
+		let certs = certdb.getCerts();
+		let enumerator = certs.getEnumerator();
+		while (enumerator.hasMoreElements()) {
+			let cert = enumerator.getNext().QueryInterface(Ci.nsIX509Cert);
+			//let sslTrust = certdb.isCertTrusted(cert, Ci.nsIX509Cert.CA_CERT, Ci.nsIX509CertDB.TRUSTED_SSL);
+			//let emailTrust = certdb.isCertTrusted(cert, Ci.nsIX509Cert.CA_CERT, Ci.nsIX509CertDB.TRUSTED_EMAIL);
+			//let objsignTrust = certdb.isCertTrusted(cert, Ci.nsIX509Cert.CA_CERT, Ci.nsIX509CertDB.TRUSTED_OBJSIGN);
+			certdb.setCertTrust(cert, Ci.nsIX509Cert.CA_CERT, Ci.nsIX509Cert.CERT_NOT_TRUSTED);
+			/*
+			sl.debug("issuer: " + cert.issuerName + "\n");
+			sl.debug("serial: " + cert.serialNumber + "\n");
+			sl.debug("trust:\n");
+			sl.debug("  SSL:\t\t" + sslTrust + "\n");
+			sl.debug("  EMAIL:\t" + emailTrust + "\n");
+			sl.debug("  OBJSIGN:\t" + objsignTrust + "\n");
+			*/ 
 		}
 	}
 }
