@@ -39,7 +39,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 /* Services */
 let	wpl = Ci.nsIWebProgressListener,
-	wnav = Ci.nsIWebNavigation,
+  wnav = Ci.nsIWebNavigation,
 	ovs = Cc["@mozilla.org/security/certoverride;1"].getService(Ci.nsICertOverrideService);
 	
 
@@ -117,9 +117,6 @@ nsBrowserStatusHandler.prototype = {
 	setJSDefaultStatus : function(status) {},
 	setOverLink : function(link) {}
 }
-
-let base = null;
-
 
 this.SebBrowser = {
 	//lastDocumentUrl : null,
