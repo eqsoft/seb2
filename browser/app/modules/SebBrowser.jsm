@@ -118,9 +118,6 @@ nsBrowserStatusHandler.prototype = {
 	setOverLink : function(link) {}
 }
 
-let base = null;
-
-
 this.SebBrowser = {
 	//lastDocumentUrl : null,
 	init : function(obj) {
@@ -180,7 +177,8 @@ this.SebBrowser = {
 		}
 		if ((aStateFlags & stopDocumentFlags) == stopDocumentFlags) { // stop document request event
 			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name + " - status: " + aStatus); 
-			if (aStatus > 0 && aStatus != 2152398850) { // error: experimental!!! ToDo: look at status codes!!
+			if (!Components.isSuccessCode(aStatus) && aStatus != 2152398850) { // heise.de with all that advertising will not load without that 2152398850 status
+			//if (aStatus > 0 && aStatus != 2152398850) { // error: experimental!!! ToDo: look at status codes!!
 				sl.debug("Error document loading: " + aStatus);
 				base.stopLoading();
 				try {
