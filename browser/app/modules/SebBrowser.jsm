@@ -39,12 +39,12 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 /* Services */
 let	wpl = Ci.nsIWebProgressListener,
-  wnav = Ci.nsIWebNavigation,
+	wnav = Ci.nsIWebNavigation,
 	ovs = Cc["@mozilla.org/security/certoverride;1"].getService(Ci.nsICertOverrideService);
-	
 
 /* SebGlobals */
 scriptloader.loadSubScript("resource://globals/prototypes.js");
+scriptloader.loadSubScript("resource://globals/const.js");
 
 /* SebModules */
 XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","SebUtils");
@@ -52,6 +52,7 @@ XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","Seb
 XPCOMUtils.defineLazyModuleGetter(this,"sw","resource://modules/SebWin.jsm","SebWin");
 XPCOMUtils.defineLazyModuleGetter(this,"sn","resource://modules/SebNet.jsm","SebNet");
 XPCOMUtils.defineLazyModuleGetter(this,"sh","resource://modules/SebHost.jsm","SebHost");
+XPCOMUtils.defineLazyModuleGetter(this,"sg","resource://modules/SebConfig.jsm","SebConfig");
 XPCOMUtils.defineLazyModuleGetter(this,"sc","resource://modules/SebScreenshot.jsm","SebScreenshot");
 
 /* ModuleGlobals */
@@ -87,8 +88,8 @@ const	nsIX509CertDB = Ci.nsIX509CertDB,
 	nsX509CertDB = "@mozilla.org/security/x509certdb;1",
 	DOCUMENT_BLOCKER = "about:document-onload-blocker",
 	CERT_SSL = 0,
-	CERT_CA = 1,
-	CERT_EMAIL = 2;
+	CERT_USER = 1,
+	CERT_CA = 2;
 
 function nsBrowserStatusHandler() {};
 nsBrowserStatusHandler.prototype = {
@@ -129,6 +130,7 @@ this.SebBrowser = {
 	},
 	
 	stateListener : function(aWebProgress, aRequest, aStateFlags, aStatus) {
+		//sl.err(aRequest.name);
 		if ((aStateFlags & startDocumentFlags) == startDocumentFlags) { // start document request event
 			this.isStarted = true;
 			this.win = sw.getChromeWin(aWebProgress.DOMWindow);
@@ -293,6 +295,29 @@ this.SebBrowser = {
 		webProgress.addProgressListener(win.XULBrowserWindow, Ci.nsIWebProgress.NOTIFY_ALL);
 		//nav = win.XulLibBrowser.webNavigation;
 		sl.debug("initBrowser");
+	},
+	
+	initSecurity : function () {
+		if (su.getConfig("disableOCSP","boolean",true)) {
+			sg.setPref("security.OCSP.enabled",0);
+		}
+		else {
+			sg.setPref("security.OCSP.enabled",1);
+		}
+		switch (su.getConfig("sslSecurityPolicy","number",SSL_SEC_BLOCK_MIXED_ACTIVE)) {
+			case SSL_SEC_NONE : // allow mixed content
+				sg.setPref("security.mixed_content.block_active_content",false);
+				sg.setPref("security.mixed_content.block_display_content",false);
+				break;
+			case SSL_SEC_BLOCK_MIXED_ACTIVE :
+				sg.setPref("security.mixed_content.block_active_content",true);
+				sg.setPref("security.mixed_content.block_display_content",false);
+				break;
+			case SSL_SEC_BLOCK_MIXED_ALL :
+				sg.setPref("security.mixed_content.block_active_content",true);
+				sg.setPref("security.mixed_content.block_display_content",true);
+				break;
+		}
 	},
 	
 	addSSLCert : function(cert) {
