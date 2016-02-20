@@ -298,6 +298,18 @@ this.SebWin = {
 		if (base.mainScreen['initialized']) { return base.mainScreen; }	 
 		base.mainScreen['titlebarEnabled'] = su.getConfig("mainBrowserWindowTitlebarEnabled","boolean",false);
 		base.mainScreen['maximized'] = su.getConfig("mainBrowserWindowMaximized","boolean",true);
+		//template browserViewMode
+		switch (su.getConfig("browserViewMode","number",1)) {
+			case 0 :
+				base.mainScreen['titlebarEnabled'] = true;
+				base.mainScreen['maximized'] = false;
+				break;
+			case 1 :
+				base.mainScreen['titlebarEnabled'] = false;
+				base.mainScreen['maximized'] = true;
+				break;
+			break;
+		}
 		base.mainScreen['width'] = seb.config["mainBrowserWindowWidth"];
 		base.mainScreen['height'] = seb.config["mainBrowserWindowHeight"];
 		base.mainScreen['position'] = pos[su.getConfig("mainBrowserWindowPositioning","number",1)];
