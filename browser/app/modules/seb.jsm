@@ -230,7 +230,7 @@ this.seb =  {
 		base.consts = win.document.getElementById("const");
 		sw.setToolbar(win);			
 		sw.setSize(win);
-		//sw.showContent(win);
+		//sw.showContent(win); still required?
 		sb.loadPage(win,base.url);
 	},
 	
