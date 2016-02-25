@@ -4,7 +4,7 @@ var 	fs 	= require('fs-extra'),
 	directory = require('serve-index'),
 	utils	= require('./utils.js');
 
-const 	CA_CN 	= "eqsoft CA",
+const 	CA_CN 	= "Simple Signing CA",
 	USR_CN	= "seb.client",
 	ADM_CN	= "seb.admin",
 	monitorPort = 8441,
@@ -25,9 +25,12 @@ var conf = function conf() {
 	
 	this.getServerOptions = function() {
 		var options = 	{
-				key:    fs.readFileSync(__dirname + '/ssl/server.key'),
-				cert:   fs.readFileSync(__dirname + '/ssl/server.crt'),
-				ca:     [ fs.readFileSync(__dirname + '/ssl/ca.crt') ],
+				key:    fs.readFileSync(__dirname + '/ssl/simple.org.key'),
+				cert:   fs.readFileSync(__dirname + '/ssl/simple.org.crt'),
+				ca:     [ 
+						fs.readFileSync(__dirname + '/ssl/root-ca.crt'), 
+						fs.readFileSync(__dirname + '/ssl/signing-ca.crt')
+					],
 				requestCert:        true, 	// client cert is required
 				rejectUnauthorized: false 	// reject invalid client certs
 				}
@@ -36,9 +39,12 @@ var conf = function conf() {
 	
 	this.getDemoOptions = function() {
 		var options = 	{
-				key:    fs.readFileSync(__dirname + '/ssl/server.key'),
-				cert:   fs.readFileSync(__dirname + '/ssl/server.crt'),
-				ca:     [ fs.readFileSync(__dirname + '/ssl/ca.crt') ],
+				key:    fs.readFileSync(__dirname + '/ssl/simple.org.key'),
+				cert:   fs.readFileSync(__dirname + '/ssl/simple.org.crt'),
+				ca:     [ 
+						fs.readFileSync(__dirname + '/ssl/root-ca.crt'), 
+						fs.readFileSync(__dirname + '/ssl/signing-ca.crt')
+					],
 				requestCert:        false, 	// client cert is required
 				rejectUnauthorized: false 	// reject invalid client certs
 				}

@@ -36,7 +36,7 @@
 			};
 				
 			function init() {
-				ws = new WebSocket("ws:///192.168.224.1:8706", ["protocolOne", "protocolTwo"]);
+				ws = new WebSocket("ws://www.example.com:8706", ["protocolOne", "protocolTwo"]);
 				var sel = document.getElementById("selMsg");
 				for (var key in msg) {
 					var op = document.createElement("option");
