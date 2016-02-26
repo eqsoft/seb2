@@ -89,9 +89,8 @@ const	nsIX509CertDB = Ci.nsIX509CertDB,
 	DOCUMENT_BLOCKER = "about:document-onload-blocker",
 	CERT_SSL = 0,
 	CERT_USER = 1, //reserved to windows host
-	CERT_ROOT_CA = 2,
-	CERT_INTERMEDIATE_CA = 3,
-	CERT_SSL_DEBUG = 4;
+	CERT_CA = 2,
+	CERT_SSL_DEBUG = 3;
 
 function nsBrowserStatusHandler() {};
 nsBrowserStatusHandler.prototype = {
@@ -300,13 +299,13 @@ this.SebBrowser = {
 	},
 	
 	initSecurity : function () {
-		if (su.getConfig("disableOCSP","boolean",true)) {
+		if (su.getConfig("sebDisableOCSP","boolean",true)) {
 			sg.setPref("security.OCSP.enabled",0);
 		}
 		else {
 			sg.setPref("security.OCSP.enabled",1);
 		}
-		switch (su.getConfig("sslSecurityPolicy","number",SSL_SEC_BLOCK_MIXED_ACTIVE)) {
+		switch (su.getConfig("sebSSLSecurityPolicy","number",SSL_SEC_BLOCK_MIXED_ACTIVE)) {
 			case SSL_SEC_NONE : // allow mixed content
 				sg.setPref("security.mixed_content.block_active_content",false);
 				sg.setPref("security.mixed_content.block_display_content",false);
@@ -349,26 +348,26 @@ this.SebBrowser = {
 		try {
 			let t = "";
 			let trustargs = "";
-			switch (type) {
-				case CERT_ROOT_CA :
-					t = "ROOT CA";
-					trustargs = 'C,,';
-				break;
-				case CERT_INTERMEDIATE_CA :
-					t = "INTERMEDIATE CA";
-					trustargs = 'c,,';
-				break;
-				/*
-				case CERT_SSL : // not required, there is no way to pin SSL certs without trusted CAs
-					t = "SSL";
-					trustargs = 'p,,';
-				break;
-				*/ 
+			let certData = (cert.certificateDataBase64 != "") ? cert.certificateDataBase64 : cert.certificateDataWin;
+			let x509 = certdb.constructX509FromBase64(certData);
+			if (su.getConfig("allCARootTrust", "boolean", false)) {
+				sl.debug("treat all CA certs as root");
+				t = "CA";
+				trustargs = "C,,";
+			}
+			else {
+				switch (x509.getChain().length) { // experimental
+					case 1 : // Root CA
+						t = "ROOT CA";
+						trustargs = "C,,";
+					break;
+					default : // Intermediate CA
+						t = "INTERMEDIATE CA";
+						trustargs = 'c,,';
+					}
 			}
 			sl.debug("add Cert: " + t);
-			let certData = (cert.certificateData != "") ? cert.certificateData : cert.certificateDataWin;
-			let x509 = certdb.constructX509FromBase64(certData);
-			sl.debug("cert subject: "+ x509.subjectName);
+			sl.debug("cert subject: " + x509.subjectName);
 			sl.debug("cert cn: "+ x509.commonName);
 			sl.debug("cert org: "+ x509.organization);
 			sl.debug("cert issuer: "+ x509.issuerName);
@@ -377,7 +376,7 @@ this.SebBrowser = {
 			try {
 				certdb2 = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB2);
 			} catch (e) {}
-			certdb2.addCertFromBase64(cert.certificateData,  trustargs, certData);
+			certdb2.addCertFromBase64(certData, trustargs, x509.commonName);
 		}
 		catch (e) { sl.err(e); }
 	},
@@ -388,13 +387,12 @@ this.SebBrowser = {
 		sl.debug("setEmbeddedCerts");
 		for (var i=0;i<certs.length;i++) {
 			switch (certs[i].type) {
-				case CERT_ROOT_CA :
-				case CERT_INTERMEDIATE_CA :
+				case CERT_CA :
 					base.addCert(certs[i],certs[i].type);
 					break;
 				case CERT_SSL :
-					base.addSSLCert(certs[i],false);
-					break;	
+					base.addSSLCert(certs[i],fale);
+					break;
 				case CERT_SSL_DEBUG :
 					base.addSSLCert(certs[i],true);
 					break;
