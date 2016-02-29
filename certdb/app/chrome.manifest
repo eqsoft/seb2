@@ -1,0 +1,4 @@
+component {2971c315-b871-32cd-b33f-bfee4fcbf683} certService.js
+contract @mozilla.org/commandlinehandler/profile-after-change;1?type=certService {2971c315-b871-32cd-b33f-bfee4fcbf683}
+category command-line-handler m-cert-service @mozilla.org/commandlinehandler/profile-after-change;1?type=certService
+resource modules file:modules/
