@@ -1,0 +1,4 @@
+<!ENTITY certdb.title "SEB Zertifikat-Manager (DE)">
+<!ENTITY certdb.tab.mine "SSL Client Zertifikate">
+<!ENTITY certdb.select.all "Alle auswählen">
+

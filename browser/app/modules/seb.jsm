@@ -113,7 +113,7 @@ this.seb =  {
 		su.init(base);
 		sg.init(base);
 		base.DEBUG = su.getBool(su.getCmd("debug"));
-		sl.init(base); 
+		sl.init(base);
 		base.initProfile();
 		sw.init(base);
 		sb.init(base);

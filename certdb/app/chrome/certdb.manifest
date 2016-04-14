@@ -1,0 +1,4 @@
+content certdb file:content/certdb/
+locale certdb en-US file:locale/certdb/en-US/
+locale certdb de-DE file:locale/certdb/de-DE/
+locale certdb fr-FR file:locale/certdb/fr-FR/

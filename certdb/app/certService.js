@@ -21,7 +21,7 @@ certService.prototype = {
 	handle : function clh_handle(cmdLine) {		
 		try {	
 			certdb.init(cmdLine);
-			cmdLine.preventDefault = true;
+			cmdLine.preventDefault = false;
 		}
 		catch (e) { dump(e+"\n"); }		
 	}

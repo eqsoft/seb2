@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://certdb/content/css/certdb.css" type="text/css"?>
+<!DOCTYPE window [
+	<!ENTITY % certdbDtdLocal SYSTEM "chrome://certdb/locale/certdb.dtd">
+	%certdbDtdLocal;
+]>
+<window id="certdbWindow" 
+	title="&certdb.title;" 
+	windowtype="main" 
+	baseurl=""
+	accelerated="true"
+	onload="certdb.onload(this);" 
+	onunload="certdb.onunload(this);" 
+	onclose="certdb.onclose(this);" 
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">	
+	
+	<script type="application/x-javascript"> 
+		const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components;
+		Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+		XPCOMUtils.defineLazyModuleGetter(this,"certdb","resource://modules/certdb.jsm","certdb");
+	</script>
+	<stringbundleset>
+		<stringbundle id="locale" src="chrome://certdb/locale/certdb.properties" />
+		<stringbundle id="const" src="chrome://certdb/content/certdb.properties" />
+	</stringbundleset>
+	<vbox flex="1">
+		<iframe flex="1" id="frCertMgr" src="about:blank"></iframe>
+		<!--<browser flex="1" src="chrome://pippki/content/certManager.xul" type="chrome"></browser>-->
+	</vbox>
+</window>

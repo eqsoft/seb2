@@ -18,3 +18,7 @@ pref("extensions.update.enabled", false);
 pref("network.cookie.prefsMigrated", true);
 pref("gecko.handlerService.allowRegisterFromDifferentHost", true);
 pref("intl.ime.nstextinput.enable", true);
+pref("toolkit.defaultChromeURI", "chrome://certdb/content/certdb.xul");
+pref("toolkit.defaultChromeFeatures", "width=800px,height=600px,chrome,dialog=yes,resizable=yes,scrollbars=yes");
+pref("toolkit.singletonWindowType", "main");
+pref("general.useragent.locale", "de-DE");

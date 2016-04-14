@@ -326,11 +326,11 @@ this.SebBrowser = {
 	
 	addSSLCert : function(cert,debug) {
 		try {
-			
 			let flags = (debug) ? ovs.ERROR_UNTRUSTED | ovs.ERROR_MISMATCH | ovs.ERROR_TIME : ovs.ERROR_UNTRUSTED;
-			let x509 = certdb.constructX509FromBase64(cert.certificateData);
+			let certData = (cert.certificateDataBase64 != "") ? cert.certificateDataBase64 : cert.certificateDataWin;
+			let x509 = certdb.constructX509FromBase64(certData);
 			//certlist.addCert(x509); // maybe needed for type 1 Identity Certs
-			let cn = (debug && cert.overrideCN) ? cert.overrideCN : x509.commonName;
+			let cn = (cert.name) ? cert.name : x509.commonName; // don't ommit the name Attribut in the config file!
 			let host = cn;
 			let port = 443;
 			let fullhost = cn.split(":");
@@ -338,8 +338,8 @@ this.SebBrowser = {
 				host = fullhost[0];
 				port = parseInt(fullhost[1]);
 			}
-			ovs.rememberValidityOverride(host,port,x509,flags,true);
-			sl.debug("add debug ssl cert: " + host + ":" + port);
+			ovs.rememberValidityOverride(host,port,x509,flags,false);
+			sl.debug("add ssl cert: " + host + ":" + port);
 		}
 		catch (e) { sl.err(e); }
 	},
@@ -353,17 +353,17 @@ this.SebBrowser = {
 			if (su.getConfig("allCARootTrust", "boolean", false)) {
 				sl.debug("treat all CA certs as root");
 				t = "CA";
-				trustargs = "C,,";
+				trustargs = "C,C,C";
 			}
 			else {
 				switch (x509.getChain().length) { // experimental
 					case 1 : // Root CA
 						t = "ROOT CA";
-						trustargs = "C,,";
+						trustargs = "C,C,C";
 					break;
 					default : // Intermediate CA
 						t = "INTERMEDIATE CA";
-						trustargs = 'c,,';
+						trustargs = 'c,c,c';
 					}
 			}
 			sl.debug("add Cert: " + t);
@@ -391,7 +391,7 @@ this.SebBrowser = {
 					base.addCert(certs[i],certs[i].type);
 					break;
 				case CERT_SSL :
-					base.addSSLCert(certs[i],fale);
+					base.addSSLCert(certs[i],false);
 					break;
 				case CERT_SSL_DEBUG :
 					base.addSSLCert(certs[i],true);

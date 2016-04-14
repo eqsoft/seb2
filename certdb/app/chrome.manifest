@@ -2,3 +2,8 @@ component {2971c315-b871-32cd-b33f-bfee4fcbf683} certService.js
 contract @mozilla.org/commandlinehandler/profile-after-change;1?type=certService {2971c315-b871-32cd-b33f-bfee4fcbf683}
 category command-line-handler m-cert-service @mozilla.org/commandlinehandler/profile-after-change;1?type=certService
 resource modules file:modules/
+manifest chrome/certdb.manifest
+manifest chrome/branding.manifest
+overlay chrome://pippki/content/certManager.xul chrome://certdb/content/certManagerOverlay.xul
+overlay chrome://pippki/content/CAOverlay.xul chrome://certdb/content/CAOverlay.xul
+override chrome://pippki/content/WebSitesOverlay.xul chrome://certdb/content/WebSitesOverlay.xul

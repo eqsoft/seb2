@@ -2,3 +2,5 @@
 .DS_Store
 log.txt
 /profile*
+/certdb/profile*
+*.old

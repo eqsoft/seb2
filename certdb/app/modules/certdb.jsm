@@ -42,7 +42,9 @@ const	nsIX509CertDB = Ci.nsIX509CertDB,
 	nsIX509CertDB2 = Ci.nsIX509CertDB2,
 	nsX509CertDB = "@mozilla.org/security/x509certdb;1";
 	
-const	PIN_CERTS_FLAG = "pincerts",
+const	CHROME_CERT_MGR = "chrome://pippki/content/certManager.xul",
+	PIN_CERTS_FLAG = "pincerts",
+	AUTO_LOAD_FLAG = "autoload",
 	CERT_DB = "cert8.db",
 	KEY_DB = "key3.db",
 	SSL_OVERRIDE = "cert_override.txt";
@@ -52,10 +54,15 @@ let 	base = null,
 	ovs = Cc["@mozilla.org/security/certoverride;1"].getService(Ci.nsICertOverrideService),
 	cdb = Cc[nsX509CertDB].getService(nsIX509CertDB),
 	pinCerts = false,
+	autoLoad = false,
 	os = appinfo.OS.toUpperCase(),
 	lf = "",
 	sep = "/",
-	sebDefaultProfile = null;
+	cmdline = null,
+	sebDefaultProfile = null,
+	frCertMgr = null,
+	cbxCASelectAll = null,
+	btnDeleteAllCA = null;
 
 this.certdb =  {
 	
@@ -78,11 +85,26 @@ this.certdb =  {
 	},
 	
 	init : function(cl) {
-		this.log("init certdb");
-		pinCerts = cl.handleFlag(PIN_CERTS_FLAG, false);
-		
+		this.log("init certdb"+serverTreeView);
+		cmdline = cl;
 		base = this;
+		pinCerts = cmdline.handleFlag(PIN_CERTS_FLAG, false);
+		autoLoad = cmdline.handleFlag(AUTO_LOAD_FLAG, false);
 		base.quitObserver.register();
+		this.initOS();
+		this.getSebProfileDir();
+		
+		if (pinCerts) {
+			this.log("pinCerts: " + pinCerts);
+			this.disableBuiltInCerts();
+		}
+		
+		if (autoLoad) {
+			this.loadCertsFromFolder();
+		}
+	},
+	
+	initOS : function() {
 		switch (os) { // line feed for dump messages
 			case "WINNT" :
 				lf = "\n\r";
@@ -98,6 +120,9 @@ this.certdb =  {
 			default :
 				lf = "\n";
 		}
+	},
+	
+	getSebProfileDir : function() {
 		sebDefaultProfile = FileUtils.getFile("CurProcD",[]);
 		let sebDefaultProfileArr = sebDefaultProfile.path.split(sep);
 		sebDefaultProfileArr.pop();
@@ -111,12 +136,9 @@ this.certdb =  {
 			this.log("Error: could not find seb profile folder: " + sebDefaultProfile.path);
 			return;
 		}
-		
-		if (pinCerts) {
-			this.log("pinCerts: " + pinCerts);
-			this.disableBuiltInCerts();
-		}
-		
+	},
+	
+	loadCertsFromFolder : function() {
 		let caDir = FileUtils.getDir("CurProcD",["certs","ca"]);
 		let entries = caDir.directoryEntries; 
 		while(entries.hasMoreElements()) {  
@@ -150,6 +172,15 @@ this.certdb =  {
 			}
 			try {
 				cdb.importPKCS12File(null,entry);
+				let certs = cdb.getCerts();
+				let enumerator = certs.getEnumerator();
+				while (enumerator.hasMoreElements()) {
+					
+					let cert = enumerator.getNext().QueryInterface(Ci.nsIX509Cert);
+					
+					this.log("import P12: " + cert.subjectName);
+					break;
+				}
 			}
 			catch (e) {
 				this.log("Error importing p12 File: " + entry.leafName + "\n" + e)
@@ -206,7 +237,7 @@ this.certdb =  {
 			catch (e) {
 				this.log("Error importing debug ssl File: " + entry.leafName + "\n" + e)
 			}
-		} 
+		}  
 	},
 	
 	addSSLCert : function(cert,filename,debug) {
@@ -229,6 +260,17 @@ this.certdb =  {
 		catch (e) { this.log(e); }
 	},
 	
+	deleteAllCACerts : function () {
+		base.log("delete all CA certs");
+		let certs = cdb.getCerts();
+		let enumerator = certs.getEnumerator();
+		while (enumerator.hasMoreElements()) {
+			let cert = enumerator.getNext().QueryInterface(Ci.nsIX509Cert);
+			base.log("delete cert: " + cert.subjectName);
+			cdb.deleteCertificate(cert);
+		}
+	},
+	
 	disableBuiltInCerts : function () {
 		let certs = cdb.getCerts();
 		let enumerator = certs.getEnumerator();
@@ -241,14 +283,17 @@ this.certdb =  {
 	
 	shutdown : function () {
 		this.log("shutdown");
+		
 		let profileDir = FileUtils.getDir("ProfD",[]);
 		
 		// copy files to seb profile
+		/*
 		let cert_db = FileUtils.getFile("ProfD",[CERT_DB]);
 		let key_db = FileUtils.getFile("ProfD",[KEY_DB]);
 		let ssl_override = FileUtils.getFile("ProfD",[SSL_OVERRIDE]);
 		
 		if (cert_db.exists()) {
+			this.log("copy " + CERT_DB + " to seb default profile: " + sebDefaultProfile.path);
 			cert_db.copyTo(sebDefaultProfile,CERT_DB);
 		}
 		else {
@@ -256,6 +301,7 @@ this.certdb =  {
 		}
 		
 		if (key_db.exists()) {
+			this.log("copy " + KEY_DB + " to seb default profile: " + sebDefaultProfile.path);
 			cert_db.copyTo(sebDefaultProfile,KEY_DB);
 		}
 		else {
@@ -263,12 +309,14 @@ this.certdb =  {
 		}
 		
 		if (ssl_override.exists()) {
+			this.log("copy " + SSL_OVERRIDE + " to seb default profile: " + sebDefaultProfile.path);
 			ssl_override.copyTo(sebDefaultProfile,SSL_OVERRIDE);
 		}
 		else {
 			this.log("file does not exist: " + ssl_override.path);
 		}
-		
+		*/
+		/*
 		let entries = profileDir.directoryEntries; 
 		while(entries.hasMoreElements()) {  
 			let entry = entries.getNext();
@@ -280,7 +328,43 @@ this.certdb =  {
 			catch (e) {
 				this.log("Error removing: " + entry.leafName + "\n" + e);
 			}
-		} 
+		}
+		*/  
+	},
+	
+	onload : function(win) {
+		this.log("onload: " + win);
+		frCertMgr = win.document.getElementById("frCertMgr");
+		frCertMgr.addEventListener("load", base.onIframeLoaded, true);
+		frCertMgr.setAttribute("src",CHROME_CERT_MGR);
+	},
+	
+	onunload : function(win) {
+		this.log("onunload");
+	},
+	
+	onclose : function(win) {
+		this.log("onclose");
+	},
+	
+	onIframeLoaded : function() {
+		base.log("iframe loaded: " + frCertMgr.getAttribute("src"));
+		cbxCASelectAll = frCertMgr.contentDocument.getElementById("cbxCASelectAll");
+		btnDeleteAllCA = frCertMgr.contentDocument.getElementById("btnDeleteAllCA");
+		//base.log(frCertMgr.contentDocument.getElementById("cbxCASelectAll"));
+		cbxCASelectAll.addEventListener("click",base.onCASelectAll,true);
+		btnDeleteAllCA.addEventListener("click",base.deleteAllCACerts,true);
+	},
+	
+	onCASelectAll : function() {
+		base.log("onCASelectAll");
+		let caTreeView = frCertMgr.contentDocument.getElementById("ca-tree").view;
+		if (cbxCASelectAll.checked) {
+			caTreeView.selection.selectAll();
+		}
+		else {
+			caTreeView.selection.select(1);
+		}
 	},
 	
 	log : function(msg) {

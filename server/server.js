@@ -31,12 +31,12 @@ function on_connection(socket) {
 	//console.log(wss.clients);
 	var cn = null;
 	try {
-		//var c = socket.upgradeReq.connection.getPeerCertificate();
+		//var c = socket.upgradeReq.connection;
 		//console.dir(c);
 		cn = socket.upgradeReq.connection.getPeerCertificate().subject.CN;
 	}
 	catch(e) {
-		console.log(e);
+		console.log("No valid client certificate enbedded in seb\n" + e);
 		return;
 	}
 	if (cn != conf.usrCN ) { // only clients with valid user certificates are allowed

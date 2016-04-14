@@ -87,7 +87,7 @@ var conf = function conf() {
 					// Safari has problems with client cert handshake on websocket connections!
 					try {
 						subject = req.connection.getPeerCertificate().subject.CN;
-						//console.log("server req subject CN: " + subject);
+						console.log("server req subject CN: " + subject);
 					}
 					catch(e) {
 						res.writeHead(403, {'Content-Type': 'text/plain'});
