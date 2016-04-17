@@ -75,7 +75,7 @@ const	xulFrame = "seb.iframe",
 	
 this.SebWin = {
 	wins : [],
-	lasWin : null,
+	lastWin : null,
 	mainScreen : {},
 	popupScreen : {},
 	winTypesReg : {

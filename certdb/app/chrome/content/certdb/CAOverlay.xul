@@ -4,7 +4,7 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-
+<?xml-stylesheet href="chrome://certdb/content/css/certdb.css" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://certdb/locale/certdb.dtd">
 
 <overlay id="CAOverlayEx" 
@@ -14,8 +14,10 @@
 
 	<vbox id="CACerts">
 		<hbox>
-			<button id="btnDeleteAllCA" label="Alle löschen" />
-			<checkbox id="cbxCASelectAll" label="&certdb.select.all;" checked="false" />
+			<button id="btnDisableAllCA" disabled="true" label="Allen Built-in Zertifikaten das Vertrauen entziehen" />
+		</hbox>
+		<hbox>
+			<button id="btnActivateAllCA" disabled="true" label="Alle Built-in Zertifikaten wieder aktivieren" />
 		</hbox>
 	</vbox>
 </overlay>

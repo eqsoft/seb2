@@ -4,3 +4,4 @@ log.txt
 /profile*
 /certdb/profile*
 *.old
+*.bc

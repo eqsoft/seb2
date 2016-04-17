@@ -81,7 +81,8 @@ let 	base = null,
 	mimeTypesRegs = {
 		flash : new RegExp(/^application\/x-shockwave-flash/),
 		pdf : new RegExp(/^application\/(x-)?pdf/)
-	};
+	},
+	windowTitleSuffix = "";
 	
 const	nsIX509CertDB = Ci.nsIX509CertDB,
 	nsIX509CertDB2 = Ci.nsIX509CertDB2,
@@ -229,7 +230,7 @@ this.SebBrowser = {
 			this.isStarted = false;
 			var w = aWebProgress.DOMWindow.wrappedJSObject;
 			try {
-				this.win.document.title = this.win.content.document.title;
+				this.win.document.title = this.win.content.document.title + " - " + windowTitleSuffix;
 			}
 			catch(e) {
 				sl.debug(e);
@@ -299,6 +300,7 @@ this.SebBrowser = {
 	},
 	
 	initSecurity : function () {
+		windowTitleSuffix = su.getConfig("browserWindowTitleSuffix","string","");
 		if (su.getConfig("sebDisableOCSP","boolean",true)) {
 			sg.setPref("security.OCSP.enabled",0);
 		}
