@@ -118,7 +118,7 @@ this.SebConfig =  {
 		for (var k in ps) {
 			var v = ps[k];
 			sl.debug("setPref: " + k + ":" + v);
-			bsae.setPref(k, v);
+			base.setPref(k, v);
 		}	
 	},
 	
