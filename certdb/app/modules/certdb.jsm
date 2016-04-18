@@ -35,7 +35,7 @@ this.EXPORTED_SYMBOLS = ["certdb"];
 const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components,
 	{ appinfo } = Cu.import("resource://gre/modules/Services.jsm").Services,
 	{ FileUtils } = Cu.import("resource://gre/modules/FileUtils.jsm",{}),
-	{ TextEncoder, TextDecoder, OS } = Cu.import("resource://gre/modules/osfile.jsm",{});
+	{ OS } = Cu.import("resource://gre/modules/osfile.jsm");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
