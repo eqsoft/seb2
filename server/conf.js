@@ -67,7 +67,7 @@ var conf = function conf() {
 			}
 			if (port == 0) {
 				console.log('can not get port');
-				res.writeHead(403, {'Content-Type': 'text/plain'});
+				res.writeHead(403, {'Content-Type': 'text/plain; charset=utf-8'});
 				res.end('can not get port');
 			}
 			
@@ -77,7 +77,7 @@ var conf = function conf() {
 			else {
 				// this should not be reached in productive ssl environments (rejectUnauthorized = true)
 				if (!req.connection.getPeerCertificate().subject) {
-					res.writeHead(403, {'Content-Type': 'text/plain'});
+					res.writeHead(403, {'Content-Type': 'text/plain; charset=utf-8'});
 					res.end('You need a valid client certificate: wrong client');
 				}
 				else {
@@ -90,7 +90,7 @@ var conf = function conf() {
 						console.log("server req subject CN: " + subject);
 					}
 					catch(e) {
-						res.writeHead(403, {'Content-Type': 'text/plain'});
+						res.writeHead(403, {'Content-Type': 'text/plain; charset=utf-8'});
 						res.end('SSL Error: failed to get certificate subject CN!');
 						return;
 					}
@@ -99,12 +99,12 @@ var conf = function conf() {
 						//console.log("server req issuer CN: " + issuer);
 					}
 					catch(e) {
-						res.writeHead(403, {'Content-Type': 'text/plain'});
+						res.writeHead(403, {'Content-Type': 'text/plain; charset=utf-8'});
 						res.end('SSL Error: failed to get certificate issuer!');
 						return;
 					}
 					if (issuer != CA_CN) {
-						res.writeHead(403, {'Content-Type': 'text/plain'});
+						res.writeHead(403, {'Content-Type': 'text/plain; charset=utf-8'});
 						res.end('You need a valid client certificate: wrong issuer!');
 						return;
 					}
