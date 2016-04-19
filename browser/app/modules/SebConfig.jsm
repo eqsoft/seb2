@@ -65,6 +65,7 @@ this.SebConfig =  {
 	},
 	
 	initConfig : function (initAfterConfig) {
+		sl.debug("initConfig");
 		function cb(obj) {
 			if (typeof obj == "object") {
 				sl.debug("config object found");
