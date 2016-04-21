@@ -5,12 +5,15 @@
 		<script>
 			var ws = null;
 			var msg = {
-				"close":"SEB.close",
-				"restartExam":"SEB.restartExam",
-				"displaySettingsChanged":"SEB.displaySettingsChanged",
-				"reload":"SEB.reload",
-				"keyboardShown":"SEB.keyboardShown",
-				"shutdown":"SEB.shutdown",
+				
+				
+				"close" : { "Handler":"Close", "Opts":null},
+				"restartExam" : { "Handler":"RestartExam", "Opts": null},
+				"displaySettingsChanged" : { "Handler":"DisplaySettingsChanged", "Opts":{}},
+				"reload" : { "Handler":"Reload", "Opts":{}},
+				"keyboardShown" : { "Handler":"KeyboardShown", "Opts":{}},
+				"shutdown" : { "Handler":"Shutdown", "Opts":{}},
+				
 				"AdditionalResourcesPdfMac" :
 				{
 					"Handler": "AdditionalResources",
@@ -35,7 +38,16 @@
 					}
 				}
 			};
-				
+			
+			/*
+			"close":"SEB.close",
+			"restartExam":"SEB.restartExam",
+			"displaySettingsChanged":"SEB.displaySettingsChanged",
+			"reload":"SEB.reload",
+			"keyboardShown":"SEB.keyboardShown",
+			"shutdown":"SEB.shutdown",
+			*/
+			
 			function init() {
 				ws = new WebSocket("ws://www.simple.org:8706", ["protocolOne", "protocolTwo"]);
 				var sel = document.getElementById("selMsg");

@@ -428,7 +428,7 @@ this.SebBrowser = {
 	},
 	
 	reload : function (win) {
-		sl.debug("try reload...");
+		sl.debug("try reload in browser ...");
 		if (!win.XulLibBrowser) {
 			sl.err("no xullib.browser in ChromeWindow!");
 			return false;
