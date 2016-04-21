@@ -298,7 +298,7 @@ this.seb =  {
 			}
 		}
 		else {
-			br.reload(win);
+			sb.reload(win);
 		}
 	},
 	
