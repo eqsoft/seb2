@@ -51,6 +51,7 @@ let	base = null,
 
 this.SebConfig =  {
 	prefsMap : {},
+	callback : null,
 	
 	init : function(obj) {
 		base = this;
@@ -64,19 +65,47 @@ this.SebConfig =  {
 		base.prefsMap["spellcheckDefault"] = base.spellcheckDefault;
 	},
 	
-	initConfig : function (initAfterConfig) {
-		sl.debug("initConfig");
+	initConfig : function(callback) {
+		base.callback = callback;
+		base.initDefaultConfig();
+	},
+	
+	initDefaultConfig : function() {
+		sl.debug("initDefaultConfig");
+		
 		function cb(obj) {
 			if (typeof obj == "object") {
-				sl.debug("config object found");
-				seb.config = obj;
+				sl.debug("default config object found");
+				seb.defaultConfig = obj;
+				base.initCustomConfig.call(null);
+			}
+		}
+		let defaultFile = FileUtils.getFile("CurProcD",["default.json"], null);
+		if (defaultFile.exists()) { 
+			su.getJSON(defaultFile.path,cb); 
+		}
+		else { 
+				sl.err("no default config found!");
+		}
+	},
+	
+	
+	initCustomConfig : function () {
+		sl.debug("initCustomConfig");
+		function cb(obj) {
+			if (typeof obj == "object") {
+				sl.debug("custom config object found");
+				seb.config = su.mergeJSON(obj, seb.defaultConfig);
+				sl.debug(JSON.stringify(seb.config));
+				
 				if (!su.isEmpty(seb.config.sebPrefs)) {		
 					base.setPrefs(seb.config.sebPrefs);
 				}
+				
 				if (!su.isEmpty(seb.config.sebPrefsMap)) {		
 					base.setPrefsMap(seb.config.sebPrefsMap);
 				}
-				initAfterConfig.call(null);
+				base.callback.call(null);
 			}
 		}
 		let configParam = su.getCmd("config");

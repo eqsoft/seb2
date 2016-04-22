@@ -59,6 +59,7 @@ let	base = null,
 this.seb =  {
 	DEBUG : false,
 	cmdline : null,
+	defaultConfig : null,
 	config : null,
 	url : "",
 	mainWin : null,
