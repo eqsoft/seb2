@@ -167,19 +167,11 @@ this.SebUtils =  {
 	},
 	
 	mergeJSON : function (source1,source2) {
-		/*
-		* Properties from the Souce1 object will be copied to Source2 Object.
-		* Note: This method will return a new merged object, Source1 and Source2 original values will not be replaced.
-		* */
 		var mergedJSON = Object.create(source2);// Copying Source2 to a new Object
 
 		for (var attrname in source1) {
 			if(mergedJSON.hasOwnProperty(attrname)) {
 				if ( source1[attrname]!=null && source1[attrname].constructor==Object ) {
-					/*
-					* Recursive call if the property is an object,
-					* Iterate the object and set all properties of the inner object.
-					*/
 					mergedJSON[attrname] = base.mergeJSON(source1[attrname], mergedJSON[attrname]);
 				} 
 
@@ -283,17 +275,26 @@ this.SebUtils =  {
 		var cv = Cc["@mozilla.org/intl/scriptableunicodeconverter"].createInstance(Ci.nsIScriptableUnicodeConverter);
 		var ch = Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash);
 		cv.charset = "UTF-8";
+		
 		//var arrUrl = {};
 		var strKey = str;
 		var arrKey = {};
 		//var urlData = cv.convertToByteArray(url, arrUrl);
 		var keyData = cv.convertToByteArray(strKey, arrKey);
 		ch.init(ch.SHA256);
+		
 		//ch.update(urlData, urlData.length);
 		ch.update(keyData, keyData.length);
 		var hash = ch.finish(false);
-		var s = [toHexString(hash.charCodeAt(i)) for (i in hash)].join("");
+		var s = "";
+		for (var i=0; i<hash.length; i++) {
+			s += toHexString(hash.charCodeAt(i));
+		};
 		return s;
+		/*
+		var s = [toHexString(hash.charCodeAt(i)) for (i in hash)].join(""); does not work anymore?? after
+		return s;
+		*/ 
 	},
 	
 	isEmpty : function (obj) {
@@ -314,5 +315,4 @@ this.SebUtils =  {
 	isObject : function(obj) {
 		return obj === Object(obj);
 	}
-	
 }
