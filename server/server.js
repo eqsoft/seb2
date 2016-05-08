@@ -10,41 +10,46 @@ var 	fs 		= require('fs-extra'),
 	handler		= {
 				"screenshot":screenshot
 			};
-
-var socketServer = https.createServer(conf.getServerOptions(), conf.getApp());
+var socketOptions = (conf.socketClientCert) ? conf.getClientCertOptions() : conf.getOptions();
+var socketServer = https.createServer(socketOptions, conf.getApp());
 var wss = new WebSocketServer({ server: socketServer });
 monitor.init(wss);
 wss.on('connection',on_connection);
-wss.on('connection',monitor.on_seb_connection);
+//wss.on('connection',monitor.on_seb_connection);
 wss.on('error',on_connection_error);
 wss.on('error',monitor.on_seb_connection_error);
 socketServer.listen(conf.socketPort);
 console.log('Websocket started on port ' + conf.socketPort);
 
 if (demoApp) {
-	httpsServer = https.createServer(conf.getDemoOptions(), conf.getApp());
+	var demoOptions = (conf.demoClientCert) ? conf.getClientCertOptions() : conf.getOptions();
+	httpsServer = https.createServer(demoOptions, conf.getApp());
 	httpsServer.listen(conf.demoPort);
 	console.log('HTTPS server for seb demo app started on port ' + conf.demoPort);
 }
 
 function on_connection(socket) {
 	//console.log(wss.clients);
-	var cn = null;
-	try {
-		//var c = socket.upgradeReq.connection;
-		//console.dir(c);
-		cn = socket.upgradeReq.connection.getPeerCertificate().subject.CN;
-	}
-	catch(e) {
-		console.log("No valid client certificate enbedded in seb\n" + e);
-		return;
-	}
-	if (cn != conf.usrCN ) { // only clients with valid user certificates are allowed
-		out("invalid user CN: " + cn);
-		socket.close();
+	if (conf.socketClientCert) {
+		var cn = null;
+		try {
+			//var c = socket.upgradeReq.connection;
+			//console.dir(c);
+			cn = socket.upgradeReq.connection.getPeerCertificate().subject.CN;
+		}
+		catch(e) {
+			console.log("No valid client certificate enbedded in seb\n" + e);
+			return;
+		}
+		if (cn != conf.usrCN ) { // only clients with valid user certificates are allowed
+			out("invalid user CN: " + cn);
+			socket.close();
+			return;
+		}
 	}
 	else {
 		out("seb client connected");
+		monitor.on_seb_connection(socket);
 		socket.on('open',on_open);
 		socket.on('open',monitor.on_seb_open);
 		socket.on('close',on_close);

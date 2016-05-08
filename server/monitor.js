@@ -14,8 +14,8 @@ var 	fs 		= require('fs-extra'),
 				"shutdown":shutdown,
 				"shutdownAll":shutdownAll
 			};
-
-var monitorServer = https.createServer(conf.getServerOptions(), conf.getApp());
+var monitorOptions = (conf.monitorClientCert) ? conf.getClientCertOptions() : conf.getOptions();
+var monitorServer = https.createServer(monitorOptions, conf.getApp());
 var wss = new WebSocketServer({ server: monitorServer });
 monitorServer.listen(conf.monitorPort);
 wss.on('connection', on_connection);
@@ -46,22 +46,25 @@ function on_connection(socket) {
 	//console.dir(socket.upgradeReq);
 	//console.log(socket.CONNECTING);
 	//console.log(socket.CLOSED);
-	var cn = null;
-	try {
-		//var c = socket.upgradeReq.connection.getPeerCertificate();
-		//console.dir(c);
-		cn = socket.upgradeReq.connection.getPeerCertificate().subject.CN;
-	}
-	catch(e) {
-		console.log(e);
-		socket.send(JSON.stringify({"handler":"socketError","opts":{"error":"failed client certificate handshake on socket connection"}}));
-		socket.close();
-		//console.dir(socket);
-		return;
-	}
-	if (cn != conf.admCN ) { // only clients with valid user certificates are allowed
-		out("invalid user CN: " + cn);
-		socket.close();
+	if (conf.monitorClientCert) {
+		var cn = null;
+		try {
+			//var c = socket.upgradeReq.connection.getPeerCertificate();
+			//console.dir(c);
+			cn = socket.upgradeReq.connection.getPeerCertificate().subject.CN;
+		}
+		catch(e) {
+			console.log(e);
+			socket.send(JSON.stringify({"handler":"socketError","opts":{"error":"failed client certificate handshake on socket connection"}}));
+			socket.close();
+			//console.dir(socket);
+			return;
+		}
+		if (cn != conf.admCN ) { // only clients with valid user certificates are allowed
+			out("invalid user CN: " + cn);
+			socket.close();
+			return;
+		}
 	}
 	else {
 		out("monitor: admin connected");
