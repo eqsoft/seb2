@@ -255,6 +255,11 @@ this.SebNet = {
 		if ( (typeof p === "boolean") && p) {
 			return 2;
 		}
+		// system proxy
+		p = proxies["proxySettingsPolicy"];
+		if ( (typeof p === "number") && p == 0) {
+			return 5;
+		}
 		// http(s) proxy
 		p = proxies["HTTPEnable"];
 		let p2 = proxies["HTTPSEnable"];
