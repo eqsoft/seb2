@@ -48,7 +48,13 @@
 	min-height: 24px;
 }
 
+.tbHidden {
+	max-height: 1px;
+	min-height: 1px;
+}
+
 #toolBar {
+	display: block;
 	background-color : #eee;
 	white-space: nowrap;
 }

@@ -228,10 +228,10 @@ this.SebWin = {
 	},
 	
 	setToolbar : function (win) {
+		var tb = win.document.getElementById("toolBar");
 		if (su.getConfig("enableBrowserWindowToolbar", "boolean", false)) {
 			sl.debug("setToolbar visible");
-			var tb = win.document.getElementById("toolBar");
-			tb.className = (su.getConfig("touchOptimized", "boolean", false)) ? "visible tbTouch" : "visible tbDesktop";			
+			tb.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";			
 			if (!su.getConfig("allowBrowsingBackForward","boolean",false)) {
 				win.document.getElementById("btnBack").className = "hidden";
 				win.document.getElementById("btnForward").className = "hidden";
@@ -243,6 +243,14 @@ this.SebWin = {
 				win.document.getElementById("btnQuit").className = "hidden";
 			}
 			sb.refreshNavigation(win);	
+		}
+		else {
+			sl.debug("setToolbar invisible");
+			tb.className = "tbHidden";
+			win.document.getElementById("btnBack").className = "hidden";
+			win.document.getElementById("btnForward").className = "hidden";
+			win.document.getElementById("btnRestart").className = "hidden";
+			win.document.getElementById("btnQuit").className = "hidden";
 		}
 	},
 	

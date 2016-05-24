@@ -57,7 +57,7 @@
 	</keyset>
 	<stack id="browser.stack" flex="1">
 		<vbox flex="1">
-			<hbox id="toolBar" class="hidden tbDesktop">
+			<hbox id="toolBar" class="tbHidden">
 				<image class="tbBtn" id="btnQuit" src="chrome://seb/content/images/quit.png" onclick="seb.quit();" />
 				<image class="tbBtn" id="btnRestart" src="chrome://seb/content/images/restart.png" onclick="sb.restart();" />
 				<image class="tbBtn" id="btnReload" src="chrome://seb/content/images/reload.png" onclick="sb.reload(window);"/>
