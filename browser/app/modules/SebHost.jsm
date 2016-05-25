@@ -328,7 +328,8 @@ this.SebHost = {
 			// called process terminates.
 			// Second and third params are used to pass command-line arguments
 			// to the process.
-			var args = ["/sbin/halt"];
+			// var args = ["/sbin/halt"];
+			var args = ["/sbin/poweroff"];
 			process.run(false, args, args.length);
 		}
 		catch(e) {
