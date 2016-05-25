@@ -47,18 +47,18 @@ function on_connection(socket) {
 			return;
 		}
 	}
-	else {
-		out("seb client connected");
-		monitor.on_seb_connection(socket);
-		socket.on('open',on_open);
-		socket.on('open',monitor.on_seb_open);
-		socket.on('close',on_close);
-		socket.on('close',monitor.on_seb_close);
-		socket.on('message',on_message);
-		socket.on('message',monitor.on_seb_message);
-		socket.on('error',on_error);
-		socket.on('error',monitor.on_seb_error);
-	}
+	
+	out("seb client connected");
+	monitor.on_seb_connection(socket);
+	socket.on('open',on_open);
+	socket.on('open',monitor.on_seb_open);
+	socket.on('close',on_close);
+	socket.on('close',monitor.on_seb_close);
+	socket.on('message',on_message);
+	socket.on('message',monitor.on_seb_message);
+	socket.on('error',on_error);
+	socket.on('error',monitor.on_seb_error);
+	
 }
 
 function on_connection_error(error) {

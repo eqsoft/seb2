@@ -66,15 +66,14 @@ function on_connection(socket) {
 			return;
 		}
 	}
-	else {
-		out("monitor: admin connected");
-		adminsExist = true;
-		addData(socket);
-		socket.on('open',on_open);
-		socket.on('close',on_close);
-		socket.on('message',on_message);
-		socket.on('error',on_error);
-	}
+	
+	out("monitor: admin connected");
+	adminsExist = true;
+	addData(socket);
+	socket.on('open',on_open);
+	socket.on('close',on_close);
+	socket.on('message',on_message);
+	socket.on('error',on_error);
 }
 
 function on_open() {
