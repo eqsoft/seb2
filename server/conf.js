@@ -1,6 +1,7 @@
 var 	fs 	= require('fs-extra'),
 	express = require('express'),
 	static = require('serve-static'),
+	basicAuth = require('basic-auth'),
 	directory = require('serve-index'),
 	utils	= require('./utils.js');
 
@@ -11,6 +12,9 @@ const 	CA_CN 	= "Simple Signing CA",
 	socketPort = 8442,
 	demoPort = 8443,
 	demoClientCert = false,
+	demoBasicAuth = true,
+	demoUser = 'demo',
+	demoPass = 'demo',
 	socketClientCert = false,
 	monitorClientCert = false;
 
@@ -26,6 +30,9 @@ var conf = function conf() {
 	this.socketPort = socketPort;
 	this.demoPort = demoPort;
 	this.demoClientCert = demoClientCert;
+	this.demoBasicAuth = demoBasicAuth;
+	this.demoUser = demoUser;
+	this.demoPass = demoPass;
 	this.socketClientCert = socketClientCert;
 	this.monitorClientCert = monitorClientCert;
 	
@@ -60,8 +67,14 @@ var conf = function conf() {
 	this.getApp = function() {
 		var app = express();
 		
+		
 		app.use(function(req,res,next) { // Check Auth: only SSL connection with valid client certs are allowed, otherwise ANONYMOUS (demo certs see: user.p12 and admin.p12
 			// don't request client certificates for demo web app
+			function unauthorized(res) {
+				res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
+				return res.sendStatus(401);
+			};
+			
 			var port = 0;
 			var checkClientCert = false;
 			if (req.socket.server && req.socket.server.address) {
@@ -81,9 +94,27 @@ var conf = function conf() {
 			if (port == demoPort && demoClientCert) {
 				checkClientCert = true;
 			}
+			
+			if (port == demoPort && demoBasicAuth) {
+				checkClientCert = false; // don't check client cert
+				var user = basicAuth(req);
+				if (!user) {
+					console.log('no credentials recieved');
+					return unauthorized(res);
+				};
+				
+				if (user.name === demoUser && user.pass === demoPass) {
+					return next();
+				}
+				else {
+					return unauthorized(res);
+				}
+			}
+			
 			if (port == socketPort && socketClientCert) {
 				checkClientCert = true;
 			}
+			
 			if (port == monitorPort && monitorClientCert) {
 				checkClientCert = true;
 			}
@@ -122,7 +153,7 @@ var conf = function conf() {
 						res.end('You need a valid client certificate: wrong issuer!');
 						return;
 					}
-					next(); 
+					next();
 				}
 			}
 			else {
@@ -130,7 +161,7 @@ var conf = function conf() {
 			}
 		});
 		app.use('/',static(__dirname));
-		app.use('/demo',static('demo'));
+		app.use('/demo', static('demo'));
 		app.use('/websocket',static('websocket'));
 		app.use('/websocket/data',directory('websocket/data'));
 		return app;
