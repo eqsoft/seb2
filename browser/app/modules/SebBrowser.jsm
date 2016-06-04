@@ -33,10 +33,12 @@
 this.EXPORTED_SYMBOLS = ["SebBrowser"];
 
 /* Modules */
-const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components,
-	{ prompt, scriptloader } = Cu.import("resource://gre/modules/Services.jsm").Services;
+const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu, Constructor: CC } = Components,
+	{ prompt, scriptloader, obs } = Cu.import("resource://gre/modules/Services.jsm").Services;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-
+Cu.import("resource://gre/modules/NetUtil.jsm");
+Cu.import("resource://gre/modules/FileUtils.jsm");
+Cu.importGlobalProperties(['Blob','FileReader']);
 /* Services */
 let	wpl = Ci.nsIWebProgressListener,
 	wnav = Ci.nsIWebNavigation,
@@ -82,6 +84,7 @@ let 	base = null,
 		flash : new RegExp(/^application\/x-shockwave-flash/),
 		pdf : new RegExp(/^application\/(x-)?pdf/)
 	},
+	sebReg = new RegExp(/.*?\.seb$/i),
 	windowTitleSuffix = "";
 	
 const	nsIX509CertDB = Ci.nsIX509CertDB,
@@ -92,6 +95,137 @@ const	nsIX509CertDB = Ci.nsIX509CertDB,
 	CERT_USER = 1, //reserved to windows host
 	CERT_CA = 2,
 	CERT_SSL_DEBUG = 3;
+
+var 	BinaryInputStream = CC('@mozilla.org/binaryinputstream;1', 'nsIBinaryInputStream', 'setInputStream');
+	BinaryOutputStream = CC('@mozilla.org/binaryoutputstream;1', 'nsIBinaryOutputStream', 'setOutputStream'),
+	StorageStream = CC('@mozilla.org/storagestream;1', 'nsIStorageStream', 'init');
+
+function TracingListener() {
+	this.receivedChunks = []; // array for incoming data. holds chunks as they come, onStopRequest we join these junks to get the full source
+	this.responseBody = ""; // we'll set this to the 
+	this.responseStatusCode;
+
+	this.deferredDone = {
+		promise: null,
+		resolve: null,
+		reject: null
+	};
+	this.deferredDone.promise = new Promise(function(resolve, reject) {
+		this.resolve = resolve;
+		this.reject = reject;
+	}.bind(this.deferredDone));
+	Object.freeze(this.deferredDone);
+	this.promiseDone = this.deferredDone.promise;
+};
+
+TracingListener.prototype = {
+	onDataAvailable: function(aRequest, aContext, aInputStream, aOffset, aCount) {
+		if (sebReg.test(aRequest.name)) {
+			var iStream = new BinaryInputStream(aInputStream) // binaryaInputStream
+			var sStream = new StorageStream(8192, aCount, null); // storageStream // not sure why its 8192 but thats how eveyrone is doing it, we should ask why
+			var oStream = new BinaryOutputStream(sStream.getOutputStream(0)); // binaryOutputStream
+			// Copy received data as they come.
+			//var s = NetUtil.read
+			var data = iStream.readBytes(aCount);
+			this.receivedChunks.push(data);
+			sl.debug("bytes: " + aCount);
+			base.dialogHandler("reading seb file bytes: " + aCount);
+			oStream.writeBytes(data, aCount);
+			//this.onDataAvailable(aRequest, aContext, sStream.newInputStream(0), aOffset, aCount);
+		}
+		else {
+			sl.debug("another resource: " + aRequest.name);
+			//this.originalListener.onDataAvailable(aRequest, aContext, sStream.newInputStream(0), aOffset, aCount);
+			this.originalListener.onDataAvailable(aRequest, aContext, aInputStream, aOffset, aCount);
+		}
+	},
+	onStartRequest: function(aRequest, aContext) {
+		// this is the simplest way to stop the original request if seb file is requested
+		// but we also have to check dynamic seb file responses seeking the Response-Header Content-Disposition: filename=xxxx.seb
+		if (sebReg.test(aRequest.name)) {
+			base.dialogHandler("captured seb file request... cancel original request");
+			this.originalListener.onStopRequest(aRequest, aContext, 0);
+		}
+		else {
+			this.originalListener.onStartRequest(aRequest, aContext);
+		}
+	},
+	onStopRequest: function(aRequest, aContext, aStatusCode) {
+		if (sebReg.test(aRequest.name)) {
+			sl.debug("chunks: " +this.receivedChunks.length);
+			var data = this.receivedChunks.join(""); // put chunks together
+			/*
+			var aFile = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
+			aFile.initWithPath("/Users/stefan/test.seb");
+			var stream = FileUtils.openSafeFileOutputStream(aFile, FileUtils.MODE_WRONLY | FileUtils.MODE_CREATE);
+			var binaryStream =Cc["@mozilla.org/binaryoutputstream;1"].createInstance(Ci.nsIBinaryOutputStream);
+			binaryStream.setOutputStream(stream);
+			binaryStream.writeBytes(data,data.length);
+			FileUtils.closeSafeFileOutputStream(stream);
+			*/ 
+			var arr = []; // uint8array with charCodes
+			for (var i=0;i<data.length;i++) {
+				arr.push(data.charCodeAt(i));
+			}
+			var u8 = new Uint8Array(arr);
+			var blob = new Blob([u8]);
+			base.dialogHandler("sending blob to websocket: " + blob.size);
+			sh.sendMessage(blob);
+			//sh.sendMessage(arr.join("%"));
+			//sl.debug(arr.length);
+			//sl.debug(String.fromCharCode.apply(null,data));
+			
+			//var arr = Uint8Array.from(data);
+			//var blob = new Blob([arr]);
+			//sl.debug();
+			//var blob = new Blob();
+			//sh.sendMessage(blob);
+			
+			/*
+			var reader = new FileReader();
+			reader.readAsArrayBuffer(blob);
+			reader.onload = function() {
+				var arrayBuffer = reader.result;
+				//sl.debug(arrayBuffer.toString());
+				//var bytes = new Uint8Array(arrayBuffer);
+				sh.sendMessage(arrayBuffer);
+				delete this.receivedChunks;
+			}
+			*/ 
+		} 
+		this.responseStatus = aStatusCode;
+		this.originalListener.onStopRequest(aRequest, aContext, aStatusCode);
+		this.deferredDone.resolve();
+	},
+	QueryInterface: function(aIID) {
+		if (aIID.equals(Ci.nsIStreamListener) || aIID.equals(Ci.nsISupports)) {
+			return this;
+		}
+		throw Cr.NS_NOINTERFACE;
+	}
+};
+
+var httpResponseObserver = {
+	observe: function(aSubject, aTopic, aData) {
+		var newListener = new TracingListener();
+		aSubject.QueryInterface(Ci.nsITraceableChannel);
+		newListener.originalListener = aSubject.setNewListener(newListener);
+		newListener.promiseDone.then(
+			function() {
+				// no error happened
+				sl.debug('response done:', newListener.responseBody);
+			},
+			function(aReason) {
+				// promise was rejected, right now i didnt set up rejection, but i should listen to on abort or bade status code then reject maybe
+			}
+		).catch(
+			function(aCatch) {
+				sl.err('something went wrong, a typo by dev probably:', aCatch);
+			}
+		);
+	}
+};
+
 
 function nsBrowserStatusHandler() {};
 nsBrowserStatusHandler.prototype = {
@@ -123,6 +257,8 @@ nsBrowserStatusHandler.prototype = {
 
 this.SebBrowser = {
 	//lastDocumentUrl : null,
+	dialogHandler : null,
+	
 	init : function(obj) {
 		base = this;
 		seb = obj;
@@ -133,11 +269,13 @@ this.SebBrowser = {
 	
 	stateListener : function(aWebProgress, aRequest, aStateFlags, aStatus) {
 		//sl.err(aRequest.name);
+		if (aRequest instanceof Ci.nsIHttpChannel) {
+			aRequest.QueryInterface(Ci.nsIHttpChannel);
+		}
 		if ((aStateFlags & startDocumentFlags) == startDocumentFlags) { // start document request event
 			this.isStarted = true;
 			this.win = sw.getChromeWin(aWebProgress.DOMWindow);
 			this.baseurl = btoa(aRequest.name);
-			
 			//this.win = sw.lastWin;
 			
 			/*
@@ -168,6 +306,18 @@ this.SebBrowser = {
 				prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
 				return 1; // 0?
 			}
+			// seb file handling
+			
+			
+			if (aRequest.getRequestHeader("Content-type") == SEB_MIME_TYPE) {
+				sl.debug("SEB File Loading...");
+				
+				aRequest.cancel(Cr.NS_BINDING_ABORTED);
+				seb.reconfState = RECONF_START;
+				seb.mainWin.openDialog(RECONFIG_URL,"",RECONFIG_FEATURES,aRequest.name,base.initReconf).focus();
+				return 0;			
+			}
+			
 			// PDF Handling
 			// don't trigger if pdf is part of the query string: infinite loop
 			// don't trigger from pdfViewer itself: infinite loop
@@ -177,17 +327,27 @@ this.SebBrowser = {
 				sw.openPdfViewer(aRequest.name);
 				base.stopLoading();
 				return;
-			} 
+			}
 		}
 		if ((aStateFlags & stopDocumentFlags) == stopDocumentFlags) { // stop document request event
-			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name + " - status: " + aStatus); 
+			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name + " - status: " + aStatus);
+			/*
+			try {
+				sl.debug("disposition:" + aRequest.getResponseHeader("Content-Disposition"));
+			}
+			catch(e) {}
+			*/ 
+			/*
+			if (sebReg.test(aRequest.name) && seb.reconfState == RECONF_START) {
+				sl.debug("sdfsdfsdfsdf");
+			}
+			*/
 			if (!Components.isSuccessCode(aStatus) && aStatus != 2152398850) { // heise.de with all that advertising will not load without that skipped 2152398850 status
 			//if (aStatus > 0 && aStatus != 2152398850) { // error: experimental!!! ToDo: look at status codes!!
 				sl.debug("Error document loading: " + aStatus);
 				base.stopLoading();
 				try {
 					try {
-						aRequest.QueryInterface(Ci.nsIHttpChannel); // no pdf mimetype handling
 						let mimeType = aRequest.getResponseHeader("Content-Type");
 						if (mimeTypesRegs.pdf.test(mimeType) && !/\.pdf$/i.test(aRequest.name) && su.getConfig("sebPdfJsEnabled","boolean", true)) { // pdf file requests should already catched by SebBrowser
 							sl.debug("request already aborted by httpResponseObserver, no error page!");
@@ -295,6 +455,11 @@ this.SebBrowser = {
 		var interfaceRequestor = win.XulLibBrowser.docShell.QueryInterface(Ci.nsIInterfaceRequestor);
 		var webProgress = interfaceRequestor.getInterface(Ci.nsIWebProgress);
 		webProgress.addProgressListener(win.XULBrowserWindow, Ci.nsIWebProgress.NOTIFY_ALL);
+		/*
+		if (sw.getWinType(win) == "reconf") {
+			obs.addObserver(httpResponseObserver, 'http-on-examine-response', false);
+		}
+		*/ 
 		//nav = win.XulLibBrowser.webNavigation;
 		sl.debug("initBrowser");
 	},
@@ -324,6 +489,20 @@ this.SebBrowser = {
 		if (su.getConfig("pinEmbeddedCertificates","boolean",false)) {
 			base.disableBuiltInCerts();
 		}
+	},
+	
+	initReconf : function(win,url,handler) {
+		sl.debug("initReconf: " + win);
+		//base.initBrowser(win); // needed?
+		base.dialogHandler = handler;
+		obs.addObserver(httpResponseObserver, 'http-on-examine-response', false);
+		base.dialogHandler("loading: " + url);
+		win.content.document.location.href = url;
+	},
+	
+	resetReconf : function() {
+		obs.removeObserver(httpResponseObserver, 'http-on-examine-response');
+		base.dialogHandler("closeDialog");
 	},
 	
 	addSSLCert : function(cert,debug) {

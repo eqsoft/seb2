@@ -34,8 +34,9 @@ this.EXPORTED_SYMBOLS = ["SebNet"];
 
 /* Modules */
 const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components,
-	{ appinfo, prefs, scriptloader, io } = Cu.import("resource://gre/modules/Services.jsm").Services;
+	{ appinfo, prefs, scriptloader, io, obs } = Cu.import("resource://gre/modules/Services.jsm").Services;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/NetUtil.jsm");
 	
 /* Services */
 
@@ -60,7 +61,8 @@ let 	seb = null,
 	},
 	convertReg = /[-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g,
 	wildcardReg = /\*/g,
-	httpReg = new RegExp(/^http\:/i);
+	httpReg = new RegExp(/^http\:/i),
+	sebReg = new RegExp(/.*?\.seb$/i),
 	reqHeader = "",
 	reqKey = null,
 	reqSalt = null,
@@ -69,7 +71,7 @@ let 	seb = null,
 	blockHTTP = false;
 
 this.SebNet = {
-		
+	
 	httpRequestObserver : {
 		observe	: function(subject, topic, data) {
 			if (topic == "http-on-modify-request" && subject instanceof Ci.nsIHttpChannel) {
@@ -78,6 +80,7 @@ this.SebNet = {
 				//subject.QueryInterface(Ci.nsIHttpChannel);
 				//sl.debug(subject.getRequestHeader('Accept'));
 				//sl.debug(subject.referrer);
+				
 				let origUrl = "";
 				let url = "";
 				try {
@@ -105,6 +108,7 @@ this.SebNet = {
 						}
 						subject.setRequestHeader(reqHeader, k, false);
 					}
+					
 					if (httpReg.test(url)) {
 						if (blockHTTP) {
 							sl.debug("block http request");
@@ -181,6 +185,7 @@ this.SebNet = {
 		base.setListRegex();
 		base.setReqHeader();
 		base.setSSLSecurity();
+		sl.debug(obs);
 		sl.out("SebNet initialized: " + seb);
 	},
 	

@@ -13,7 +13,10 @@
 	"layout.spellcheckDefault" 	: { "cb" : "spellcheckDefault" }
 },
 "sebServerEnabled":false,
-"sebServer": {},
+"sebServer": {
+	"url"    : "https://localhost:8442/websocket/index.html",
+	"socket" : "wss://localhost:8442"
+},
 "sebScreenshot":false,
 "sebScreenshotImageType":"image/jpeg",
 "sebScreenshotSound":false,
@@ -33,7 +36,7 @@
 "allowQuit":true,
 "showReloadWarning" : true,
 "quitURL":"http://www.safeexambrowser.org/quit",
-"hashedQuitPassword":"5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d85e",
+"hashedQuitPassword":"5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
 "pinEmbeddedCertificates":false,
 "allCARootTrust":false,
 "embeddedCertificates":[],
@@ -69,6 +72,7 @@
 "enableZoomPage":true,
 "enableZoomText":false,
 "allowSpellCheck":false,
+"downloadDirectoryWin":"",
 
 "DESCRIPTION":"*** the config params above are already migrated ****",
 
@@ -87,7 +91,6 @@
 "enableLogging":false,
 "logDirectoryWIN":"",
 "monitorProcesses":false,
-"downloadDirectoryWin":"",
 "downloadAndOpenSebConfig":true,
 "newBrowserWindowByLinkBlockForeign":false,
 "enableBrowserWindowToolbar":true,

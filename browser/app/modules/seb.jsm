@@ -33,13 +33,17 @@ this.EXPORTED_SYMBOLS = ["seb"];
 
 /* Modules */
 const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components,
-	{ appinfo, io, locale, prefs, prompt } = Cu.import("resource://gre/modules/Services.jsm").Services,
+	{ appinfo, io, locale, prefs, prompt, scriptloader } = Cu.import("resource://gre/modules/Services.jsm").Services,
 	{ FileUtils } = Cu.import("resource://gre/modules/FileUtils.jsm",{}),
 	{ OS } = Cu.import("resource://gre/modules/osfile.jsm");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 /* Services */
+
+/* SebGlobals */
+scriptloader.loadSubScript("resource://globals/prototypes.js");
+scriptloader.loadSubScript("resource://globals/const.js");
 
 /* SebModules */
 XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","SebUtils");
@@ -71,6 +75,7 @@ this.seb =  {
 	quitIgnorePassword : false,
 	quitIgnoreWarning : false,
 	hostForceQuit : false,
+	reconfState : RECONF_NO,
 	toString : function() {
 		return appinfo.name;
 	},
@@ -238,6 +243,13 @@ this.seb =  {
 	},
 	
 	initSecondary : function(win) {
+		sl.debug("initSecondary");
+		sw.setToolbar(win);
+		sw.setSize(win);
+	},
+	
+	initReconf : function(win) {
+		sl.debug("initReconf");
 		sw.setToolbar(win);
 		sw.setSize(win);
 	},
@@ -256,12 +268,19 @@ this.seb =  {
 		sb.setBrowserHandler(win);
 		sn.httpRequestObserver.register();
 		sn.httpResponseObserver.register();
-		if (sw.getWinType(win) == "main") {
-			base.mainWin = win;
-			base.initMain(win);
-		}
-		else {
-			base.initSecondary(win);
+		switch (sw.getWinType(win)) {
+			case "main" :
+				base.mainWin = win;
+				base.initMain(win);
+				break;
+			case "secondary" :
+				base.initSecondary(win);
+				break;
+			case "reconf" :
+				base.initReconf(win);
+				break;
+			default :
+				base.initSecondary(win);
 		}
 	},
 	
@@ -269,6 +288,7 @@ this.seb =  {
 		sl.debug("onunload");
 		if (sw.getWinType(win) == "main") {
 			sh.closeMessageSocket();
+			// sebserver and other handler?
 		}
 		else {
 			sw.removeWin(win);
@@ -301,6 +321,15 @@ this.seb =  {
 		else {
 			sb.reload(win);
 		}
+	},
+	
+	reconfigure: function(config) {
+		sl.debug("reconfigure");
+		sg.initCustomConfig(config);
+		sb.resetReconf();
+		sw.resetWindows();
+		base.mainWin.document.location.reload(true);
+		base.reconfState = RECONF_SUCCESS;
 	},
 	
 	quit: function(e) {

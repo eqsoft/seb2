@@ -66,6 +66,7 @@ this.SebHost = {
 	os : "",
 	ars : {},
 	msgHandler : {},
+	sendHandler : {},
 
 	init : function(obj) {
 		base = this;
@@ -79,7 +80,12 @@ this.SebHost = {
 			"RestartExam" : base.handleRestartExam,
 			"Close" : base.handleClose,
 			"KeyboardShown" : base.handleKeyboardShown,
-			"Shutdown" : base.handleShutdown
+			"Shutdown" : base.handleShutdown,
+			"SebFileTransfer" : base.handleSebFileTransfer,
+			"Reconfigure" : base.handleReconfigure
+		};
+		base.sendHandler = {
+			"SebFile" : base.sendSebFile
 		};
 		base.initAdditionalResources();
 		sl.out("SebHost initialized: " + seb);
@@ -123,6 +129,7 @@ this.SebHost = {
 		
 		try {
 			messageSocket = new WebSocket(socket);
+			messageSocket.binaryType = "blob";
 			sl.debug("messageSocket: " + typeof messageSocket)
 		}
 		catch (e) {
@@ -149,6 +156,7 @@ this.SebHost = {
 		
 		messageSocket.onmessage = function(evt) { 
 			// ToDo: message handling !!
+			sl.debug("socket message type: " + evt.type);
 			if (/^SEB\./.test(evt.data)) { // old string messages
 				switch (evt.data) {
 					case "SEB.close" :
@@ -193,19 +201,24 @@ this.SebHost = {
 					if (typeof msgObj === "object") {
 						//sl.debug(msgObj);
 						try {
-							//sl.debug(JSON.stringify(msgObj)); 
-							base.msgHandler[msgObj["Handler"]].call(base,msgObj["Opts"]);
+							//sl.debug(JSON.stringify(msgObj));
+							if (typeof base.msgHandler[msgObj["Handler"]] == "function") {
+								base.msgHandler[msgObj["Handler"]].call(base,msgObj["Opts"]);
+							}
+							else {
+								sl.debug("not handled msg: " + msgObj["Handler"]);
+							}
 						}
 						catch(e) {
 							sl.err(e);
 						}
 					}
 					else {
-						sl.debug("1 messageSocket: not handled msg: " + evt.data); 
+						sl.debug("messageSocket(1): not handled msg: " + evt.data); 
 					}
 				}
 				catch(e) {
-					sl.debug("2 messageSocket: not handled msg: " + evt.data); 
+					sl.debug("messageSocket(2): not handled msg: " + evt.data); 
 				}
 			}
 		};
@@ -302,6 +315,21 @@ this.SebHost = {
 	handleShutdown : function(opt) {
 		sl.debug("messageSocket handled: " + opt);
 		base.shutdown();
+	},
+	
+	handleSebFileTransfer : function (opts) {
+		sl.debug("handleSebFileTransfer handled: " + opts);
+		sb.dialogHandler("SebFile transfer succeeded. Waiting for decrypted seb config...");
+	},
+	
+	handleReconfigure : function (opts) {
+		sl.debug("handleReconfigure handled");
+		seb.reconfigure(opts.configBase64);
+	},
+	
+	sendSebFile : function (base64) {
+		let msg = {"Handler":"SebFile","Opts":{"fileBase64":base64}};
+		base.sendMessage(JSON.stringify(msg));
 	},
 	
 	quitFromHost : function () {

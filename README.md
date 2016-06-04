@@ -31,9 +31,7 @@ but we recommand to use own firefox binaries. Download the latest firefox runtim
 http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest
 ```
 
-Install firefox to another folder then your default firefox with the customized installation setup. 
-BEWARE not to override your default Mozilla Firefox installation, 
-or delete the custom seb2 profile folder paths in the start scripts.
+Install firefox to any other folder then your default firefox with the customized installation setup. BEWARE not to override your default firefox installation. DO NOT delete the custom seb2 profile folder paths in the start scripts, this would override your default firefox profile.
 
 For seb server and demo mode including the screenshot component you need to install node.js (http://nodejs.org/).
 After installing node.js you need to install some node modules:

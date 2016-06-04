@@ -47,6 +47,7 @@ XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","Seb
 
 /* SebGlobals */
 scriptloader.loadSubScript("resource://globals/prototypes.js");
+scriptloader.loadSubScript("resource://globals/const.js");
 
 /* ModuleGlobals */
 let	base = null,
@@ -292,9 +293,85 @@ this.SebUtils =  {
 		};
 		return s;
 		/*
-		var s = [toHexString(hash.charCodeAt(i)) for (i in hash)].join(""); does not work anymore?? after
+		var s = [toHexString(hash.charCodeAt(i)) for (i in hash)].join(""); does not work anymore??
 		return s;
 		*/ 
+	},
+	
+	UintToString : function(array) {
+		var out, i, len, c;
+		var char2, char3;
+
+		out = "";
+		len = array.length;
+		i = 0;
+		while(i < len) {
+			c = array[i++];
+			switch(c >> 4) { 
+				case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+					// 0xxxxxxx
+					out += String.fromCharCode(c);
+					break;
+				case 12: case 13:
+					// 110x xxxx   10xx xxxx
+					char2 = array[i++];
+					out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+					break;
+				case 14:
+					// 1110 xxxx  10xx xxxx  10xx xxxx
+					char2 = array[i++];
+					char3 = array[i++];
+					out += String.fromCharCode(((c & 0x0F) << 12) |
+					       ((char2 & 0x3F) << 6) |
+					       ((char3 & 0x3F) << 0));
+				break;
+			}
+		}
+
+		return out;
+	},
+	
+	getEndianness : function () {
+		var a = new ArrayBuffer(4);
+		var b = new Uint8Array(a);
+		var c = new Uint32Array(a);
+		b[0] = 0xa1;
+		b[1] = 0xb2;
+		b[2] = 0xc3;
+		b[3] = 0xd4;
+		if (c[0] === 0xd4c3b2a1) {
+			return LITTLE_ENDIAN;
+		}
+		if (c[0] === 0xa1b2c3d4) {
+			return BIG_ENDIAN;
+		} 
+		else {
+			throw new Error('Unrecognized endianness');
+		}
+	},
+	
+	swapBytes : function (buf, size) {
+		var bytes = Uint8Array(buf);
+		var len = bytes.length;
+		if(size == 'WORD') {
+			var holder;
+			for(var i =0; i<len; i+=2) {
+				holder = bytes[i];
+				bytes[i] = bytes[i+1];
+				bytes[i+1] = holder;
+			}
+		}
+		else if(size == 'DWORD') {
+			var holder;
+			for(var i =0; i<len; i+=4) {
+				holder = bytes[i];
+				bytes[i] = bytes[i+3];
+				bytes[i+3] = holder;
+				holder = bytes[i+1];
+				bytes[i+1] = bytes[i+2];
+				bytes[i+2] = holder;
+			}
+		}
 	},
 	
 	isEmpty : function (obj) {

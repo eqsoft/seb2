@@ -5,3 +5,6 @@ log.txt
 /certdb/profile*
 *.old
 *.bc
+/notizen.txt
+*.seb
+base64.json

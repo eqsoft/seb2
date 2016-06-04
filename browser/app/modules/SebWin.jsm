@@ -33,7 +33,8 @@
 this.EXPORTED_SYMBOLS = ["SebWin"];
 
 /* Modules */
-const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components;
+const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components,
+	{ scriptloader } = Cu.import("resource://gre/modules/Services.jsm").Services;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
@@ -42,7 +43,10 @@ let 	wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowM
 	ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].getService(Ci.nsIWindowWatcher),
 	wpl = Ci.nsIWebProgressListener,
 	wnav = Ci.nsIWebNavigation;
-
+	
+/* SebGlobals */
+scriptloader.loadSubScript("resource://globals/prototypes.js");
+scriptloader.loadSubScript("resource://globals/const.js");
 
 /* SebModules */
 XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","SebLog");
@@ -99,7 +103,13 @@ this.SebWin = {
 	addWin : function (win) {
 		sl.debug("addWin");
 		if (base.wins.length >= 1) { // secondary
-			base.setWinType(win,"secondary");
+			if (seb.reconfState == RECONF_START) {
+				base.setWinType(win,"reconf");
+			}
+			else {
+				base.setWinType(win,"secondary");
+			}
+			
 			//win.document.getElementsByTagName("window")[0].setAttribute("",type);
 		}
 		base.lastWin = win;
@@ -189,6 +199,18 @@ this.SebWin = {
 		}
 		base.wins = [];
 		base.wins.push(main);
+	},
+	
+	resetWindows : function () { // close all secondary wins (the modal reconf dialog has to be closed from seb.jsm)
+		for (var i=0;i<base.wins.length;i++) {
+			let win = base.wins[i];
+			if (base.getWinType(win) != "main") {
+				var n = (win.document && win.content) ? base.getWinType(win) + ": " + win.document.title : " empty document";
+				sl.debug("close win from array: " + n);
+				win.close();
+			}
+		}
+		base.wins = [];	// empty base wins, main win will be reloaded and readded
 	},
 	
 	openDistinctWin : function(url) {
@@ -462,6 +484,7 @@ this.SebWin = {
 	},
 	
 	setTitlebar : function (win,scr) {
+		sl.debug("setTitlebar");
 		let attr = "";
 		let val = "";
 		let sebwin = win.document.getElementById("sebWindow");

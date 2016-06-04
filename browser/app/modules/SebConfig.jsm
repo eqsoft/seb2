@@ -77,7 +77,7 @@ this.SebConfig =  {
 			if (typeof obj == "object") {
 				sl.debug("default config object found");
 				seb.defaultConfig = obj;
-				base.initCustomConfig.call(null);
+				base.initCustomConfig.call(null,null);
 			}
 		}
 		let defaultFile = FileUtils.getFile("CurProcD",["default.json"], null);
@@ -90,7 +90,7 @@ this.SebConfig =  {
 	},
 	
 	
-	initCustomConfig : function () {
+	initCustomConfig : function (config) {
 		sl.debug("initCustomConfig");
 		function cb(obj) {
 			if (typeof obj == "object") {
@@ -108,18 +108,24 @@ this.SebConfig =  {
 				base.callback.call(null);
 			}
 		}
-		let configParam = su.getCmd("config");
-		let configFile = FileUtils.getFile("CurProcD",["config.json"], null);
-		if (configParam != null) {
-			sl.debug("config param found: " + configParam);
-			su.getJSON(configParam.trim(), cb); 
+		if (config) { // for reconfiguring on-the-fly
+			sl.debug("initCustomConfig: reconfiguration");
+			su.getJSON(config.trim(), cb);
 		}
 		else {
-			if (configFile.exists()) { 
-				su.getJSON(configFile.path.trim(),cb); 
+			let configParam = su.getCmd("config");
+			let configFile = FileUtils.getFile("CurProcD",["config.json"], null);
+			if (configParam != null) {
+				sl.debug("config param found: " + configParam);
+				su.getJSON(configParam.trim(), cb); 
 			}
-			else { 
-				sl.err("no config param and no default config.json!");
+			else {
+				if (configFile.exists()) { 
+					su.getJSON(configFile.path.trim(),cb); 
+				}
+				else { 
+					sl.err("no config param and no default config.json!");
+				}
 			}
 		}
 	},
