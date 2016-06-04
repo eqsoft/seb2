@@ -11,4 +11,4 @@ const 	SSL_SEC_NONE = 0, 		// allow all http / https and mixed contents
 	RECONF_START = 1,
 	RECONF_SUCCESS = 2,
 	RECONFIG_URL = "chrome://seb/content/reconf.xul",
-	RECONFIG_FEATURES = "chrome,dialog,modal,resizable=yes,width=400,height=200";
+	RECONFIG_FEATURES = "chrome,dialog,modal,resizable=yes,width=800,height=600,scrollbars=yes";

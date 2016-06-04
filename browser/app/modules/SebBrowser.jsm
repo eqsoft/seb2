@@ -85,6 +85,7 @@ let 	base = null,
 		pdf : new RegExp(/^application\/(x-)?pdf/)
 	},
 	sebReg = new RegExp(/.*?\.seb$/i),
+	sebFileAttachment = new RegExp(/.*?filename\=.*?\.seb/i);
 	windowTitleSuffix = "";
 	
 const	nsIX509CertDB = Ci.nsIX509CertDB,
@@ -120,6 +121,7 @@ function TracingListener() {
 
 TracingListener.prototype = {
 	onDataAvailable: function(aRequest, aContext, aInputStream, aOffset, aCount) {
+		/*
 		if (sebReg.test(aRequest.name)) {
 			var iStream = new BinaryInputStream(aInputStream) // binaryaInputStream
 			var sStream = new StorageStream(8192, aCount, null); // storageStream // not sure why its 8192 but thats how eveyrone is doing it, we should ask why
@@ -134,35 +136,63 @@ TracingListener.prototype = {
 			//this.onDataAvailable(aRequest, aContext, sStream.newInputStream(0), aOffset, aCount);
 		}
 		else {
+			// try to get ResponseHeader
+			aRequest.QueryInterface(Ci.nsIHttpChannel);
+			try {
+				var dispo = aRequest.getResponseHeader('Content-disposition');
+				sl.debug(dispo);
+			}
+			catch(e){};
 			sl.debug("another resource: " + aRequest.name);
 			//this.originalListener.onDataAvailable(aRequest, aContext, sStream.newInputStream(0), aOffset, aCount);
 			this.originalListener.onDataAvailable(aRequest, aContext, aInputStream, aOffset, aCount);
 		}
+		*/ 
+		this.originalListener.onDataAvailable(aRequest, aContext, aInputStream, aOffset, aCount);
 	},
 	onStartRequest: function(aRequest, aContext) {
+		//this.originalListener.onStopRequest(aRequest, aContext, 0);
+		var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+		xhr.open("HEAD", aRequest.name, true);
+		//xhr.responseType = "arraybuffer";
+		xhr.readystatechange = function (evt) {
+			sl.debug(xhr.readyState);
+			sl.debug(xhr.status);
+			if (xhr.readyState == 4 && xhr.status == 200) {
+				sl.debug(xhr.getResponseHeader('Content-disposition'));
+			}
+			/*
+			var arrayBuffer = xhr.response; // Note: not responseText
+			if (arrayBuffer) {
+				var byteArray = new Uint8Array(arrayBuffer);
+				sh.sendSebFile(btoa(String.fromCharCode.apply(null, byteArray)));
+				base.stopLoading();
+			}
+			*/ 
+			
+		};
+		
+		xhr.send(null);
 		// this is the simplest way to stop the original request if seb file is requested
 		// but we also have to check dynamic seb file responses seeking the Response-Header Content-Disposition: filename=xxxx.seb
+		
+		/*
 		if (sebReg.test(aRequest.name)) {
 			base.dialogHandler("captured seb file request... cancel original request");
-			this.originalListener.onStopRequest(aRequest, aContext, 0);
+			//this.originalListener.onStopRequest(aRequest, aContext, 0);
 		}
 		else {
-			this.originalListener.onStartRequest(aRequest, aContext);
+			base.dialogHandler("cancel original request...");
+			
+			//this.originalListener.onStartRequest(aRequest, aContext);
 		}
+		*/ 
 	},
 	onStopRequest: function(aRequest, aContext, aStatusCode) {
+		/*
 		if (sebReg.test(aRequest.name)) {
 			sl.debug("chunks: " +this.receivedChunks.length);
 			var data = this.receivedChunks.join(""); // put chunks together
-			/*
-			var aFile = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
-			aFile.initWithPath("/Users/stefan/test.seb");
-			var stream = FileUtils.openSafeFileOutputStream(aFile, FileUtils.MODE_WRONLY | FileUtils.MODE_CREATE);
-			var binaryStream =Cc["@mozilla.org/binaryoutputstream;1"].createInstance(Ci.nsIBinaryOutputStream);
-			binaryStream.setOutputStream(stream);
-			binaryStream.writeBytes(data,data.length);
-			FileUtils.closeSafeFileOutputStream(stream);
-			*/ 
 			var arr = []; // uint8array with charCodes
 			for (var i=0;i<data.length;i++) {
 				arr.push(data.charCodeAt(i));
@@ -171,31 +201,11 @@ TracingListener.prototype = {
 			var blob = new Blob([u8]);
 			base.dialogHandler("sending blob to websocket: " + blob.size);
 			sh.sendMessage(blob);
-			//sh.sendMessage(arr.join("%"));
-			//sl.debug(arr.length);
-			//sl.debug(String.fromCharCode.apply(null,data));
-			
-			//var arr = Uint8Array.from(data);
-			//var blob = new Blob([arr]);
-			//sl.debug();
-			//var blob = new Blob();
-			//sh.sendMessage(blob);
-			
-			/*
-			var reader = new FileReader();
-			reader.readAsArrayBuffer(blob);
-			reader.onload = function() {
-				var arrayBuffer = reader.result;
-				//sl.debug(arrayBuffer.toString());
-				//var bytes = new Uint8Array(arrayBuffer);
-				sh.sendMessage(arrayBuffer);
-				delete this.receivedChunks;
-			}
-			*/ 
 		} 
-		this.responseStatus = aStatusCode;
+		this.responseStatusCode = aStatusCode;
 		this.originalListener.onStopRequest(aRequest, aContext, aStatusCode);
 		this.deferredDone.resolve();
+		*/ 
 	},
 	QueryInterface: function(aIID) {
 		if (aIID.equals(Ci.nsIStreamListener) || aIID.equals(Ci.nsISupports)) {
@@ -276,17 +286,70 @@ this.SebBrowser = {
 			this.isStarted = true;
 			this.win = sw.getChromeWin(aWebProgress.DOMWindow);
 			this.baseurl = btoa(aRequest.name);
-			//this.win = sw.lastWin;
-			
-			/*
-			if (this.win !== sw.getChromeWin(aWebProgress.DOMWindow)) {
-				sl.debug("strange: this.win != sw.getChromeWin(aWebProgress.DOMWindow");
-			}
-			*/
-			 
 			sl.debug("DOCUMENT REQUEST START: " + aRequest.name + " status: " + aStatus);
 			sl.debug("baseurl: " + this.baseurl);
-			//this.win.document.getElementsByTagName("window")[0].setAttribute("baseurl",baseurl);
+			if (seb.reconfState == RECONF_START && sw.getWinType(this.win) == "reconf") { // sneak response header
+				base.dialogHandler("check seb file request");
+				sl.debug("suspend original request of reconf transaction");
+				var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+				var xhr2 = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+				aRequest.suspend();
+				
+				var assertSebFile = false;
+				xhr.onload = function (evt) {
+					if (xhr.readyState === 4) {
+						sl.debug("async head request done");
+						if (xhr.status === 200) {
+							try {
+								if (sebFileAttachment.test(xhr.getResponseHeader('Content-disposition'))) {
+									sl.debug("seb file attachment response header");
+									assertSebFile = true;
+								}
+								if (sebReg.test(aRequest.name)) {
+									sl.debug("direct seb file download as " + xhr.getResponseHeader('Content-type'));
+									assertSebFile = true;
+								}
+							}
+							catch(e) {}
+							if (assertSebFile) {
+								aRequest.cancel(Cr.NS_BINDING_ABORTED);
+								base.dialogHandler("assert seb file download");
+								xhr2.onload = function() {
+									if (xhr2.readyState === 4) {
+										sl.debug("async get request done");
+										if (xhr2.status === 200) {
+											var blob = xhr2.response;
+											sl.debug(blob.size);
+											base.dialogHandler("seb file downloaded: " + blob.size);
+											sh.sendMessage(blob);
+										}
+									}
+								}
+								xhr2.onerror = function() {
+									aRequest.resume();
+								}
+								xhr2.responseType = "blob";
+								xhr2.open("GET", aRequest.name, true);
+								xhr2.send(null);
+							}
+							else {
+								aRequest.resume();
+							}
+						} 
+						else {
+							aRequest.resume();
+						}
+						
+					}
+				}
+				xhr.onerror = function() {
+					aRequest.resume();
+				}
+				xhr.open("HEAD", aRequest.name, true);
+				xhr.send(null);
+				return;
+			}
+			
 			base.startLoading(this.win);
 			if (seb.quitURL === aRequest.name) {
 				aRequest.cancel(aStatus);
@@ -311,12 +374,12 @@ this.SebBrowser = {
 			
 			if (aRequest.getRequestHeader("Content-type") == SEB_MIME_TYPE) {
 				sl.debug("SEB File Loading...");
-				
 				aRequest.cancel(Cr.NS_BINDING_ABORTED);
 				seb.reconfState = RECONF_START;
 				seb.mainWin.openDialog(RECONFIG_URL,"",RECONFIG_FEATURES,aRequest.name,base.initReconf).focus();
 				return 0;			
 			}
+			
 			
 			// PDF Handling
 			// don't trigger if pdf is part of the query string: infinite loop
@@ -331,17 +394,6 @@ this.SebBrowser = {
 		}
 		if ((aStateFlags & stopDocumentFlags) == stopDocumentFlags) { // stop document request event
 			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name + " - status: " + aStatus);
-			/*
-			try {
-				sl.debug("disposition:" + aRequest.getResponseHeader("Content-Disposition"));
-			}
-			catch(e) {}
-			*/ 
-			/*
-			if (sebReg.test(aRequest.name) && seb.reconfState == RECONF_START) {
-				sl.debug("sdfsdfsdfsdf");
-			}
-			*/
 			if (!Components.isSuccessCode(aStatus) && aStatus != 2152398850) { // heise.de with all that advertising will not load without that skipped 2152398850 status
 			//if (aStatus > 0 && aStatus != 2152398850) { // error: experimental!!! ToDo: look at status codes!!
 				sl.debug("Error document loading: " + aStatus);
@@ -493,16 +545,18 @@ this.SebBrowser = {
 	
 	initReconf : function(win,url,handler) {
 		sl.debug("initReconf: " + win);
-		//base.initBrowser(win); // needed?
+		base.initBrowser(win);
 		base.dialogHandler = handler;
-		obs.addObserver(httpResponseObserver, 'http-on-examine-response', false);
 		base.dialogHandler("loading: " + url);
-		win.content.document.location.href = url;
+		base.setBrowserHandler(win);
+		base.loadPage(win,url);
+		
 	},
 	
 	resetReconf : function() {
-		obs.removeObserver(httpResponseObserver, 'http-on-examine-response');
+		//obs.removeObserver(httpResponseObserver, 'http-on-examine-response');
 		base.dialogHandler("closeDialog");
+		seb.reconfState = RECONF_SUCCESS;
 	},
 	
 	addSSLCert : function(cert,debug) {

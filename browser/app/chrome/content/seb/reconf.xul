@@ -52,4 +52,10 @@
 		<label id="msgBox" value="..."/>
 		<spacer></spacer>
 	</vbox>
+	<vbox id="loadingBox" class="hidden">
+		<hbox>
+			<spacer></spacer>
+			<image id="loadingImage" src="chrome://seb/content/images/loading.gif" />
+		</hbox>
+	</vbox>
 </dialog>

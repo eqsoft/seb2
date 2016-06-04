@@ -93,7 +93,11 @@ this.SebWin = {
 	},
 	
 	getWinType : function (win) {
-		return win.document.getElementsByTagName("window")[0].getAttribute("windowtype");
+		var w = win.document.getElementsByTagName("window");
+		if (w.length === 0) {
+			w = win.document.getElementsByTagName("dialog");
+		}
+		return w[0].getAttribute("windowtype");
 	},
 	
 	setWinType : function (win,type) {

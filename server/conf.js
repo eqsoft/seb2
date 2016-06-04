@@ -1,4 +1,5 @@
 var 	fs 	= require('fs-extra'),
+	path	= require('path'),
 	express = require('express'),
 	static = require('serve-static'),
 	basicAuth = require('basic-auth'),
@@ -12,7 +13,7 @@ const 	CA_CN 	= "Simple Signing CA",
 	socketPort = 8442,
 	demoPort = 8443,
 	demoClientCert = false,
-	demoBasicAuth = false,
+	demoBasicAuth = true,
 	demoUser = 'demo',
 	demoPass = 'demo',
 	socketClientCert = false,
@@ -164,6 +165,18 @@ var conf = function conf() {
 		app.use('/demo', static('demo'));
 		app.use('/websocket',static('websocket'));
 		app.use('/websocket/data',directory('websocket/data'));
+		app.use('/download', function(req, res) {
+			var file = __dirname + '/demo/res/test.seb';
+
+			var filename = path.basename(file);
+			//var mimetype = mime.lookup(file);
+
+			res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+			//res.setHeader('Content-type', mimetype);
+
+			var filestream = fs.createReadStream(file);
+			filestream.pipe(res);
+		});
 		return app;
 	}
 }
