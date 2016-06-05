@@ -38,7 +38,7 @@ const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu, Constructor: CC } 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/FileUtils.jsm");
-Cu.importGlobalProperties(['Blob','FileReader']);
+Cu.importGlobalProperties(['Blob']);
 /* Services */
 let	wpl = Ci.nsIWebProgressListener,
 	wnav = Ci.nsIWebNavigation,

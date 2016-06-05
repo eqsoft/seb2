@@ -248,17 +248,17 @@ this.seb =  {
 		sw.setSize(win);
 	},
 	
-	initReconf : function(win) {
-		sl.debug("initReconf");
-		sw.setToolbar(win);
-		sw.setSize(win);
-	},
-	
 	/* handler */
 	setQuitHandler : function(win) {
 		sl.debug("setQuitHandler");
-		win.addEventListener( "close", base.quit, true); // controlled shutdown for main window
+		win.addEventListener("close", base.quit, true); // controlled shutdown for main window
 		base.quitObserver.register();
+	},
+	
+	removeQuitHandler : function(win) {
+		sl.debug("removeQuitHandler");
+		win.removeEventListener("close", base.quit); // controlled shutdown for main window
+		base.quitObserver.unregister();
 	},
 	
 	/* events */
@@ -266,21 +266,12 @@ this.seb =  {
 		sl.debug("onload");
 		sw.addWin(win);
 		sb.setBrowserHandler(win);
-		sn.httpRequestObserver.register();
-		sn.httpResponseObserver.register();
-		switch (sw.getWinType(win)) {
-			case "main" :
-				base.mainWin = win;
-				base.initMain(win);
-				break;
-			case "secondary" :
-				base.initSecondary(win);
-				break;
-			case "reconf" :
-				base.initReconf(win);
-				break;
-			default :
-				base.initSecondary(win);
+		if (sw.getWinType(win) == "main") {
+			base.mainWin = win;
+			base.initMain(win);
+		}
+		else {
+			base.initSecondary(win);
 		}
 	},
 	

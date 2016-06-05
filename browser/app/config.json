@@ -14,8 +14,8 @@
 },
 "sebServerEnabled":true,
 "sebServer": {
-	"url"    : "https://localhost:8442/websocket/index.html",
-	"socket" : "wss://localhost:8442"
+	"url"    : "https://192.168.224.1:8442/websocket/index.html",
+	"socket" : "wss://192.168.224.1:8442"
 },
 "sebScreenshot":false,
 "sebScreenshotImageType":"image/jpeg",
@@ -23,7 +23,8 @@
 "sebSSlSecurityPolicy": 1,
 "sebDisableOCSP": true,
 "browserUserAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:45.0) Gecko/20100101 Firefox/45.0 SEB 2.2",
-"startURL":"http://localhost/end.html",
+"startURL":"http://192.168.224.1/end.html",
+"startURL_":"https://192.168.224.1:8443/demo/index.html",
 "sendBrowserExamKey":true,
 "browserRequestHeader":"X-SafeExamBrowser-RequestHash",
 "browserExamKey":"SEBKEY",
@@ -51,10 +52,10 @@
 	}
 ],
 "browserMessagingSocketEnabled":true,
-"browserMessagingSocket":"ws://localhost:8706",
+"browserMessagingSocket":"ws://192.168.224.1:8706",
 "browserMessagingPingTime":120000,
 "proxies": {},
-"browserViewMode":1,
+"browserViewMode":0,
 "showTaskBar":false,
 "taskBarHeight":0,
 "touchOptimized":false,
@@ -64,7 +65,7 @@
 "mainBrowserWindowHeight":"100%",
 "mainBrowserWindowPositioning":1,
 "mainBrowserRestart":true,
-"restartExamURL":"https://localhost:8443/demo/end.html",
+"restartExamURL":"https://192.168.224.1:8443/demo/end.html",
 "mainBrowserLoad":"",
 "mainBrowserLoadReferrerInString":"",
 "allowBrowsingBackForward":true,

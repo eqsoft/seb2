@@ -104,24 +104,27 @@ this.SebWin = {
 		win.document.getElementsByTagName("window")[0].setAttribute("windowtype",type);
 	},
 	
+	setSizeMode : function (win,mode) {
+		win.document.getElementsByTagName("window")[0].setAttribute("sizemode",mode);
+	},
+	
 	addWin : function (win) {
 		sl.debug("addWin");
-		if (base.wins.length >= 1) { // secondary
-			if (seb.reconfState == RECONF_START) {
-				base.setWinType(win,"reconf");
-			}
-			else {
+		let t = base.getWinType(win);
+		if (t == "main") {
+			if (base.wins.length >= 1) { // secondary
 				base.setWinType(win,"secondary");
 			}
+			base.lastWin = win;
+			sb.initBrowser(win);
+			base.wins.push(win);
 			
-			//win.document.getElementsByTagName("window")[0].setAttribute("",type);
+			sl.debug("window added with type: " + base.getWinType(win));
+			sl.debug("windows count: " + base.wins.length);
 		}
-		base.lastWin = win;
-		sb.initBrowser(win);
-		base.wins.push(win);
-		
-		sl.debug("window added with type: " + base.getWinType(win));
-		sl.debug("windows count: " + base.wins.length);
+		else {
+			sl.debug("ommit window handling for " + t);
+		}
 	},
 	
 	getRecentWin : function () {
@@ -215,6 +218,10 @@ this.SebWin = {
 			}
 		}
 		base.wins = [];	// empty base wins, main win will be reloaded and readded
+		base.setSizeMode(seb.mainWin,"maximized");
+		seb.mainWin.maximize();
+		base.mainScreen = {};
+		base.popupScreen = {};
 	},
 	
 	openDistinctWin : function(url) {
@@ -492,6 +499,7 @@ this.SebWin = {
 		let attr = "";
 		let val = "";
 		let sebwin = win.document.getElementById("sebWindow");
+		sl.debug("titlebarEnabled: " + scr.titlebarEnabled);
 		switch (sh.os) {
 			case "WINNT" :
 				if (!scr.titlebarEnabled) {

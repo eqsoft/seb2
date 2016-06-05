@@ -7,6 +7,8 @@ const 	SSL_SEC_NONE = 0, 		// allow all http / https and mixed contents
 	SEB_MIME_TYPE = 'application/x-crypted-seb-file',
 	LITTLE_ENDIAN = 0,
 	BIG_ENDIAN = 1,
+	HIDDEN_URL= "chrome://seb/content/hidden.xul",
+	HIDDEN_FEATURES = "chrome,modal=no,dialog,resizable=no,width=1,height=1",
 	RECONF_NO = 0,
 	RECONF_START = 1,
 	RECONF_SUCCESS = 2,
