@@ -381,7 +381,7 @@ this.SebNet = {
 		sl.debug("setReqHeader");
 		sendBrowserExamKey = su.getConfig("sendBrowserExamKey","boolean",false);
 		if (!sendBrowserExamKey) { return; }
-		let rh = su.getConfig("browserRequestHeader","string","");
+		let rh = su.getConfig("sebBrowserRequestHeader","string","");
 		let rk = su.getConfig("browserExamKey","string","");
 		let rs = su.getConfig("browserURLSalt","boolean",true);
 		
