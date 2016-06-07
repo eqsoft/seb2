@@ -37,7 +37,7 @@ For seb server and demo mode including the screenshot component you need to inst
 After installing node.js you need to install some node modules:
 
 ``` 
-npm install -g fs-extra express serve-static serve-index ws
+npm install -g fs-extra express serve-static serve-index ws basic-auth
 ``` 
 Switch to ``` seb2/server/ ``` folder and type:
 
@@ -56,7 +56,24 @@ seb2 first loads a set of default configuration params in ./browser/app/default.
 in the commandline param ``` -config PARAM ```. The commandline parameter might be an absolute path or any url to a local or remote config json file. The param can also be a stringified or a base64 encoded json object. A base64 encoded string param is used by windows SEB configuration of the embedded seb2.
 The custom config object will then be be merged to the default config object with the precedence of custom config params.
 
-## Config params in alphabethical order ##
+## Special seb params (not handled by Windows SEB) ##
+#### sebAllCARootTrust ####
+#### sebBrowserRequestHeader ####
+#### sebDisableOCSP ####
+#### sebMainBrowserWindowTitlebarEnabled ####
+#### sebMainBrowserWindowMaximized ####
+#### sebNewBrowserWindowByLinkTitlebarEnabled ####
+#### sebNewBrowserWindowMaximized ####
+#### sebPrefs ####
+#### sebPrefsMap ####
+#### sebServer ####
+#### sebScreenshot ####
+#### sebScreenshotImageType ####
+#### sebScreenshotSound ####
+#### SebServerEnabled ####
+#### sebSSlSecurityPolicy ####
+
+## Config params in alphabethical order (handled by Windows SEB) ##
 
 #### additionalResources ####
 #### allowBrowsingBackForward ####
@@ -95,11 +112,13 @@ The custom config object will then be be merged to the default config object wit
 #### pinEmbeddedCertificates ####
 #### proxies ####
 #### quitURL ####
+#### removeBrowserProfile ####
 #### restartExamPasswordProtected ####
 #### restartExamText (not implemented) ####
 #### restartExamURL (not implemented) ####
 #### restartExamUseStartURL (not implemented) ####
 #### sendBrowserExamKey ####
+#### showReloadWarning ####
 #### showTaskBar ####
 #### startURL ####
 #### taskBarHeight ####
@@ -108,4 +127,6 @@ The custom config object will then be be merged to the default config object wit
 #### urlFilterRegex ####
 #### whitelistURLFilter ####
 #### zoomMode ####
+
+## Websocket Handler ##
 
