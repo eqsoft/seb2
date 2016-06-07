@@ -83,7 +83,7 @@ this.seb =  {
 	quitObserver : {
 		observe	: function(subject, topic, data) {
 			if (topic == "xpcom-shutdown") {
-				if (base.config["removeProfile"]) {
+				if (base.config["removeBrowserProfile"]) {
 					sl.debug("removeProfile");
 					for (var i=0;i<base.profile.dirs.length;i++) { // don't delete data folder
 						sl.debug("try to remove everything from profile folder: " + base.profile.dirs[i].path);
