@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Screenshot Demo: Test Page</title>
+	<link rel="stylesheet" href="res/q.css" type="text/css"></link>
+	<script>
+	
+	function openWin(href) {
+		window.open(href, "_blank", "toolbar=yes, scrollbars=yes, resizable=yes, top=500, left=500, width=400, height=400");
+	}
+	</script>
+</head>
+<body onload="setLink();">
+	<div class="content">
+		<p>
+		Test Page
+		</p>
+		<p><a href="http://wikipedia.de" target="_self">Wikipedia</a></p>
+		<p><a href="https://google.com" target="_self">Beenden</a></p>
+		<p><a href="/demo/q1.html" target="_blank">new Window per _blank link</a></p>
+		<p><a href="/demo/q1.html" target="_new">new Window per _new link</a></p>
+		<p><a href="/demo/q1.html" onclick="openWin(this.href);return false">new Window per javascript</a></p>
+		<p><a href="http://async5.org/moz/pdfjs.pdf">remote pdf</a></p>
+		<p><a href="file:///Z:/Development/test.pdf">local pdf</a></p>
+		<p><a href="http://192.168.224.1/ilias_dev/testpdf.php">dynamic pdf 1</a></p>
+		<p><a href="http://java.cete.com/DynamicPDFv80/HelloWorld">dynamic pdf 2</a></p>
+		<p><a href="sebs://192.168.224.1:8443/demo/res/test.seb">sebs file (192.)</a></p>
+		<p><a href="sebs://192.168.224.1:8443/download">sebs file as attatchment (192.)</a></p>
+		<p><a href="sebs://192.168.224.1:8443/demo/end.html">seb file link (192.)</a></p>
+		<p><a href="sebs://localhost:8443/demo/res/test.seb">sebs file (local)</a></p>
+		<p><a href="sebs://localhost:8443/download">sebs file as attatchment (local)</a></p>
+		<p><a href="sebs://localhost:8443/demo/end.html">seb file link (local)</a></p>
+		<p><input type="text" size="100" />
+	</div>
+</body>
+</html>
