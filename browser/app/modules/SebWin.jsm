@@ -337,8 +337,8 @@ this.SebWin = {
 	
 	setMainScreen : function() {
 		if (base.mainScreen['initialized']) { return base.mainScreen; }	 
-		base.mainScreen['titlebarEnabled'] = su.getConfig("mainBrowserWindowTitlebarEnabled","boolean",false);
-		base.mainScreen['maximized'] = su.getConfig("mainBrowserWindowMaximized","boolean",true);
+		base.mainScreen['titlebarEnabled'] = su.getConfig("sebMainBrowserWindowTitlebarEnabled","boolean",false);
+		base.mainScreen['maximized'] = su.getConfig("sebMainBrowserWindowMaximized","boolean",true);
 		//template browserViewMode
 		switch (su.getConfig("browserViewMode","number",1)) {
 			case 0 :
@@ -364,8 +364,8 @@ this.SebWin = {
 	
 	setPopupScreen : function() {
 		if (base.popupScreen['initialized']) { return base.popupScreen; }
-		base.popupScreen['titlebarEnabled'] = su.getConfig("newBrowserWindowByLinkTitlebarEnabled","boolean",true);
-		base.popupScreen['maximized'] = su.getConfig("newBrowserWindowByLinkMaximized","boolean",false);
+		base.popupScreen['titlebarEnabled'] = su.getConfig("sebNewBrowserWindowByLinkTitlebarEnabled","boolean",true);
+		base.popupScreen['maximized'] = su.getConfig("sebNewBrowserWindowByLinkMaximized","boolean",false);
 		base.popupScreen['width'] = seb.config["newBrowserWindowByLinkWidth"];
 		base.popupScreen['height'] = seb.config["newBrowserWindowByLinkHeight"];
 		base.popupScreen['position'] = pos[su.getConfig("newBrowserWindowByLinkPositioning","number",0)];
