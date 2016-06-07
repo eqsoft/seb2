@@ -585,7 +585,7 @@ this.SebBrowser = {
 			let trustargs = "";
 			let certData = (cert.certificateDataBase64 != "") ? cert.certificateDataBase64 : cert.certificateDataWin;
 			let x509 = certdb.constructX509FromBase64(certData);
-			if (su.getConfig("allCARootTrust", "boolean", false)) {
+			if (su.getConfig("sebAllCARootTrust", "boolean", false)) {
 				sl.debug("treat all CA certs as root");
 				t = "CA";
 				trustargs = "C,C,C";
