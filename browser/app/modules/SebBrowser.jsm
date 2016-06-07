@@ -59,6 +59,8 @@ XPCOMUtils.defineLazyModuleGetter(this,"sc","resource://modules/SebScreenshot.js
 
 /* ModuleGlobals */
 let 	base = null,
+	authMgr = null,
+	cookieMgr = null,
 	seb = null,
 	certdb = null,
 	certdb2 = null,
@@ -97,146 +99,6 @@ const	nsIX509CertDB = Ci.nsIX509CertDB,
 	CERT_CA = 2,
 	CERT_SSL_DEBUG = 3;
 
-var 	BinaryInputStream = CC('@mozilla.org/binaryinputstream;1', 'nsIBinaryInputStream', 'setInputStream');
-	BinaryOutputStream = CC('@mozilla.org/binaryoutputstream;1', 'nsIBinaryOutputStream', 'setOutputStream'),
-	StorageStream = CC('@mozilla.org/storagestream;1', 'nsIStorageStream', 'init');
-
-function TracingListener() {
-	this.receivedChunks = []; // array for incoming data. holds chunks as they come, onStopRequest we join these junks to get the full source
-	this.responseBody = ""; // we'll set this to the 
-	this.responseStatusCode;
-
-	this.deferredDone = {
-		promise: null,
-		resolve: null,
-		reject: null
-	};
-	this.deferredDone.promise = new Promise(function(resolve, reject) {
-		this.resolve = resolve;
-		this.reject = reject;
-	}.bind(this.deferredDone));
-	Object.freeze(this.deferredDone);
-	this.promiseDone = this.deferredDone.promise;
-};
-
-TracingListener.prototype = {
-	onDataAvailable: function(aRequest, aContext, aInputStream, aOffset, aCount) {
-		/*
-		if (sebReg.test(aRequest.name)) {
-			var iStream = new BinaryInputStream(aInputStream) // binaryaInputStream
-			var sStream = new StorageStream(8192, aCount, null); // storageStream // not sure why its 8192 but thats how eveyrone is doing it, we should ask why
-			var oStream = new BinaryOutputStream(sStream.getOutputStream(0)); // binaryOutputStream
-			// Copy received data as they come.
-			//var s = NetUtil.read
-			var data = iStream.readBytes(aCount);
-			this.receivedChunks.push(data);
-			sl.debug("bytes: " + aCount);
-			base.dialogHandler("reading seb file bytes: " + aCount);
-			oStream.writeBytes(data, aCount);
-			//this.onDataAvailable(aRequest, aContext, sStream.newInputStream(0), aOffset, aCount);
-		}
-		else {
-			// try to get ResponseHeader
-			aRequest.QueryInterface(Ci.nsIHttpChannel);
-			try {
-				var dispo = aRequest.getResponseHeader('Content-disposition');
-				sl.debug(dispo);
-			}
-			catch(e){};
-			sl.debug("another resource: " + aRequest.name);
-			//this.originalListener.onDataAvailable(aRequest, aContext, sStream.newInputStream(0), aOffset, aCount);
-			this.originalListener.onDataAvailable(aRequest, aContext, aInputStream, aOffset, aCount);
-		}
-		*/ 
-		this.originalListener.onDataAvailable(aRequest, aContext, aInputStream, aOffset, aCount);
-	},
-	onStartRequest: function(aRequest, aContext) {
-		//this.originalListener.onStopRequest(aRequest, aContext, 0);
-		var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
-		xhr.open("HEAD", aRequest.name, true);
-		//xhr.responseType = "arraybuffer";
-		xhr.readystatechange = function (evt) {
-			sl.debug(xhr.readyState);
-			sl.debug(xhr.status);
-			if (xhr.readyState == 4 && xhr.status == 200) {
-				sl.debug(xhr.getResponseHeader('Content-disposition'));
-			}
-			/*
-			var arrayBuffer = xhr.response; // Note: not responseText
-			if (arrayBuffer) {
-				var byteArray = new Uint8Array(arrayBuffer);
-				sh.sendSebFile(btoa(String.fromCharCode.apply(null, byteArray)));
-				base.stopLoading();
-			}
-			*/ 
-			
-		};
-		
-		xhr.send(null);
-		// this is the simplest way to stop the original request if seb file is requested
-		// but we also have to check dynamic seb file responses seeking the Response-Header Content-Disposition: filename=xxxx.seb
-		
-		/*
-		if (sebReg.test(aRequest.name)) {
-			base.dialogHandler("captured seb file request... cancel original request");
-			//this.originalListener.onStopRequest(aRequest, aContext, 0);
-		}
-		else {
-			base.dialogHandler("cancel original request...");
-			
-			//this.originalListener.onStartRequest(aRequest, aContext);
-		}
-		*/ 
-	},
-	onStopRequest: function(aRequest, aContext, aStatusCode) {
-		/*
-		if (sebReg.test(aRequest.name)) {
-			sl.debug("chunks: " +this.receivedChunks.length);
-			var data = this.receivedChunks.join(""); // put chunks together
-			var arr = []; // uint8array with charCodes
-			for (var i=0;i<data.length;i++) {
-				arr.push(data.charCodeAt(i));
-			}
-			var u8 = new Uint8Array(arr);
-			var blob = new Blob([u8]);
-			base.dialogHandler("sending blob to websocket: " + blob.size);
-			sh.sendMessage(blob);
-		} 
-		this.responseStatusCode = aStatusCode;
-		this.originalListener.onStopRequest(aRequest, aContext, aStatusCode);
-		this.deferredDone.resolve();
-		*/ 
-	},
-	QueryInterface: function(aIID) {
-		if (aIID.equals(Ci.nsIStreamListener) || aIID.equals(Ci.nsISupports)) {
-			return this;
-		}
-		throw Cr.NS_NOINTERFACE;
-	}
-};
-
-var httpResponseObserver = {
-	observe: function(aSubject, aTopic, aData) {
-		var newListener = new TracingListener();
-		aSubject.QueryInterface(Ci.nsITraceableChannel);
-		newListener.originalListener = aSubject.setNewListener(newListener);
-		newListener.promiseDone.then(
-			function() {
-				// no error happened
-				sl.debug('response done:', newListener.responseBody);
-			},
-			function(aReason) {
-				// promise was rejected, right now i didnt set up rejection, but i should listen to on abort or bade status code then reject maybe
-			}
-		).catch(
-			function(aCatch) {
-				sl.err('something went wrong, a typo by dev probably:', aCatch);
-			}
-		);
-	}
-};
-
-
 function nsBrowserStatusHandler() {};
 nsBrowserStatusHandler.prototype = {
 	isStarted : false,
@@ -274,6 +136,8 @@ this.SebBrowser = {
 		seb = obj;
 		certdb = Cc[nsX509CertDB].getService(nsIX509CertDB);
 		//base.disableBuiltInCerts();
+		authMgr = Cc["@mozilla.org/network/http-auth-manager;1"].getService(Ci.nsIHttpAuthManager); // clearAll
+		cookieMgr = Cc["@mozilla.org/cookiemanager;1"].getService(Ci.nsICookieManager); // removeAll
 		sl.out("SebBrowser initialized: " + seb);
 	},
 	
@@ -491,6 +355,7 @@ this.SebBrowser = {
 	},
 	
 	initBrowser : function (win) {
+		
 		if (!win) {
 			sl.err("wrong arguments for initBrowser(win)");
 			return false;
@@ -554,7 +419,6 @@ this.SebBrowser = {
 	},
 	
 	resetReconf : function() {
-		//obs.removeObserver(httpResponseObserver, 'http-on-examine-response');
 		base.dialogHandler("closeDialog");
 		seb.reconfState = RECONF_SUCCESS;
 	},
