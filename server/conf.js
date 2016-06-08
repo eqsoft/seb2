@@ -13,7 +13,7 @@ const 	CA_CN 	= "Simple Signing CA",
 	socketPort = 8442,
 	demoPort = 8443,
 	demoClientCert = false,
-	demoBasicAuth = false,
+	demoBasicAuth = true,
 	demoUser = 'demo',
 	demoPass = 'demo',
 	socketClientCert = false,
@@ -73,7 +73,12 @@ var conf = function conf() {
 			// don't request client certificates for demo web app
 			function unauthorized(res) {
 				res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
-				return res.sendStatus(401);
+				if (typeof(res.sendStatus) == 'function') {
+					return res.sendStatus(401);
+				}
+				else {
+					return res.status(401).send();
+				}
 			};
 			
 			var port = 0;
