@@ -61,6 +61,7 @@ XPCOMUtils.defineLazyModuleGetter(this,"sc","resource://modules/SebScreenshot.js
 let 	base = null,
 	authMgr = null,
 	cookieMgr = null,
+	historySrv = null,
 	seb = null,
 	certdb = null,
 	certdb2 = null,
@@ -138,6 +139,7 @@ this.SebBrowser = {
 		//base.disableBuiltInCerts();
 		authMgr = Cc["@mozilla.org/network/http-auth-manager;1"].getService(Ci.nsIHttpAuthManager); // clearAll
 		cookieMgr = Cc["@mozilla.org/cookiemanager;1"].getService(Ci.nsICookieManager); // removeAll
+		historySrv = Cc["@mozilla.org/browser/nav-history-service;1"].getService(Ci.nsIBrowserHistory); // removeAllPages
 		sl.out("SebBrowser initialized: " + seb);
 	},
 	
@@ -555,6 +557,17 @@ this.SebBrowser = {
 		sw.removeSecondaryWins();
 		//sw.showLoading(seb.mainWin);
 		base.loadPage(seb.mainWin,url);
+	},
+	
+	clearSession : function() { // what about localStorage?
+		authMgr.clearAll();
+		cookieMgr.removeAll();
+		try {
+			historySrv.removeAllPages(); // does not work...we should start firefox in private modus
+		}
+		catch(e) {
+			//sl.err("error remove history pages: " + e + "\n typeof removeAllPages " + typeof(historySrv.removeAllPages));
+		}
 	},
 	
 	load : function() {

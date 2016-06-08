@@ -82,7 +82,8 @@ this.SebHost = {
 			"KeyboardShown" : base.handleKeyboardShown,
 			"Shutdown" : base.handleShutdown,
 			"SebFileTransfer" : base.handleSebFileTransfer,
-			"Reconfigure" : base.handleReconfigure
+			"Reconfigure" : base.handleReconfigure,
+			"ClearSession" : base.handleClearSession
 		};
 		base.sendHandler = {
 			"SebFile" : base.sendSebFile
@@ -325,6 +326,11 @@ this.SebHost = {
 	handleReconfigure : function (opts) {
 		sl.debug("handleReconfigure handled");
 		seb.reconfigure(opts.configBase64);
+	},
+	
+	handleClearSession : function (opts) {
+		sl.debug("handleClearSession handled");
+		sb.clearSession();
 	},
 	
 	sendSebFile : function (base64) {
