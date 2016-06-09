@@ -1,6 +1,12 @@
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+const	Cc = Components.classes,
+	Ci = Components.interfaces,
+	Cu = Components.utils;
+
+const 	{ scriptloader } = Cu.import("resource://gre/modules/Services.jsm").Services;
+
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/NetUtil.jsm");
+scriptloader.loadSubScript("resource://globals/const.js");
 
 // sebProtocol
 const kSCHEME = "seb";
@@ -26,7 +32,7 @@ sebProtocol.prototype = {
 	scheme: kSCHEME,
 	defaultPort: -1,
 	protocolFlags: 	nsIProtocolHandler.URI_NORELATIVE |
-			nsIProtocolHandler.URI_NOAUTH  | 
+			nsIProtocolHandler.URI_NOAUTH | 
 			nsIProtocolHandler.URI_LOADABLE_BY_ANYONE,
 	allowPort: function(port, scheme) {
 		return false;
@@ -40,27 +46,20 @@ sebProtocol.prototype = {
 	},
 
 	newChannel: function(aURI) {
-		//dump("uri spec:" + aURI.spech + "\n");
+		//dump("uri spec:" + aURI.spec + "\n");
 		var ch = null;
 		try {
-			var ios = Cc[kIOSERVICE_CONTRACTID].getService(nsIIOService);
-			var ch = ios.newChannel("http://www.google.com", null, null);
-			// dump(ch + "\n");
+			let newUrl = aURI.spec.replace(/^seb:/i,'http:');
+			let uri = NetUtil.newURI(newUrl);
+			ch = NetUtil.newChannel(uri);
+			ch.QueryInterface(Ci.nsIHttpChannel);
+			ch.setRequestHeader(SEB_FILE_HEADER, "1", false);
+			ch.setRequestHeader("Content-type",SEB_MIME_TYPE,false);
 		}
 		catch (e) {
 			dump(e + "\n");
 		}
 		return ch;
-	},
-	
-	// CHANGEME: change the help info as appropriate, but
-	// follow the guidelines in nsICommandLineHandler.idl
-	// specifically, flag descriptions should start at
-	// character 24, and lines should be wrapped at
-	// 72 characters with embedded newlines,
-	// and finally, the string should end with a newline
-	helpInfo : "	-debug              set debug true|false\n" +
-             "		-config	<uri>       additional json object url,\n" +
-             "		wrapping this description\n"
+	}
 };
 var NSGetFactory = XPCOMUtils.generateNSGetFactory([sebProtocol]);
