@@ -70,114 +70,129 @@ let 	seb = null,
 	forceHTTPS = false,
 	blockHTTP = false;
 
-this.SebNet = {
-	
-	httpRequestObserver : {
-		observe	: function(subject, topic, data) {
-			if (topic == "http-on-modify-request" && subject instanceof Ci.nsIHttpChannel) {
-				//sl.debug("http request: "+ subject.URI.spec);
-				//sl.debug(data);
-				//subject.QueryInterface(Ci.nsIHttpChannel);
-				//sl.debug(subject.getRequestHeader('Accept'));
-				//sl.debug(subject.referrer);
-				
-				let origUrl = "";
-				let url = "";
-				try {
-					origUrl = subject.URI.spec;
-					url = origUrl.split("#"); // url fragment is not transmitted to the server!
-					url = url[0];
-					//sl.debug("request: " + url);
-					let urlTrusted = su.getConfig("urlFilterTrustedContent","boolean",true);
-					if (!urlTrusted) {
-						if (!base.isValidUrl(url)) {
-							subject.cancel(Cr.NS_BINDING_ABORTED);
-							return;
-						}
-					}
-								
-					//if (sendReqHeader && /text\/html/g.test(subject.getRequestHeader('Accept'))) { // experimental
-					if (sendBrowserExamKey) {
-						var k;
-						if (reqSalt) {								
-							k = base.getRequestValue(url, reqKey);
-							//sl.debug("get req value: " + url + " : " + reqKey + " = " + k);
-						}
-						else {
-							k = reqKey;
-						}
-						subject.setRequestHeader(reqHeader, k, false);
-					}
-					
-					if (httpReg.test(url)) {
-						if (blockHTTP) {
-							sl.debug("block http request");
-							subject.cancel(Cr.NS_BINDING_ABORTED);
-							return;
-						}
-						if (forceHTTPS) { // non common browser behaviour, experimental
-							sl.debug("try redirecting request to https: " + origUrl);
-							try {
-								subject.redirectTo(io.newURI(origUrl.replace("http:","https:"),null,null));
-							}
-							catch(e) {
-								sl.debug(e + "\nurl: " + url);
-							}
-						}
-					}
-				}
-				catch (e) {
-					sl.debug(e + "\nurl: " + url);
-				}
-			}
-		},
 
-		get observerService() {  
-			return Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);  
-		},
-	  
-		register: function() {  
-			this.observerService.addObserver(this, "http-on-modify-request", false);  
-		},  
-	  
-		unregister: function()  {  
-			this.observerService.removeObserver(this, "http-on-modify-request");  
-		}  
-	},
-	
-	httpResponseObserver : { // experimental
-		observe	: function(subject, topic, data) {
-			if (topic == ("http-on-examine-response" || "http-on-examine-cached-response") && subject instanceof Ci.nsIHttpChannel) {
-				let mimeType = "";
-				let url = "";
-				try {
-					url = subject.URI.spec;
-					mimeType = subject.getResponseHeader("Content-Type");
-					if (mimeTypesRegs.pdf.test(mimeType) && !/\.pdf$/i.test(url) && su.getConfig("sebPdfJsEnabled","boolean", true)) { // pdf file requests should already be captured by SebBrowser
-						subject.cancel(Cr.NS_BINDING_ABORTED);
-						sw.openPdfViewer(url);
-					}
-				}
-				catch (e) {
-					//sl.debug(e + "\nurl: " + url + "\nmimetype: " + mimeType);
-				} 
-			} 
-		},
+/* request Observer */
 
-		get observerService() {  
-			return Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);  
-		},
-	  
-		register: function() {  
-			this.observerService.addObserver(this, "http-on-examine-response", false);
-			this.observerService.addObserver(this, "http-on-examine-cached-response", false);
-		},  
-	  
-		unregister: function()  { 
-			this.observerService.removeObserver(this, "http-on-examine-response", false);
-			this.observerService.removeObserver(this, "http-on-examine-cached-response", false); 
+requestHeaderVisitor = function () {
+        this._isFlash = false;
+        this._isSeb = false;
+};
+
+requestHeaderVisitor.prototype.visitHeader = function ( aHeader, aValue ) {
+	sl.debug(aHeader+" : "+aValue);
+	/*
+        if ( aHeader.indexOf( "Content-Type" ) !== -1 ) {
+            if ( aValue.indexOf( "application/x-shockwave-flash" ) !== -1 ) {
+                this._isFlash = true;
+            }
+        }
+        */ 
+};
+
+requestHeaderVisitor.prototype.isFlash = function () {
+	return this._isFlash;
+};
+
+
+requestObserver = function () {
+        this.register();
+        this.aborted = Cr.NS_BINDING_ABORTED;
+        this.nsIHttpChannel = Ci.nsIHttpChannel;
+        this.nsIChannel = Ci.nsIChannel;
+        this.nsIRequest = Ci.nsIRequest;
+};
+
+requestObserver.prototype.observe = function ( subject, topic, data ) {
+	var uri, aVisitor;
+	if ( subject instanceof this.nsIHttpChannel ) {
+		sl.debug("");
+		sl.debug("-> http request modify: " + subject.name);
+		sl.debug("request header:");
+		sl.debug("*****************");
+		aVisitor = new requestHeaderVisitor();
+		subject.visitRequestHeaders(aVisitor);
+		sl.debug("");
+		if ( aVisitor.isFlash( ) ) {
+			uri = subject.URI;
+			subject.cancel( this.aborted );
 		}
-	},
+	}
+};
+
+requestObserver.prototype.register = function ( ) {
+        var observerService = Cc[ "@mozilla.org/observer-service;1" ].getService( Ci.nsIObserverService );
+        observerService.addObserver(this, "http-on-modify-request", false);
+};
+
+requestObserver.prototype.unregister = function ( ) {
+        var observerService = Cc[ "@mozilla.org/observer-service;1" ].getService( Ci.nsIObserverService );
+        observerService.removeObserver( this, "http-on-modify-request" );
+};
+
+/* response Observer */
+
+responseHeaderVisitor = function () {
+        this._isFlash = false;
+        this._isSeb = false;
+};
+
+responseHeaderVisitor.prototype.visitHeader = function ( aHeader, aValue ) {
+	sl.debug(aHeader+" : "+aValue);
+	/*
+        if ( aHeader.indexOf( "Content-Type" ) !== -1 ) {
+            if ( aValue.indexOf( "application/x-shockwave-flash" ) !== -1 ) {
+                this._isFlash = true;
+            }
+        }
+        */ 
+};
+
+responseHeaderVisitor.prototype.isFlash = function () {
+	return this._isFlash;
+};
+
+
+responseObserver = function () {
+        this.register();
+        this.aborted = Cr.NS_BINDING_ABORTED;
+        this.nsIHttpChannel = Ci.nsIHttpChannel;
+        this.nsIChannel = Ci.nsIChannel;
+        this.nsIRequest = Ci.nsIRequest;
+};
+
+responseObserver.prototype.observe = function ( subject, topic, data ) {
+	var uri, aVisitor;
+	if ( subject instanceof this.nsIHttpChannel ) {
+		sl.debug("");
+		sl.debug("<- http response examine: " + subject.name);
+		sl.debug("response header:");
+		sl.debug("*****************");
+		aVisitor = new responseHeaderVisitor();
+		subject.visitResponseHeaders(aVisitor);
+		sl.debug("");
+		if ( aVisitor.isFlash() ) {
+			uri = subject.URI;
+			subject.cancel( this.aborted );	
+		}
+	}
+};
+
+responseObserver.prototype.register = function ( ) {
+        var observerService = Cc[ "@mozilla.org/observer-service;1" ].getService( Ci.nsIObserverService );
+        observerService.addObserver(this, "http-on-examine-response", false);
+        observerService.addObserver(this, "http-on-examine-cached-response", false);
+};
+
+responseObserver.prototype.unregister = function ( ) {
+        var observerService = Cc[ "@mozilla.org/observer-service;1" ].getService( Ci.nsIObserverService );
+        observerService.removeObserver( this, "http-on-examine-response" );
+        observerService.removeObserver(this, "http-on-examine-cached-response");
+};
+
+
+this.SebNet = {
+	reqObs : null,
+	respObs : null,
 	
 	init : function(obj) {
 		base = this;
@@ -185,7 +200,8 @@ this.SebNet = {
 		base.setListRegex();
 		base.setReqHeader();
 		base.setSSLSecurity();
-		sl.debug(obs);
+		base.respObs = new responseObserver();
+		base.reqObs = new requestObserver();
 		sl.out("SebNet initialized: " + seb);
 	},
 	

@@ -87,7 +87,7 @@ let 	base = null,
 		flash : new RegExp(/^application\/x-shockwave-flash/),
 		pdf : new RegExp(/^application\/(x-)?pdf/)
 	},
-	sebReg = new RegExp(/.*?\.seb$/i),
+	sebReg = new RegExp(/.*?\.seb/i),
 	sebFileAttachment = new RegExp(/.*?filename\=.*?\.seb/i);
 	windowTitleSuffix = "";
 	
@@ -154,6 +154,7 @@ this.SebBrowser = {
 			this.baseurl = btoa(aRequest.name);
 			sl.debug("DOCUMENT REQUEST START: " + aRequest.name + " status: " + aStatus);
 			sl.debug("baseurl: " + this.baseurl);
+			/*
 			if (seb.reconfState == RECONF_START && sw.getWinType(this.win) == "reconf") { // sneak response header
 				base.dialogHandler("check seb file request");
 				sl.debug("suspend original request of reconf transaction");
@@ -167,7 +168,10 @@ this.SebBrowser = {
 						sl.debug("async head request done");
 						if (xhr.status === 200) {
 							try {
-								if (sebFileAttachment.test(xhr.getResponseHeader('Content-disposition'))) {
+								sl.debug("status 200: " + aRequest.name);
+								sl.debug("status 200: " + aRequest.getResponseHeader('Content-Disposition'));
+								sl.debug("status 200: " + aRequest.getResponseHeader('Content-disposition'));
+								if (sebFileAttachment.test(xhr.getResponseHeader('Content-Disposition'))) {
 									sl.debug("seb file attachment response header");
 									assertSebFile = true;
 								}
@@ -176,7 +180,10 @@ this.SebBrowser = {
 									assertSebFile = true;
 								}
 							}
-							catch(e) {}
+							catch(e) {
+								sl.debug("resume request 0: " + aRequest.name);
+								aRequest.resume();
+							}
 							if (assertSebFile) {
 								aRequest.cancel(Cr.NS_BINDING_ABORTED);
 								base.dialogHandler("assert seb file download");
@@ -199,22 +206,27 @@ this.SebBrowser = {
 								xhr2.send(null);
 							}
 							else {
+								sl.debug("resume request 1: " + aRequest.name);
 								aRequest.resume();
 							}
 						} 
 						else {
+							sl.debug("resume request 2: " + aRequest.name);
 							aRequest.resume();
 						}
 						
 					}
 				}
 				xhr.onerror = function() {
+					sl.debug("resume request 3: " + aRequest.name);
 					aRequest.resume();
 				}
 				xhr.open("HEAD", aRequest.name, true);
 				xhr.send(null);
 				return;
+				 
 			}
+			*/ 
 			
 			base.startLoading(this.win);
 			if (seb.quitURL === aRequest.name) {
@@ -237,7 +249,7 @@ this.SebBrowser = {
 			}
 			// seb file handling
 			
-			
+			/*
 			if (aRequest.getRequestHeader("Content-type") == SEB_MIME_TYPE) {
 				sl.debug("SEB File Loading...");
 				aRequest.cancel(Cr.NS_BINDING_ABORTED);
@@ -245,6 +257,7 @@ this.SebBrowser = {
 				seb.mainWin.openDialog(RECONFIG_URL,"",RECONFIG_FEATURES,aRequest.name,base.initReconf).focus();
 				return 0;			
 			}
+			*/ 
 			
 			
 			// PDF Handling
