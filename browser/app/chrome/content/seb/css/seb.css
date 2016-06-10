@@ -101,3 +101,7 @@
 	opacity : 1;
 	cursor : pointer;
 }
+
+button[dlgtype="extra1"] {
+	display: none;
+}

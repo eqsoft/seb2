@@ -343,13 +343,12 @@ this.SebBrowser = {
 	},
 	
 	initReconf : function(win,url,handler) {
-		sl.debug("initReconf: " + win);
+		sl.debug("initReconf: " + win.document.getElementsByTagName("Button").length);
 		//base.initBrowser(win);
 		base.dialogHandler = handler;
 		base.dialogHandler("loading: " + url);
 		//base.setBrowserHandler(win);
 		base.loadPage(win,url);
-		
 	},
 	
 	resetReconf : function() {

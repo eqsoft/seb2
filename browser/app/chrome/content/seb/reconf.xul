@@ -38,7 +38,6 @@
 		function init() {
 			ms = document.getElementById("msgBox");
 			br = document.getElementById("brSebFile");
-			//extra1 = window.getButton("extra1");
 			var sebFileUrl = window.arguments[0];
 			window.arguments[1].call(null,window,sebFileUrl,msg); // delegate to SebBrowser.jsm
 			msg("init");
