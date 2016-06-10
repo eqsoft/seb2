@@ -62,7 +62,11 @@ let 	seb = null,
 	convertReg = /[-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g,
 	wildcardReg = /\*/g,
 	httpReg = new RegExp(/^http\:/i),
-	sebReg = new RegExp(/.*?\.seb$/i),
+	sebFileReg = new RegExp(/.*?\.seb$/i),
+	sebFileAttachmentReg = new RegExp(/.*?filename\=.*?\.seb/i),
+	contentTypeReg = new RegExp(/content\-type/i),
+	contentDispositionReg = new RegExp(/content\-disposition/i),
+	sebMimetypeReg = new RegExp(SEB_MIME_TYPE,"i"),
 	reqHeader = "",
 	reqKey = null,
 	reqSalt = null,
@@ -74,23 +78,20 @@ let 	seb = null,
 /* request Observer */
 
 requestHeaderVisitor = function () {
-        this._isFlash = false;
-        this._isSeb = false;
+        this._isSebRequest = false;
 };
 
-requestHeaderVisitor.prototype.visitHeader = function ( aHeader, aValue ) {
-	sl.debug(aHeader+" : "+aValue);
-	/*
-        if ( aHeader.indexOf( "Content-Type" ) !== -1 ) {
-            if ( aValue.indexOf( "application/x-shockwave-flash" ) !== -1 ) {
-                this._isFlash = true;
-            }
-        }
-        */ 
+requestHeaderVisitor.prototype.visitHeader = function ( h, v ) {
+	sl.debug(h+" : "+v);
+	if (contentTypeReg.test(h)) {
+		if (sebMimetypeReg.test(v)) {
+			this._isSebRequest = true;
+		}
+	}
 };
 
-requestHeaderVisitor.prototype.isFlash = function () {
-	return this._isFlash;
+requestHeaderVisitor.prototype.isSebRequest = function () {
+	return this._isSebRequest;
 };
 
 
@@ -103,6 +104,9 @@ requestObserver = function () {
 };
 
 requestObserver.prototype.observe = function ( subject, topic, data ) {
+	if (sb.blockObs) {
+		return;
+	}
 	var uri, aVisitor;
 	if ( subject instanceof this.nsIHttpChannel ) {
 		sl.debug("");
@@ -112,9 +116,11 @@ requestObserver.prototype.observe = function ( subject, topic, data ) {
 		aVisitor = new requestHeaderVisitor();
 		subject.visitRequestHeaders(aVisitor);
 		sl.debug("");
-		if ( aVisitor.isFlash( ) ) {
-			uri = subject.URI;
+		if ( aVisitor.isSebRequest() ) {
+			sl.debug("abort seb request");
+			//uri = subject.URI;
 			subject.cancel( this.aborted );
+			sb.openSebFileDialog(subject.name);
 		}
 	}
 };
@@ -132,23 +138,27 @@ requestObserver.prototype.unregister = function ( ) {
 /* response Observer */
 
 responseHeaderVisitor = function () {
-        this._isFlash = false;
-        this._isSeb = false;
+        this._isSebResponse = false;
 };
 
-responseHeaderVisitor.prototype.visitHeader = function ( aHeader, aValue ) {
-	sl.debug(aHeader+" : "+aValue);
-	/*
-        if ( aHeader.indexOf( "Content-Type" ) !== -1 ) {
-            if ( aValue.indexOf( "application/x-shockwave-flash" ) !== -1 ) {
-                this._isFlash = true;
-            }
-        }
-        */ 
+responseHeaderVisitor.prototype.visitHeader = function ( h, v ) {
+	sl.debug(h+" : "+v);
+	if (contentTypeReg.test(h)) {
+		if (sebMimetypeReg.test(v)) {
+			this._isSebResponse = true;
+			return;
+		}
+	}
+	if ( contentDispositionReg.test(h) ) {
+		if ( sebFileAttachmentReg.test(v)) {
+			this._isSebResponse = true;
+			return;
+		}
+	}
 };
 
-responseHeaderVisitor.prototype.isFlash = function () {
-	return this._isFlash;
+responseHeaderVisitor.prototype.isSebResponse = function () {
+	return this._isSebResponse;
 };
 
 
@@ -161,18 +171,28 @@ responseObserver = function () {
 };
 
 responseObserver.prototype.observe = function ( subject, topic, data ) {
+	if (sb.blockObs) {
+		return;
+	}
 	var uri, aVisitor;
 	if ( subject instanceof this.nsIHttpChannel ) {
 		sl.debug("");
 		sl.debug("<- http response examine: " + subject.name);
-		sl.debug("response header:");
-		sl.debug("*****************");
-		aVisitor = new responseHeaderVisitor();
-		subject.visitResponseHeaders(aVisitor);
-		sl.debug("");
-		if ( aVisitor.isFlash() ) {
-			uri = subject.URI;
-			subject.cancel( this.aborted );	
+		if (sebFileReg.test(subject.name)) { // direct seb file
+			subject.cancel( this.aborted );
+			sb.downloadSebFile(subject.name);
+		}
+		else {
+			sl.debug("response header:");
+			sl.debug("*****************");
+			aVisitor = new responseHeaderVisitor();
+			subject.visitResponseHeaders(aVisitor);
+			sl.debug("");
+			if ( aVisitor.isSebResponse() ) {
+				//uri = subject.URI;
+				subject.cancel( this.aborted );
+				sb.downloadSebFile(subject.name);
+			}
 		}
 	}
 };

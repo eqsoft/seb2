@@ -88,7 +88,6 @@ let 	base = null,
 		pdf : new RegExp(/^application\/(x-)?pdf/)
 	},
 	sebReg = new RegExp(/.*?\.seb/i),
-	sebFileAttachment = new RegExp(/.*?filename\=.*?\.seb/i);
 	windowTitleSuffix = "";
 	
 const	nsIX509CertDB = Ci.nsIX509CertDB,
@@ -131,7 +130,7 @@ nsBrowserStatusHandler.prototype = {
 this.SebBrowser = {
 	//lastDocumentUrl : null,
 	dialogHandler : null,
-	
+	blockObs : false,
 	init : function(obj) {
 		base = this;
 		seb = obj;
@@ -154,79 +153,6 @@ this.SebBrowser = {
 			this.baseurl = btoa(aRequest.name);
 			sl.debug("DOCUMENT REQUEST START: " + aRequest.name + " status: " + aStatus);
 			sl.debug("baseurl: " + this.baseurl);
-			/*
-			if (seb.reconfState == RECONF_START && sw.getWinType(this.win) == "reconf") { // sneak response header
-				base.dialogHandler("check seb file request");
-				sl.debug("suspend original request of reconf transaction");
-				var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
-				var xhr2 = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
-				aRequest.suspend();
-				
-				var assertSebFile = false;
-				xhr.onload = function (evt) {
-					if (xhr.readyState === 4) {
-						sl.debug("async head request done");
-						if (xhr.status === 200) {
-							try {
-								sl.debug("status 200: " + aRequest.name);
-								sl.debug("status 200: " + aRequest.getResponseHeader('Content-Disposition'));
-								sl.debug("status 200: " + aRequest.getResponseHeader('Content-disposition'));
-								if (sebFileAttachment.test(xhr.getResponseHeader('Content-Disposition'))) {
-									sl.debug("seb file attachment response header");
-									assertSebFile = true;
-								}
-								if (sebReg.test(aRequest.name)) {
-									sl.debug("direct seb file download as " + xhr.getResponseHeader('Content-type'));
-									assertSebFile = true;
-								}
-							}
-							catch(e) {
-								sl.debug("resume request 0: " + aRequest.name);
-								aRequest.resume();
-							}
-							if (assertSebFile) {
-								aRequest.cancel(Cr.NS_BINDING_ABORTED);
-								base.dialogHandler("assert seb file download");
-								xhr2.onload = function() {
-									if (xhr2.readyState === 4) {
-										sl.debug("async get request done");
-										if (xhr2.status === 200) {
-											var blob = xhr2.response;
-											sl.debug(blob.size);
-											base.dialogHandler("seb file downloaded: " + blob.size);
-											sh.sendMessage(blob);
-										}
-									}
-								}
-								xhr2.onerror = function() {
-									aRequest.resume();
-								}
-								xhr2.responseType = "blob";
-								xhr2.open("GET", aRequest.name, true);
-								xhr2.send(null);
-							}
-							else {
-								sl.debug("resume request 1: " + aRequest.name);
-								aRequest.resume();
-							}
-						} 
-						else {
-							sl.debug("resume request 2: " + aRequest.name);
-							aRequest.resume();
-						}
-						
-					}
-				}
-				xhr.onerror = function() {
-					sl.debug("resume request 3: " + aRequest.name);
-					aRequest.resume();
-				}
-				xhr.open("HEAD", aRequest.name, true);
-				xhr.send(null);
-				return;
-				 
-			}
-			*/ 
 			
 			base.startLoading(this.win);
 			if (seb.quitURL === aRequest.name) {
@@ -257,8 +183,7 @@ this.SebBrowser = {
 				seb.mainWin.openDialog(RECONFIG_URL,"",RECONFIG_FEATURES,aRequest.name,base.initReconf).focus();
 				return 0;			
 			}
-			*/ 
-			
+			*/
 			
 			// PDF Handling
 			// don't trigger if pdf is part of the query string: infinite loop
@@ -387,12 +312,6 @@ this.SebBrowser = {
 		var interfaceRequestor = win.XulLibBrowser.docShell.QueryInterface(Ci.nsIInterfaceRequestor);
 		var webProgress = interfaceRequestor.getInterface(Ci.nsIWebProgress);
 		webProgress.addProgressListener(win.XULBrowserWindow, Ci.nsIWebProgress.NOTIFY_ALL);
-		/*
-		if (sw.getWinType(win) == "reconf") {
-			obs.addObserver(httpResponseObserver, 'http-on-examine-response', false);
-		}
-		*/ 
-		//nav = win.XulLibBrowser.webNavigation;
 		sl.debug("initBrowser");
 	},
 	
@@ -425,10 +344,10 @@ this.SebBrowser = {
 	
 	initReconf : function(win,url,handler) {
 		sl.debug("initReconf: " + win);
-		base.initBrowser(win);
+		//base.initBrowser(win);
 		base.dialogHandler = handler;
 		base.dialogHandler("loading: " + url);
-		base.setBrowserHandler(win);
+		//base.setBrowserHandler(win);
 		base.loadPage(win,url);
 		
 	},
@@ -436,6 +355,39 @@ this.SebBrowser = {
 	resetReconf : function() {
 		base.dialogHandler("closeDialog");
 		seb.reconfState = RECONF_SUCCESS;
+	},
+	
+	openSebFileDialog : function(url) { // original request is canceled by SebNet.jsm requestObserver
+		sl.debug("openSebFileDialog");
+		seb.reconfState = RECONF_START;
+		seb.mainWin.openDialog(RECONFIG_URL,"",RECONFIG_FEATURES,url,base.initReconf).focus();
+	},
+	
+	downloadSebFile : function(url) {
+		var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+		base.dialogHandler("seb file download");
+		xhr.onload = function() {
+			if (xhr.readyState === 4) {
+				sl.debug("async get request done");
+				if (xhr.status === 200) {
+					var blob = xhr.response;
+					sl.debug(blob.size);
+					base.dialogHandler("seb file downloaded: " + blob.size);
+					sh.sendMessage(blob);
+					base.blockObs = false;
+				}
+				else {
+					base.blockObs = false;
+				}
+			}
+		}
+		xhr.onerror = function() {
+			base.blockObs = false;
+		}
+		xhr.responseType = "blob";
+		xhr.open("GET", url, true);
+		base.blockObs = true;
+		xhr.send(null);
 	},
 	
 	addSSLCert : function(cert,debug) {

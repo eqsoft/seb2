@@ -257,14 +257,14 @@ this.SebUtils =  {
 	
 	decodeBase64 : function (data,charset) {
 		if (base.isUTF8(charset)) {
-			return decodeURIComponent(escape(atob(data)))
+			return decodeURIComponent(escape(atob(data)));
 		}
 		return atob(data);
 	},
 	
 	encodeBase64 : function (data,charset) {
 		if (base.isUTF8(charset)) {
-			return btoa(unescape(encodeURIComponent(data)))
+			return btoa(unescape(encodeURIComponent(data)));
 		}
 		return btoa(data);
 	},
@@ -372,6 +372,10 @@ this.SebUtils =  {
 				bytes[i+2] = holder;
 			}
 		}
+	},
+	
+	escapeRegExp : function (str) {
+		return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 	},
 	
 	isEmpty : function (obj) {

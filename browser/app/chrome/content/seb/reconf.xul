@@ -12,7 +12,8 @@
 	title="&seb.reconf.title;"
 	windowtype="reconf"
 	onload="init();"
-	buttons="cancel">
+	buttons="extra1,cancel"
+	defaultButton="extra1">
 	<script type="application/x-javascript"><![CDATA[
 		var ms = null;
 		var br = null;
@@ -37,11 +38,11 @@
 		function init() {
 			ms = document.getElementById("msgBox");
 			br = document.getElementById("brSebFile");
+			//extra1 = window.getButton("extra1");
 			var sebFileUrl = window.arguments[0];
 			window.arguments[1].call(null,window,sebFileUrl,msg); // delegate to SebBrowser.jsm
 			msg("init");
 		}
-		
 		
 		
 	]]></script>
