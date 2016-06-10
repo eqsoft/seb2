@@ -54,7 +54,7 @@ sebsProtocol.prototype = {
 			ch = NetUtil.newChannel(uri);
 			ch.QueryInterface(Ci.nsIHttpChannel);
 			ch.setRequestHeader(SEB_FILE_HEADER, "1", false);
-			ch.setRequestHeader("Content-type",SEB_MIME_TYPE,false);
+			ch.setRequestHeader("Content-Type",SEB_MIME_TYPE,false);
 		}
 		catch (e) {
 			dump(e + "\n");
