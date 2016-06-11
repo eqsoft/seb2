@@ -82,7 +82,7 @@ requestHeaderVisitor = function () {
 };
 
 requestHeaderVisitor.prototype.visitHeader = function ( h, v ) {
-	sl.debug(h+" : "+v);
+	sl.info(h+" : "+v);
 	if (contentTypeReg.test(h)) {
 		if (sebMimetypeReg.test(v)) {
 			this._isSebRequest = true;
@@ -109,13 +109,13 @@ requestObserver.prototype.observe = function ( subject, topic, data ) {
 	}
 	var uri, aVisitor;
 	if ( subject instanceof this.nsIHttpChannel ) {
-		sl.debug("");
-		sl.debug("-> http request modify: " + subject.name);
-		sl.debug("request header:");
-		sl.debug("*****************");
+		sl.info("");
+		sl.info("-> http request modify: " + subject.name);
+		sl.info("request header:");
+		sl.info("*****************");
 		aVisitor = new requestHeaderVisitor();
 		subject.visitRequestHeaders(aVisitor);
-		sl.debug("");
+		sl.info("");
 		if ( aVisitor.isSebRequest() ) {
 			sl.debug("abort seb request");
 			//uri = subject.URI;
@@ -142,7 +142,7 @@ responseHeaderVisitor = function () {
 };
 
 responseHeaderVisitor.prototype.visitHeader = function ( h, v ) {
-	sl.debug(h+" : "+v);
+	sl.info(h+" : "+v);
 	if (contentTypeReg.test(h)) {
 		if (sebMimetypeReg.test(v)) {
 			this._isSebResponse = true;
@@ -176,20 +176,22 @@ responseObserver.prototype.observe = function ( subject, topic, data ) {
 	}
 	var uri, aVisitor;
 	if ( subject instanceof this.nsIHttpChannel ) {
-		sl.debug("");
-		sl.debug("<- http response examine: " + subject.name);
+		sl.info("");
+		sl.info("<- http response examine: " + subject.name);
 		if (sebFileReg.test(subject.name)) { // direct seb file
+			sl.debug("abort seb response: direct seb file download");
 			subject.cancel( this.aborted );
 			sb.downloadSebFile(subject.name);
 		}
 		else {
-			sl.debug("response header:");
-			sl.debug("*****************");
+			sl.info("response header:");
+			sl.info("*****************");
 			aVisitor = new responseHeaderVisitor();
 			subject.visitResponseHeaders(aVisitor);
-			sl.debug("");
+			sl.info("");
 			if ( aVisitor.isSebResponse() ) {
 				//uri = subject.URI;
+				sl.debug("abort seb response: seb file attachment");
 				subject.cancel( this.aborted );
 				sb.downloadSebFile(subject.name);
 			}

@@ -61,7 +61,9 @@ let	base = null,
 	overrideProfile = true;
 
 this.seb =  {
+	DEBUG_CMD : 0,
 	DEBUG : false,
+	INFO : false,
 	cmdline : null,
 	defaultConfig : null,
 	config : null,
@@ -118,7 +120,9 @@ this.seb =  {
 		base.cmdline = cl;
 		su.init(base);
 		sg.init(base);
-		base.DEBUG = su.getBool(su.getCmd("debug"));
+		base.DEBUG_CMD = su.getNumber(su.getCmd("debug"));
+		base.DEBUG = su.getBool(base.DEBUG_CMD); // true > 0
+		base.INFO = (base.DEBUG && (base.DEBUG_CMD == INFO_LEVEL)) ? true : false;
 		sl.init(base);
 		base.initProfile();
 		sw.init(base);
