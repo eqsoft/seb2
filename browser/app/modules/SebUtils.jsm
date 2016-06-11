@@ -223,17 +223,30 @@ this.SebUtils =  {
 	
 	getBool : function (b) {
 		var ret;
-		switch (b) {
-			case "1":
-			case 1:
-			case "true":
-			case true :
-				ret = true;
-			break;
-			default: 
+		switch (typeof(b)) {
+			case "string" :
+				ret = (b == "false" || b == "undefined") ? false : true;
+				break;
+			case "number" :
+				ret = (b > 0) ? true : false;
+				break;
+			case "boolean" :
+				ret = b;
+				break;
+			case "object" :
+				ret = (b === null) ? false : true;
+				break;
+			case "undefined" :
 				ret = false;
+				break;
+			default :
+				ret = true;
 		}
 		return ret;
+	},
+	
+	getNumber : function (x) {
+		return parseInt(x,10);
 	},
 	
 	getLocStr : function (k) {
