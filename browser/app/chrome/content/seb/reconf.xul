@@ -13,16 +13,19 @@
 	windowtype="reconf"
 	onload="init();"
 	buttons="extra1,cancel"
-	defaultButton="extra1">
+	defaultButton="extra1"
+	ondialogcancel="return cancelDialog()"
+	>
 	<script type="application/x-javascript"><![CDATA[
 		var ms = null;
 		var br = null;
+		var load = null;
 		
 		function msg(txt, append) {
 			switch (txt) {
 				case "closeDialog" :
 					window.close();
-				break;
+					break;
 				default :
 					if (!append) {
 						ms.value = "";
@@ -31,16 +34,18 @@
 			}
 		}
 		
-		function onLoad() {
-			msg("browser loaded",false);
-		}
-		
 		function init() {
 			ms = document.getElementById("msgBox");
 			br = document.getElementById("brSebFile");
+			load = document.getElementById("loadingBox");
 			var sebFileUrl = window.arguments[0];
 			window.arguments[1].call(null,window,sebFileUrl,msg); // delegate to SebBrowser.jsm
-			msg("init");
+		}
+		
+		function cancelDialog() {
+			msg("reconfigureAborted");
+			window.arguments[2].call(null,window);
+			return false;
 		}
 		
 		

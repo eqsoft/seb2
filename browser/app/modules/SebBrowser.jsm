@@ -157,19 +157,19 @@ this.SebBrowser = {
 			base.startLoading(this.win);
 			if (seb.quitURL === aRequest.name) {
 				aRequest.cancel(aStatus);
-				base.stopLoading();
+				base.stopLoading(this.win);
 				var tmpQuit = seb.allowQuit; // store default shutdownEnabled
 				var tmpIgnorePassword = seb.quitIgnorePassword; // store default quitIgnorePassword
 				seb.allowQuit = true; // set to true
 				seb.quitIgnorePassword = true;
-				seb.quit();									
+				seb.quit();				
 				seb.allowQuit = tmpQuit; // set default shutdownEnabled
 				seb.quitIgnorePassword = tmpIgnorePassword; // set default shutdownIgnorePassword
 				return;
 			}
 			if (!sn.isValidUrl(aRequest.name)) {
 				aRequest.cancel(aStatus);
-				base.stopLoading();
+				base.stopLoading(this.win);
 				prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
 				return 1; // 0?
 			}
@@ -192,16 +192,17 @@ this.SebBrowser = {
 				sl.debug("pdf start request");
 				aRequest.cancel(aStatus);
 				sw.openPdfViewer(aRequest.name);
-				base.stopLoading();
+				base.stopLoading(this.win);
 				return;
 			}
 		}
 		if ((aStateFlags & stopDocumentFlags) == stopDocumentFlags) { // stop document request event
 			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name + " - status: " + aStatus);
+			//this.win = sw.getChromeWin(aWebProgress.DOMWindow);
 			if (!Components.isSuccessCode(aStatus) && aStatus != 2152398850) { // heise.de with all that advertising will not load without that skipped 2152398850 status
 			//if (aStatus > 0 && aStatus != 2152398850) { // error: experimental!!! ToDo: look at status codes!!
 				sl.debug("Error document loading: " + aStatus);
-				base.stopLoading();
+				base.stopLoading(this.win);
 				try {
 					try {
 						let mimeType = aRequest.getResponseHeader("Content-Type");
@@ -242,7 +243,7 @@ this.SebBrowser = {
 				}
 			}
 			
-			base.stopLoading();
+			base.stopLoading(this.win);
 			this.isStarted = false;
 			var w = aWebProgress.DOMWindow.wrappedJSObject;
 			try {
@@ -343,15 +344,23 @@ this.SebBrowser = {
 	},
 	
 	initReconf : function(win,url,handler) {
-		sl.debug("initReconf: " + win.document.getElementsByTagName("Button").length);
-		//base.initBrowser(win);
+		sl.debug("reconfigure started");
+		base.initBrowser(win);
+		seb.reconfState = RECONF_START;
 		base.dialogHandler = handler;
-		base.dialogHandler("loading: " + url);
-		//base.setBrowserHandler(win);
+		base.setBrowserHandler(win);
 		base.loadPage(win,url);
 	},
 	
+	abortReconf : function(win) {
+		sl.debug("reconfigure aborted");
+		seb.reconfState = RECONF_ABORTED;
+		sh.sendReconfigureAborted();
+		win.close();
+	},
+	
 	resetReconf : function() {
+		//base.dialogHandler("reconfigure succeeded");
 		base.dialogHandler("closeDialog");
 		seb.reconfState = RECONF_SUCCESS;
 	},
@@ -359,7 +368,7 @@ this.SebBrowser = {
 	openSebFileDialog : function(url) { // original request is canceled by SebNet.jsm requestObserver
 		sl.debug("openSebFileDialog");
 		seb.reconfState = RECONF_START;
-		seb.mainWin.openDialog(RECONFIG_URL,"",RECONFIG_FEATURES,url,base.initReconf).focus();
+		seb.mainWin.openDialog(RECONFIG_URL,"",RECONFIG_FEATURES,url,base.initReconf,base.abortReconf).focus();
 	},
 	
 	downloadSebFile : function(url) {
@@ -386,6 +395,7 @@ this.SebBrowser = {
 		xhr.responseType = "blob";
 		xhr.open("GET", url, true);
 		base.blockObs = true;
+		
 		xhr.send(null);
 	},
 	
@@ -572,8 +582,11 @@ this.SebBrowser = {
 		}
 	},
 	
-	stopLoading : function() { // stop loading on all windows 
+	stopLoading : function(win) { // stop loading on all windows 
 		try {
+			if (win) {
+				win.document.getElementById('loadingBox').className = "hidden";
+			}
 			for (var i=0;i<sw.wins.length;i++) {
 				sw.wins[i].document.getElementById('loadingBox').className = "hidden";
 			}	

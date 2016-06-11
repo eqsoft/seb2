@@ -86,7 +86,8 @@ this.SebHost = {
 			"ClearSession" : base.handleClearSession
 		};
 		base.sendHandler = {
-			"SebFile" : base.sendSebFile
+			"SebFile" : base.sendSebFile,
+			"ReconfigureAborted" : base.sendReconfigureAborted
 		};
 		base.initAdditionalResources();
 		sl.out("SebHost initialized: " + seb);
@@ -334,7 +335,12 @@ this.SebHost = {
 	},
 	
 	sendSebFile : function (base64) {
-		let msg = {"Handler":"SebFile","Opts":{"fileBase64":base64}};
+		let msg = {Handler:"SebFile",Opts:{"fileBase64":base64}};
+		base.sendMessage(JSON.stringify(msg));
+	},
+	
+	sendReconfigureAborted : function () {
+		let msg = {Handler:"ReconfigureAborted",Opts:{}};
 		base.sendMessage(JSON.stringify(msg));
 	},
 	

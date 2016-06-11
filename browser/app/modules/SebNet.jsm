@@ -121,6 +121,7 @@ requestObserver.prototype.observe = function ( subject, topic, data ) {
 			//uri = subject.URI;
 			subject.cancel( this.aborted );
 			sb.openSebFileDialog(subject.name);
+			return;
 		}
 	}
 };
@@ -178,12 +179,15 @@ responseObserver.prototype.observe = function ( subject, topic, data ) {
 	if ( subject instanceof this.nsIHttpChannel ) {
 		sl.info("");
 		sl.info("<- http response examine: " + subject.name);
-		if (sebFileReg.test(subject.name)) { // direct seb file
-			sl.debug("abort seb response: direct seb file download");
-			subject.cancel( this.aborted );
-			sb.downloadSebFile(subject.name);
-		}
-		else {
+		// check seb file if seb.reconfigState = RECONF_START
+		if (seb.reconfState == RECONF_START) {
+			if (sebFileReg.test(subject.name)) { // direct seb file
+				sl.debug("abort seb response: direct seb file download");
+				subject.cancel( this.aborted );
+				sb.downloadSebFile(subject.name);
+				return;
+			}
+			
 			sl.info("response header:");
 			sl.info("*****************");
 			aVisitor = new responseHeaderVisitor();
@@ -194,7 +198,13 @@ responseObserver.prototype.observe = function ( subject, topic, data ) {
 				sl.debug("abort seb response: seb file attachment");
 				subject.cancel( this.aborted );
 				sb.downloadSebFile(subject.name);
+				return;
 			}
+			/*
+			if (subject.requestSucceeded) {
+				sb.idleReconf();
+			}
+			*/ 
 		}
 	}
 };

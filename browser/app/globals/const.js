@@ -14,5 +14,6 @@ const 	DEBUG_LEVEL = 1,
 	RECONF_NO = 0,
 	RECONF_START = 1,
 	RECONF_SUCCESS = 2,
+	RECONF_ABORTED = 3,
 	RECONFIG_URL = "chrome://seb/content/reconf.xul",
 	RECONFIG_FEATURES = "chrome,dialog,modal,resizable=yes,width=800,height=600,scrollbars=yes";
