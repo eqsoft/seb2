@@ -7,6 +7,7 @@
 "sebMainBrowserWindowMaximized":true,
 "sebNewBrowserWindowByLinkTitlebarEnabled":true,
 "sebNewBrowserWindowMaximized":false,
+"sebPdfJsEnabled":true,
 "sebPrefs": {},
 "sebPrefsMap": {
 	"general.useragent.override" 	: "browserUserAgent",
@@ -28,7 +29,7 @@
 "sebScreenshotImageType":"image/jpeg",
 "sebScreenshotSound":false,
 "sebServerEnabled":true,
-"sebSSlSecurityPolicy": 1,
+"sebSSLSecurityPolicy": 1,
 
 "SEBParams":"Config params in alphabethical order (handled by both Windows SEB and Core seb)",
 "additionalResources": 
@@ -144,7 +145,7 @@
 "startURL_":"sebs://moodle-app2.let.ethz.ch/mod/resource/view.php?id=120434",
 "taskBarHeight":0,
 "touchOptimized":false,
-"urlFilterTrustedContent":true,
+"urlFilterTrustedContent":false,
 "urlFilterRegex":true,
 "whitelistURLFilter":[],
 "zoomMode":0,

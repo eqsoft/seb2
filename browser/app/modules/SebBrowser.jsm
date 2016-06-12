@@ -88,6 +88,7 @@ let 	base = null,
 		pdf : new RegExp(/^application\/(x-)?pdf/)
 	},
 	sebReg = new RegExp(/.*?\.seb/i),
+	httpReg = new RegExp(/^http\:/i),
 	windowTitleSuffix = "";
 	
 const	nsIX509CertDB = Ci.nsIX509CertDB,
@@ -130,7 +131,6 @@ nsBrowserStatusHandler.prototype = {
 this.SebBrowser = {
 	//lastDocumentUrl : null,
 	dialogHandler : null,
-	blockObs : false,
 	init : function(obj) {
 		base = this;
 		seb = obj;
@@ -173,17 +173,14 @@ this.SebBrowser = {
 				prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
 				return 1; // 0?
 			}
-			// seb file handling
-			
-			/*
-			if (aRequest.getRequestHeader("Content-type") == SEB_MIME_TYPE) {
-				sl.debug("SEB File Loading...");
-				aRequest.cancel(Cr.NS_BINDING_ABORTED);
-				seb.reconfState = RECONF_START;
-				seb.mainWin.openDialog(RECONFIG_URL,"",RECONFIG_FEATURES,aRequest.name,base.initReconf).focus();
-				return 0;			
+			if (httpReg.test(aRequest.name)) {
+				if (sn.blockHTTP) {
+					sl.debug("block http request");
+					aRequest.cancel( Cr.NS_BINDING_ABORTED );
+					base.stopLoading(this.win);
+					prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
+				}
 			}
-			*/
 			
 			// PDF Handling
 			// don't trigger if pdf is part of the query string: infinite loop
@@ -369,34 +366,6 @@ this.SebBrowser = {
 		sl.debug("openSebFileDialog");
 		seb.reconfState = RECONF_START;
 		seb.mainWin.openDialog(RECONFIG_URL,"",RECONFIG_FEATURES,url,base.initReconf,base.abortReconf).focus();
-	},
-	
-	downloadSebFile : function(url) {
-		var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
-		base.dialogHandler("seb file download");
-		xhr.onload = function() {
-			if (xhr.readyState === 4) {
-				sl.debug("async get request done");
-				if (xhr.status === 200) {
-					var blob = xhr.response;
-					sl.debug(blob.size);
-					base.dialogHandler("seb file downloaded: " + blob.size);
-					sh.sendMessage(blob);
-					base.blockObs = false;
-				}
-				else {
-					base.blockObs = false;
-				}
-			}
-		}
-		xhr.onerror = function() {
-			base.blockObs = false;
-		}
-		xhr.responseType = "blob";
-		xhr.open("GET", url, true);
-		base.blockObs = true;
-		
-		xhr.send(null);
 	},
 	
 	addSSLCert : function(cert,debug) {

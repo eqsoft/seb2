@@ -320,6 +320,10 @@ this.seb =  {
 	
 	reconfigure: function(config) {
 		sl.debug("reconfigure");
+		if (base.reconfState == RECONF_ABORTED) {
+			sl.debug("aborted!");
+			return;
+		}
 		sg.initCustomConfig(config);
 		sb.resetReconf();
 		sw.resetWindows();

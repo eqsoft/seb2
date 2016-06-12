@@ -57,7 +57,8 @@ let 	seb = null,
 	blackListRegs = [],
 	mimeTypesRegs = {
 		flash : new RegExp(/^application\/x-shockwave-flash/),
-		pdf : new RegExp(/^application\/(x-)?pdf/)
+		pdf : new RegExp(/^application\/(x-)?pdf/),
+		seb : new RegExp(/^application\/seb/)
 	},
 	convertReg = /[-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g,
 	wildcardReg = /\*/g,
@@ -482,8 +483,8 @@ this.SebNet = {
 	},
 	
 	setSSLSecurity : function () {
-		forceHTTPS = (su.getConfig("sslSecurityPolicy","number",SSL_SEC_BLOCK_MIXED_ACTIVE) == SSL_SEC_FORCE_HTTPS);
-		blockHTTP = (su.getConfig("sslSecurityPolicy","number",SSL_SEC_BLOCK_MIXED_ACTIVE) == SSL_SEC_BLOCK_HTTP);
+		forceHTTPS = (su.getConfig("sebSSlSecurityPolicy","number",SSL_SEC_BLOCK_MIXED_ACTIVE) == SSL_SEC_FORCE_HTTPS);
+		blockHTTP = (su.getConfig("sebSSLSecurityPolicy","number",SSL_SEC_BLOCK_MIXED_ACTIVE) == SSL_SEC_BLOCK_HTTP);
 		sl.debug("forceHTTPS: " + forceHTTPS);
 		sl.debug("blockHTTP: " + blockHTTP);
 	}
