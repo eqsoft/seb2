@@ -75,7 +75,8 @@ let 	seb = null,
 	reqSalt = null,
 	urlTrusted = true,
 	pdfJsEnabled = false,
-	blockObs = false;
+	blockObs = false,
+	allowLoadSettings = false;
 
 /* request Observer */
 
@@ -113,37 +114,27 @@ requestObserver.prototype.observe = function ( subject, topic, data ) {
 	if ( subject instanceof this.nsIHttpChannel ) {
 		sl.info("");
 		sl.info("-> http request modify: " + subject.name);
-		sl.info("request header:");
-		sl.info("*****************");
 		origUrl = subject.URI.spec;
 		url = origUrl.split("#"); // url fragment is not transmitted to the server!
 		url = url[0];
-		sl.info("");
+		
 		if (!urlTrusted) {
 			if (!base.isValidUrl(url)) {
 				subject.cancel( this.aborted );
 				return;
 			}
 		}
-		if (sendBrowserExamKey) {
-			var k;
-			if (reqSalt) {								
-				k = base.getRequestValue(url, reqKey);
-				sl.info("get req value: " + url + " : " + reqKey + " = " + k);
-			}
-			else {
-				k = reqKey;
-			}
-			subject.setRequestHeader(reqHeader, k, false);
-		}
+		sl.info("request header:");
+		sl.info("*****************");
 		aVisitor = new requestHeaderVisitor();
 		subject.visitRequestHeaders(aVisitor);
+		sl.info("");
 		if ( aVisitor.isSebRequest() && base.isValidUrl(subject.name) ) { // Check if RECONF_SUCCESS!
 			sl.debug("abort seb request");
-			if (seb.reconfState == RECONF_SUCCESS) {
+			if (seb.reconfState == RECONF_SUCCESS && !allowLoadSettings) {
 				sl.debug("abort seb reconfigure request: Already reconfigured!");
 				subject.cancel( this.aborted );
-				prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.already.reconfigured"));
+				//prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.already.reconfigured"));
 				return;
 			}
 			else {
@@ -305,6 +296,7 @@ this.SebNet = {
 		base.setReqHeader();
 		base.setSSLSecurity();
 		pdfJsEnabled = su.getConfig("sebPdfJsEnabled","boolean", true);
+		allowLoadSettings = su.getConfig("loadURLAllowLoadingNewSettings", false);
 		sl.debug("pdfJsEnabled:" + pdfJsEnabled);
 		base.respObs = new responseObserver();
 		base.reqObs = new requestObserver();
@@ -531,8 +523,9 @@ this.SebNet = {
 		sb.dialogHandler("seb file download");
 		xhr.onload = function() {
 			if (xhr.readyState === 4) {
-				sl.debug("async get request done");
+				sl.debug("async get request done: " + xhr.status);
 				if (xhr.status === 200) {
+					sl.debug(xhr.response);
 					var blob = xhr.response;
 					sl.debug(blob.size);
 					sb.dialogHandler("seb file downloaded: " + blob.size);
@@ -540,6 +533,8 @@ this.SebNet = {
 					blockObs = false;
 				}
 				else {
+					sl.debug("could not load seb file url: " + "\status: " + xhr.status);
+					sb.dialogHandler("could not load seb file: " + xhr.status);
 					blockObs = false;
 				}
 			}

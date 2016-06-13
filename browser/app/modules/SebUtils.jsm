@@ -91,6 +91,13 @@ this.SebUtils =  {
 		}		
 	},
 	
+	isBase64 : function (str) {
+		if (!str) {
+			return false;
+		} 
+		return base.checkBase64.test(str);
+	},
+	
 	getJSON : function (data,callback) {	
 		// check base64
 		if (base.checkBase64.test(data)) {

@@ -326,7 +326,7 @@ this.SebHost = {
 	
 	handleReconfigure : function (opts) {
 		sl.debug("handleReconfigure handled");
-		seb.reconfigure(opts.configBase64);
+		seb.reconfigure(opts.configBase64.trim());
 	},
 	
 	handleClearSession : function (opts) {

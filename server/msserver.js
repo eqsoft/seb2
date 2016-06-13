@@ -21,7 +21,7 @@ wss.on('connection', function(ws) {
 					client.send(JSON.stringify(h));
 					setTimeout(function() { // just wait for 3 seconds
 						fs.readFile(reconfpath, 'utf8', function(err, data) {
-							r.Opts.configBase64 = data;
+							r.Opts.configBase64 = data.trim();
 							wss.clients.forEach(function each(client) {
 								client.send(JSON.stringify(r));
 							});

@@ -320,10 +320,20 @@ this.seb =  {
 	
 	reconfigure: function(config) {
 		sl.debug("reconfigure");
+		sl.info("reconfigure config: " + config);
 		if (base.reconfState == RECONF_ABORTED) {
 			sl.debug("aborted!");
 			return;
 		}
+		
+		if (!su.isBase64(config)) {
+			var msg = "no base64 config recieved: aborted!";
+			sl.debug(msg);
+			base.reconfState == RECONF_NO;
+			sb.dialogHandler(msg);
+			return;
+		}
+		 
 		sg.initCustomConfig(config);
 		sb.resetReconf();
 		sw.resetWindows();
