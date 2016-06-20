@@ -64,7 +64,6 @@ this.SebHost = {
 	
 	messageServer : false,
 	os : "",
-	ars : {},
 	msgHandler : {},
 	sendHandler : {},
 
@@ -89,39 +88,7 @@ this.SebHost = {
 			"SebFile" : base.sendSebFile,
 			"ReconfigureAborted" : base.sendReconfigureAborted
 		};
-		base.initAdditionalResources();
 		sl.out("SebHost initialized: " + seb);
-	},
-	
-	initAdditionalResources : function (obj) {
-		//var ar = {};
-		if (obj === undefined) { // initial load
-			obj = su.getConfig("additionalResources","object",null);
-			if (obj !== undefined && obj !== null) {
-				base.initAdditionalResources(obj);
-				return;
-			}
-			
-		}
-		else { // object param
-			for (var i=0;i<obj.length;i++) { // ars array
-				var ar = obj[i];
-				var data = {};
-				var sub = null;
-				for (var key in ar) { // plain object structure without hierarchy
-					if (key !== "additionalResources") {
-						data[key] = ar[key];
-					}
-					else {
-						
-						if (ar[key] !== undefined && ar[key] !== null) {
-							base.initAdditionalResources(ar[key]);
-						}
-					}
-				}
-				base.ars[data["identifier"]] = data;
-			}
-		}
 	},
 	
 	messageSocketListener : function (e) {
@@ -260,11 +227,11 @@ this.SebHost = {
 	handleArs : function(opts) {
 		try {
 			var url = "";
-			if (base.ars[opts.id].url) {
-				url = base.ars[opts.id].url;
+			if (seb.ars[opts.id].url) {
+				url = seb.ars[opts.id].url;
 			}
 			else {
-				url = "file://" + opts.path + base.ars[opts.id].resourceDataFilename.replace("\\\\","/");
+				url = "file://" + opts.path + seb.ars[opts.id].resourceDataFilename.replace("\\\\","/");
 			}
 			if (url != "") {
 				sl.debug("try to open additional resource: " + url);

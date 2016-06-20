@@ -5,4 +5,4 @@
 # 
 #/Applications/Firefox.app/Contents/MacOS/firefox -app "../../app/seb.ini" -no-remote -profile "../../../profilemac" 
 #/Applications/Xulrunner.app/Contents/MacOS/xulrunner -app "../../app/seb.ini" -no-remote -profile ../../../profilemac -debug 1 -jsconsole -purgecaches
-/Applications/Firefox.app/Contents/MacOS/firefox -app "../../app/seb.ini" -no-remote -profile "../../../profilemac"
+/Applications/Firefox.app/Contents/MacOS/firefox -app "../../app/seb.ini" -private -no-remote -profile "../../../profilemac"

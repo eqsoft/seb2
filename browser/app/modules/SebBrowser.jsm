@@ -131,6 +131,7 @@ nsBrowserStatusHandler.prototype = {
 this.SebBrowser = {
 	//lastDocumentUrl : null,
 	dialogHandler : null,
+	linkURLS : {},
 	init : function(obj) {
 		base = this;
 		seb = obj;
@@ -513,10 +514,41 @@ this.SebBrowser = {
 		}
 	},
 	
-	load : function() {
-		//mainBrowserLoad
-		//mainBrowserLoadReferrer
-		sl.debug("try to load from command...");
+	load : function(win) {
+		sl.debug("try to load extra url ...");
+		/*
+		if (seb.loadURL == "") {
+			sl.debug("no loadURL defined");
+			return;
+		}
+		// first check referrer
+		if (seb.loadURLReferrerFilter != "") {
+			let w = (win) ? win : sw.getRecentWin();
+			let loadReferrer = w.content.document.location.href;
+			if (loadReferrer.indexOf(seb.loadURLReferrerFilter) < 0) {
+				sl.debug("loading \"" + seb.loadURL + "\" is only allowed if string in referrer: \"" + seb.loadURLReferrerFilter + "\"");
+				return false;
+				//base.loadPage(seb.mainWin,loadUrl);
+			}
+		}
+		// check confirmation
+		if (seb.loadURLConfirm) {
+			var txt = (seb.loadURLText != "") ? seb.loadURLText : su.getLocStr("seb.load.warning");
+			var result = prompt.confirm(null, su.getLocStr("seb.load.warning.title"), txt);
+			if (result) {
+				if (seb.loadURLResetSession) {
+					base.clearSession();
+				}
+				base.loadPage(seb.mainWin,loadUrl);
+			}
+			else {
+				sl.debug("loadURL aborted by user");
+
+			}
+		}
+		*/
+		
+		/*
 		let loadUrl = su.getConfig("mainBrowserLoad","string","");
 		let loadReferrerInString = su.getConfig("mainBrowserLoadReferrerInString","string","");
 		if (loadUrl == "") {
@@ -539,6 +571,7 @@ this.SebBrowser = {
 			sl.debug("load from command " + loadUrl);
 			base.loadPage(seb.mainWin,loadUrl);
 		}
+		*/ 
 	},
 	
 	startLoading : function(win) {

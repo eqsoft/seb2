@@ -72,12 +72,25 @@ this.seb =  {
 	profile: {},
 	locs : null,	
 	consts : null,
+	ars : {},
 	allowQuit : false,
 	quitURL : "",
 	quitIgnorePassword : false,
 	quitIgnoreWarning : false,
 	hostForceQuit : false,
 	reconfState : RECONF_NO,
+	arsKeys : {},
+	/*
+	loadURL : "",
+	loadURLLinkURL : "",
+	allowLoadSettings : false,
+	loadURLConfirm : false,
+	loadURLReferrerFilter : "",
+	loadURLResetSession : false,
+	loadURLShowButton : false,
+	loadURLText : "",
+	*/ 
+	
 	toString : function() {
 		return appinfo.name;
 	},
@@ -150,6 +163,8 @@ this.seb =  {
 	
 	initAfterConfig : function() {
 		base.initLocale();
+		base.initAdditionalResources();
+		base.getArsLinksAndKeys();
 		sn.init(base); // needs config on init for compiled RegEx
 		sn.initProxies();
 		sh.init(base);
@@ -234,6 +249,28 @@ this.seb =  {
 		base.url = su.getUrl();
 		base.allowQuit = su.getConfig("allowQuit","boolean",false);
 		base.quitURL =su.getConfig("quitURL","string","");
+		base.initArsKeys(win);
+		/*
+		base.loadURL = su.getConfig("loadURL", "string", "");
+		base.loadURLLinkURL = su.getConfig("loadURLLinkURL", "string", "");
+		base.allowLoadSettings = su.getConfig("loadURLAllowLoadingNewSettings", "boolean", false);
+		base.loadURLConfirm = su.getConfig("loadURLConfirm", "boolean", false);
+		base.loadURLReferrerFilter = su.getConfig("loadURLReferrerFilter", "string", "");
+		base.loadURLResetSession = su.getConfig("loadURLResetSession", "boolean", false);
+		base.loadURLShowButton = su.getConfig("loadURLShowButton", "boolean", false);
+		base.loadURLText = su.getConfig("loadURLText", "string", "");
+		*/ 
+		
+		//base.setLoadURLKeys(win);
+		
+		/*
+		
+		let keyset = document.getElementById(KEYSET_ID);
+		keyset.parentNode.appendChild(keyset);
+		 */
+		
+		
+		
 		sb.setEmbeddedCerts();
 		base.setQuitHandler(win);
 		sh.setMessageSocketHandler(win);
@@ -248,8 +285,79 @@ this.seb =  {
 	
 	initSecondary : function(win) {
 		sl.debug("initSecondary");
+		base.initArsKeys(win);
 		sw.setToolbar(win);
 		sw.setSize(win);
+	},
+	
+	initAdditionalResources : function (obj) {
+		//var ar = {};
+		if (obj === undefined) { // initial load
+			sl.debug("initAdditionalResources");
+			obj = su.getConfig("additionalResources","object",null);
+			if (obj !== undefined && obj !== null) {
+				base.initAdditionalResources(obj);
+				return;
+			}
+			
+		}
+		else { // object param
+			for (var i=0;i<obj.length;i++) { // ars array
+				var ar = obj[i];
+				var data = {};
+				var sub = null;
+				for (var key in ar) { // plain object structure without hierarchy
+					if (key !== "additionalResources") {
+						data[key] = ar[key];
+					}
+					else {
+						
+						if (ar[key] !== undefined && ar[key] !== null) {
+							base.initAdditionalResources(ar[key]);
+						}
+					}
+				}
+				base.ars[data["identifier"]] = data;
+			}
+		}
+	},
+	
+	getArsLinksAndKeys : function () {
+		sl.debug("getArsLinksAndKeys");
+		for (k in base.ars) {
+			//sl.debug(JSON.stringify(base.ars[k]));
+			if (base.ars[k]["linkURL"] && base.ars[k]["linkURL"] != "") {
+				sb.linkURLS[base.ars[k]["linkURL"]] = k;
+			}
+			if (base.ars[k]["keycode"] && base.ars[k]["keycode"] != "") {
+				let m = (base.ars[k]["modifiers"] && base.ars[k]["modifiers"] != "") ? base.ars[k]["modifiers"] : "";
+				base.arsKeys[k] = {keycode : base.ars[k]["keycode"], modifiers : m}
+			}
+			if (base.ars[k]["key"] && base.ars[k]["key"] != "") {
+				let m = (base.ars[k]["modifiers"] && base.ars[k]["modifiers"] != "") ? base.ars[k]["modifiers"] : "";
+				base.arsKeys[k] = {key : base.ars[k]["key"], modifiers : m}
+			}
+		}
+		//sl.debug(JSON.stringify(sb.linkURLS));
+	},
+	
+	initArsKeys : function (win) {
+		let keySet = win.document.getElementById("sebKeySet");
+		for (k in base.arsKeys) {
+			let elKey = win.document.createElement("key");
+			elKey.setAttribute("id", k);
+			if (base.arsKeys[k].keycode) {
+				elKey.setAttribute("keycode", base.arsKeys[k].keycode);
+				elKey.setAttribute("modifiers", base.arsKeys[k].modifiers);
+			}
+			if (base.arsKeys[k].key) {
+				elKey.setAttribute("key", base.arsKeys[k].key);
+				elKey.setAttribute("modifiers", base.arsKeys[k].modifiers);
+			}
+			elKey.setAttribute("oncommand",'seb.load(this)');
+			keySet.appendChild(elKey);
+		}
+		keySet.parentNode.appendChild(keySet);
 	},
 	
 	/* handler */
@@ -341,6 +449,10 @@ this.seb =  {
 		base.reconfState = RECONF_SUCCESS;
 	},
 	
+	load: function(el) {
+		sl.debug("XXXXX:" + el.id);
+	},
+	
 	quit: function(e) {
 		sl.debug("try to quit...");
 		var w = base.mainWin;
@@ -429,16 +541,21 @@ this.seb =  {
 				}
 			}
 			
-			/*
-			if (sebBinaryClient) {
-				for (var s in sebBinaryClient.streams) {
-					x.debug("close stream " + s);
-					sebBinaryClient.streams[s]._socket.close();
-				}
-			}
-			*/
 			sw.closeAllWin();
 			sl.debug("quit"); 
 		}		
+	},
+	
+	/*
+	setLoadURLKeys : function (win) {
+		sl.debug("setLoadURLKeys");
+		var loadCmd = win.document.getElementById("seb.load");
+		if (loadCmd) {
+			let loadURLKeycode = su.getConfig("loadURLKeycode", "string", "");
+			let loadURLModifiers = su.getConfig("loadURLModifiers", "string", "");
+			loadCmd.setAttribute("keycode",loadURLKeycode);
+			loadCmd.setAttribute("modifiers",loadURLModifiers);
+		}
 	}
+	*/ 
 }

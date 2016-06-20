@@ -75,8 +75,7 @@ let 	seb = null,
 	reqSalt = null,
 	urlTrusted = true,
 	pdfJsEnabled = false,
-	blockObs = false,
-	allowLoadSettings = false;
+	blockObs = false;
 
 /* request Observer */
 
@@ -131,7 +130,7 @@ requestObserver.prototype.observe = function ( subject, topic, data ) {
 		sl.info("");
 		if ( aVisitor.isSebRequest() && base.isValidUrl(subject.name) ) { // Check if RECONF_SUCCESS!
 			sl.debug("abort seb request");
-			if (seb.reconfState == RECONF_SUCCESS && !allowLoadSettings) {
+			if (seb.reconfState == RECONF_SUCCESS && !seb.allowLoadSettings) {
 				sl.debug("abort seb reconfigure request: Already reconfigured!");
 				subject.cancel( this.aborted );
 				//prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.already.reconfigured"));
@@ -289,6 +288,7 @@ this.SebNet = {
 	forceHTTPS : false,
 	blockHTTP : false,
 	
+	
 	init : function(obj) {
 		base = this;
 		seb = obj;
@@ -296,7 +296,6 @@ this.SebNet = {
 		base.setReqHeader();
 		base.setSSLSecurity();
 		pdfJsEnabled = su.getConfig("sebPdfJsEnabled","boolean", true);
-		allowLoadSettings = su.getConfig("loadURLAllowLoadingNewSettings", false);
 		sl.debug("pdfJsEnabled:" + pdfJsEnabled);
 		base.respObs = new responseObserver();
 		base.reqObs = new requestObserver();
