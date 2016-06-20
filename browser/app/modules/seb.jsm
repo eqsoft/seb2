@@ -354,7 +354,7 @@ this.seb =  {
 				elKey.setAttribute("key", base.arsKeys[k].key);
 				elKey.setAttribute("modifiers", base.arsKeys[k].modifiers);
 			}
-			elKey.setAttribute("oncommand",'seb.load(this)');
+			elKey.setAttribute("oncommand",'seb.load(window, this)');
 			keySet.appendChild(elKey);
 		}
 		keySet.parentNode.appendChild(keySet);
@@ -449,8 +449,42 @@ this.seb =  {
 		base.reconfState = RECONF_SUCCESS;
 	},
 	
-	load: function(el) {
-		sl.debug("XXXXX:" + el.id);
+	load: function(win, el) {
+		sl.debug("try to load additional ressource:" + el.id);
+		let ar = base.ars[el.id];
+		let url = ar["URL"];
+		let filter = ar["refererFilter"];
+		let reset = ar["resetSession"];
+		let confirm = ar["confirm"];
+		let confirmText = (ar["confirmText"] && ar["confirmText"] != "") ? ar["confirmText"] : su.getLocStr("seb.load.warning");
+		if (!url || url == "") {
+			sl.debug("no url to load!");
+			return;
+		}
+		
+		// first check referrer
+		if (filter && filter != "") {
+			let w = (win) ? win : sw.getRecentWin();
+			let loadReferrer = w.content.document.location.href;
+			if (loadReferrer.indexOf(filter) < 0) {
+				sl.debug("loading \"" + url + "\" is only allowed if string in referrer: \"" + filter + "\"");
+				return false;
+				//base.loadPage(seb.mainWin,loadUrl);
+			}
+		}
+		
+		// check confirmation
+		if (confirm) {
+			var result = prompt.confirm(null, su.getLocStr("seb.load.warning.title"), confirmText);
+			if (!result) {
+				sl.debug("loadURL aborted by user");
+				return;	
+			}
+		}
+		if (reset) {		
+			sb.clearSession();
+		}
+		sb.loadPage(base.mainWin,url); 
 	},
 	
 	quit: function(e) {

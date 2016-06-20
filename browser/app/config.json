@@ -8,7 +8,9 @@
 "sebNewBrowserWindowByLinkTitlebarEnabled":true,
 "sebNewBrowserWindowMaximized":false,
 "sebPdfJsEnabled":true,
-"sebPrefs": {},
+"sebPrefs": {
+	"network.proxy.type" 	: 0
+},
 "sebPrefsMap": {
 	"general.useragent.override" 	: "browserUserAgent",
 	"browser.download.dir" 		: "downloadDirectoryWIN",
@@ -49,13 +51,12 @@
 		"resourceDataLauncher": 0,
 		"resourceData":"",
 		"linkURL" : "http://localhost:8443/linkurl",
-		"refererFilter":"end.html",
+		"refererFilter":"test.html",
 		"resetSession":true,
 		"allowLoadingNewSettings":false,
-		"keycode":"VK_F8",
-		"modifiers":"control shift",
+		"key":"L",
+		"modifiers":"control",
 		"confirm":true,
-		"confirmText":"Wollen Sie wirklich die URL laden?",
 		"showButton":""
 		}
 	],

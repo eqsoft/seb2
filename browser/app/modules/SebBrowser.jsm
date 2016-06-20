@@ -504,6 +504,7 @@ this.SebBrowser = {
 	},
 	
 	clearSession : function() { // what about localStorage?
+		sl.debug("clearSession");
 		authMgr.clearAll();
 		cookieMgr.removeAll();
 		try {
@@ -513,67 +514,7 @@ this.SebBrowser = {
 			//sl.err("error remove history pages: " + e + "\n typeof removeAllPages " + typeof(historySrv.removeAllPages));
 		}
 	},
-	
-	load : function(win) {
-		sl.debug("try to load extra url ...");
-		/*
-		if (seb.loadURL == "") {
-			sl.debug("no loadURL defined");
-			return;
-		}
-		// first check referrer
-		if (seb.loadURLReferrerFilter != "") {
-			let w = (win) ? win : sw.getRecentWin();
-			let loadReferrer = w.content.document.location.href;
-			if (loadReferrer.indexOf(seb.loadURLReferrerFilter) < 0) {
-				sl.debug("loading \"" + seb.loadURL + "\" is only allowed if string in referrer: \"" + seb.loadURLReferrerFilter + "\"");
-				return false;
-				//base.loadPage(seb.mainWin,loadUrl);
-			}
-		}
-		// check confirmation
-		if (seb.loadURLConfirm) {
-			var txt = (seb.loadURLText != "") ? seb.loadURLText : su.getLocStr("seb.load.warning");
-			var result = prompt.confirm(null, su.getLocStr("seb.load.warning.title"), txt);
-			if (result) {
-				if (seb.loadURLResetSession) {
-					base.clearSession();
-				}
-				base.loadPage(seb.mainWin,loadUrl);
-			}
-			else {
-				sl.debug("loadURL aborted by user");
-
-			}
-		}
-		*/
 		
-		/*
-		let loadUrl = su.getConfig("mainBrowserLoad","string","");
-		let loadReferrerInString = su.getConfig("mainBrowserLoadReferrerInString","string","");
-		if (loadUrl == "") {
-			sl.debug("no mainBrowserLoad defined.");
-			return;
-		}
-		let doc = seb.mainWin.content.document;
-		let loadReferrer = doc.location.href;
-		if (loadReferrerInString != "") {
-			if (loadReferrer.indexOf(loadReferrerInString) > -1) {
-				base.loadPage(seb.mainWin,loadUrl);
-			}
-			else {
-					
-				sl.debug("loading \"" + loadUrl + "\" is only allowed if string in referrer: \"" + loadReferrerInString + "\"");
-				return false;
-			}
-		}
-		else {
-			sl.debug("load from command " + loadUrl);
-			base.loadPage(seb.mainWin,loadUrl);
-		}
-		*/ 
-	},
-	
 	startLoading : function(win) {
 		try {
 			win = (win) ? win : seb.mainWin;
