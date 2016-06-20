@@ -168,6 +168,14 @@ this.SebBrowser = {
 				seb.quitIgnorePassword = tmpIgnorePassword; // set default shutdownIgnorePassword
 				return;
 			}
+			
+			if (base.linkURLS[aRequest.name] || base.linkURLS[aRequest.name.replace(/\/$/),""]) {
+				aRequest.cancel(aStatus);
+				base.stopLoading(this.win);
+				seb.loadAR(this.win, base.linkURLS[aRequest.name]);
+				return;
+			}
+			
 			if (!sn.isValidUrl(aRequest.name)) {
 				aRequest.cancel(aStatus);
 				base.stopLoading(this.win);

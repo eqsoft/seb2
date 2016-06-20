@@ -80,16 +80,6 @@ this.seb =  {
 	hostForceQuit : false,
 	reconfState : RECONF_NO,
 	arsKeys : {},
-	/*
-	loadURL : "",
-	loadURLLinkURL : "",
-	allowLoadSettings : false,
-	loadURLConfirm : false,
-	loadURLReferrerFilter : "",
-	loadURLResetSession : false,
-	loadURLShowButton : false,
-	loadURLText : "",
-	*/ 
 	
 	toString : function() {
 		return appinfo.name;
@@ -250,27 +240,6 @@ this.seb =  {
 		base.allowQuit = su.getConfig("allowQuit","boolean",false);
 		base.quitURL =su.getConfig("quitURL","string","");
 		base.initArsKeys(win);
-		/*
-		base.loadURL = su.getConfig("loadURL", "string", "");
-		base.loadURLLinkURL = su.getConfig("loadURLLinkURL", "string", "");
-		base.allowLoadSettings = su.getConfig("loadURLAllowLoadingNewSettings", "boolean", false);
-		base.loadURLConfirm = su.getConfig("loadURLConfirm", "boolean", false);
-		base.loadURLReferrerFilter = su.getConfig("loadURLReferrerFilter", "string", "");
-		base.loadURLResetSession = su.getConfig("loadURLResetSession", "boolean", false);
-		base.loadURLShowButton = su.getConfig("loadURLShowButton", "boolean", false);
-		base.loadURLText = su.getConfig("loadURLText", "string", "");
-		*/ 
-		
-		//base.setLoadURLKeys(win);
-		
-		/*
-		
-		let keyset = document.getElementById(KEYSET_ID);
-		keyset.parentNode.appendChild(keyset);
-		 */
-		
-		
-		
 		sb.setEmbeddedCerts();
 		base.setQuitHandler(win);
 		sh.setMessageSocketHandler(win);
@@ -354,7 +323,7 @@ this.seb =  {
 				elKey.setAttribute("key", base.arsKeys[k].key);
 				elKey.setAttribute("modifiers", base.arsKeys[k].modifiers);
 			}
-			elKey.setAttribute("oncommand",'seb.load(window, this)');
+			elKey.setAttribute("oncommand",'seb.loadAR(window, this.id)');
 			keySet.appendChild(elKey);
 		}
 		keySet.parentNode.appendChild(keySet);
@@ -449,9 +418,9 @@ this.seb =  {
 		base.reconfState = RECONF_SUCCESS;
 	},
 	
-	load: function(win, el) {
-		sl.debug("try to load additional ressource:" + el.id);
-		let ar = base.ars[el.id];
+	loadAR: function(win, id) {
+		sl.debug("try to load additional ressource:" + id);
+		let ar = base.ars[id];
 		let url = ar["URL"];
 		let filter = ar["refererFilter"];
 		let reset = ar["resetSession"];
@@ -469,7 +438,6 @@ this.seb =  {
 			if (loadReferrer.indexOf(filter) < 0) {
 				sl.debug("loading \"" + url + "\" is only allowed if string in referrer: \"" + filter + "\"");
 				return false;
-				//base.loadPage(seb.mainWin,loadUrl);
 			}
 		}
 		
@@ -578,18 +546,5 @@ this.seb =  {
 			sw.closeAllWin();
 			sl.debug("quit"); 
 		}		
-	},
-	
-	/*
-	setLoadURLKeys : function (win) {
-		sl.debug("setLoadURLKeys");
-		var loadCmd = win.document.getElementById("seb.load");
-		if (loadCmd) {
-			let loadURLKeycode = su.getConfig("loadURLKeycode", "string", "");
-			let loadURLModifiers = su.getConfig("loadURLModifiers", "string", "");
-			loadCmd.setAttribute("keycode",loadURLKeycode);
-			loadCmd.setAttribute("modifiers",loadURLModifiers);
-		}
 	}
-	*/ 
 }

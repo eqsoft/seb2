@@ -32,7 +32,6 @@
 	<commandset id="sebCommandSet">	
 		<command id="sebCmdQuit" oncommand="seb.quit();"/>
 		<command id="sebCmdReload" oncommand="sb.reload(window);"/>
-		<command id="sebCmdLoad" oncommand="sb.load();"/>
 		<command id="sebCmdRestart" oncommand="sb.restart();"/>
 		<command id="sebCmdBack" oncommand="sb.back(window);"/>
 		<command id="sebCmdForward" oncommand="sb.forward(window);"/>
@@ -46,7 +45,6 @@
 	<keyset id="sebKeySet">
 		<key id="seb.quit" keycode="VK_F4" modifiers="control shift" command="sebCmdQuit"/>
 		<key id="seb.reload" keycode="VK_F5" modifiers="control shift" command="sebCmdReload"/>
-		<key id="seb.load" keycode="VK_F6" modifiers="control shift" command="sebCmdLoad"/>
 		<key id="seb.restart" keycode="VK_F9" modifiers="control shift" command="sebCmdRestart"/>
 		<key id="seb.back" keycode="VK_LEFT" modifiers="control shift" command="sebCmdBack"/>
 		<key id="seb.forward" keycode="VK_RIGHT" modifiers="control shift" command="sebCmdForward"/>
