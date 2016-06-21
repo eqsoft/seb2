@@ -574,7 +574,8 @@ this.SebBrowser = {
 	refreshNavigation : function(win) {
 		sl.debug("refreshNavigation");
 		var nav = win.XulLibBrowser.webNavigation;
-		if (su.getConfig("allowBrowsingBackForward","boolean",false)) { // should be visible
+		var visible = (win === seb.mainWin) ? su.getConfig("allowBrowsingBackForward","boolean",false) : su.getConfig("newBrowserWindowByLinkNavigation","boolean",false);		
+		if (visible) { // if not visible do nothing 
 			var back = win.document.getElementById("btnBack");
 			var forward = win.document.getElementById("btnForward");
 			if (nav.canGoBack) {

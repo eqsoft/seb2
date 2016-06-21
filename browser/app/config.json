@@ -197,7 +197,7 @@
 "startURL_":"sebs://moodle-app2.let.ethz.ch/mod/resource/view.php?id=120434",
 "startURL_":"https://localhost:8443/demo/index.html",
 "taskBarHeight":0,
-"touchOptimized":true,
+"touchOptimized":false,
 "urlFilterTrustedContent":false,
 "urlFilterRegex":true,
 "whitelistURLFilter":[],

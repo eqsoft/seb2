@@ -263,7 +263,7 @@ this.SebWin = {
 	setToolbar : function (win) {
 		var tb = win.document.getElementById("toolBar");
 		var ib = win.document.getElementById("imageBox");
-		if (win === seb.mainWin) {
+		if (win === seb.mainWin) { // main win
 			if (su.getConfig("enableBrowserWindowToolbar", "boolean", false)) {
 				sl.debug("setToolbar visible");
 				tb.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";			
@@ -288,15 +288,14 @@ this.SebWin = {
 			else {
 				sl.debug("setToolbar invisible");
 				tb.className = "tbHidden";
+				ib.className = "tbHidden";
+				//base.resetAndhideElement(win.document.getElementById("btnBack"));
+				//base.resetAndhideElement(win.document.getElementById("btnForward"));
 				win.document.getElementById("btnBack").className = "hidden";
-				win.document.getElementById("btnForward").className = "hidden";
-				/*
-				win.document.getElementById("btnRestart").className = "hidden";
-				win.document.getElementById("btnQuit").className = "hidden";
-				*/ 
+				win.document.getElementById("btnForward").className = "hidden"; 
 			}
 		}
-		else {
+		else { // popup
 			if (su.getConfig("newBrowserWindowByLinkNavigation", "boolean", false)) {
 				tb.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";
 				ib.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";
@@ -304,7 +303,16 @@ this.SebWin = {
 				win.document.getElementById("btnForward").className = "hidden";
 				if (!su.getConfig("sebToolbarShowReload","boolean",false)) {
 					win.document.getElementById("btnReload").className = "hidden";
+					
 				}
+				sb.refreshNavigation(win);
+			}
+			else {
+				tb.className = "tbHidden";
+				ib.className = "tbHidden";
+				win.document.getElementById("btnBack").className = "hidden";
+				win.document.getElementById("btnForward").className = "hidden";
+				win.document.getElementById("btnReload").className = "hidden";
 			}
 		}
 	},
