@@ -59,6 +59,11 @@
 	white-space: nowrap;
 }
 
+#imageBox {
+	position: fixed;
+	right: 35px;
+}
+
 .tbTouch > .tbBtn	{
 	height: 32px;
 	width: 32px;
