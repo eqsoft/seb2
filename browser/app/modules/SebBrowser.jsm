@@ -132,6 +132,7 @@ this.SebBrowser = {
 	//lastDocumentUrl : null,
 	dialogHandler : null,
 	linkURLS : {},
+	quitURLRefererFilter : "",
 	init : function(obj) {
 		base = this;
 		seb = obj;
@@ -140,6 +141,7 @@ this.SebBrowser = {
 		authMgr = Cc["@mozilla.org/network/http-auth-manager;1"].getService(Ci.nsIHttpAuthManager); // clearAll
 		cookieMgr = Cc["@mozilla.org/cookiemanager;1"].getService(Ci.nsICookieManager); // removeAll
 		historySrv = Cc["@mozilla.org/browser/nav-history-service;1"].getService(Ci.nsIBrowserHistory); // removeAllPages
+		
 		sl.out("SebBrowser initialized: " + seb);
 	},
 	
@@ -157,6 +159,16 @@ this.SebBrowser = {
 			
 			base.startLoading(this.win);
 			if (seb.quitURL === aRequest.name) {
+				if (base.quitURLRefererFilter != "") {
+					let filter = base.quitURLRefererFilter;
+					let referer = this.win.content.document.location.href;
+					if (referer.indexOf(filter) < 0) {
+						sl.debug("quitURL \"" + seb.quitURL + "\" is only allowed if string in referrer: \"" + filter + "\"");
+						aRequest.cancel(aStatus);
+						base.stopLoading(this.win);
+						return;
+					}
+				}
 				aRequest.cancel(aStatus);
 				base.stopLoading(this.win);
 				var tmpQuit = seb.allowQuit; // store default shutdownEnabled
@@ -324,6 +336,7 @@ this.SebBrowser = {
 	
 	initSecurity : function () {
 		windowTitleSuffix = su.getConfig("browserWindowTitleSuffix","string","");
+		base.quitURLRefererFilter = su.getConfig("quitURLRefererFilter","string","");
 		if (su.getConfig("sebDisableOCSP","boolean",true)) {
 			sg.setPref("security.OCSP.enabled",0);
 		}

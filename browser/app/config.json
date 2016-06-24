@@ -185,6 +185,7 @@
 "pinEmbeddedCertificates":false,
 "proxies": {},
 "quitURL":"http://localhost/quit",
+"quitURLRefererFilter":"bla.html",
 "removeBrowserProfile": true,
 "restartExamPasswordProtected":"",
 "restartExamText":"",
