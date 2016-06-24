@@ -407,12 +407,14 @@ this.seb =  {
 			var msg = "no base64 config recieved: aborted!";
 			sl.debug(msg);
 			base.reconfState == RECONF_NO;
-			sb.dialogHandler(msg);
+			//sb.dialogHandler(msg);
 			return;
+		}
+		if (base.reconfState == RECONF_START) { // started by link and dialog
+			sb.resetReconf();
 		}
 		 
 		sg.initCustomConfig(config);
-		sb.resetReconf();
 		sw.resetWindows();
 		base.mainWin.document.location.reload(true);
 		base.reconfState = RECONF_SUCCESS;

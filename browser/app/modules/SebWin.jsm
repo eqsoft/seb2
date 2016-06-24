@@ -292,7 +292,8 @@ this.SebWin = {
 				//base.resetAndhideElement(win.document.getElementById("btnBack"));
 				//base.resetAndhideElement(win.document.getElementById("btnForward"));
 				win.document.getElementById("btnBack").className = "hidden";
-				win.document.getElementById("btnForward").className = "hidden"; 
+				win.document.getElementById("btnForward").className = "hidden";
+				win.document.getElementById("btnReload").className = "hidden";
 			}
 		}
 		else { // popup
