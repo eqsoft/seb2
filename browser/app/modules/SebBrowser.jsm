@@ -360,6 +360,34 @@ this.SebBrowser = {
 		if (su.getConfig("pinEmbeddedCertificates","boolean",false)) {
 			base.disableBuiltInCerts();
 		}
+		// set proxy auth
+		if (seb.config.proxies && seb.config.proxies.Auth) {
+			let authType = seb.config.proxies.AuthType;
+			let realm = seb.config.proxies.Realm;
+			let host = seb.config.proxies.HTTPProxy;
+			let port = seb.config.proxies.HTTPPort;
+			let usr = seb.config.proxies.User;
+			let pwd = seb.config.proxies.Password;
+			sl.debug("set proxies auth: " + host + "://" + usr + ":" + pwd + "@" + host + ":" + port);
+			if (!seb.config.proxies.User || !seb.config.proxies.Password) {
+				sl.debug("No proxy user or password defined");
+				return;
+			}
+			if (!seb.config.proxies.HTTPEnable || !seb.config.proxies.HTTPSEnable) {
+				sl.debug("No http proxy enabled");
+				return;
+			}
+			if (!seb.config.proxies.HTTPProxy || !seb.config.proxies.HTTPPort) {
+				sl.debug("No http proxy or port defined");
+				return;
+			}
+			try {
+				authMgr.setAuthIdentity("http",host,port,authType,realm,null,null,usr,pwd);
+			}
+			catch(e) {
+				sl.err(e);
+			}
+		}	
 	},
 	
 	initReconf : function(win,url,handler) {

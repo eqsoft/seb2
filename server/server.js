@@ -6,7 +6,10 @@ var 	fs 		= require('fs-extra'),
 	out		= utils.out,
 	WebSocketServer = require('ws').Server,
 	monitor		= require('./monitor.js'),
-	demoApp		= true,
+	httpProxy	= require('http-proxy'),
+	http		= require('http'),
+	url		= require('url'),
+	proxyApp	= require('express')(),
 	handler		= {
 				"screenshot":screenshot
 			};
@@ -21,11 +24,31 @@ wss.on('error',monitor.on_seb_connection_error);
 socketServer.listen(conf.socketPort);
 console.log('Websocket started on port ' + conf.socketPort);
 
-if (demoApp) {
+if (conf.demoApp) {
 	var demoOptions = (conf.demoClientCert) ? conf.getClientCertOptions() : conf.getOptions();
 	httpsServer = https.createServer(demoOptions, conf.getApp());
 	httpsServer.listen(conf.demoPort);
 	console.log('HTTPS server for seb demo app started on port ' + conf.demoPort);
+}
+
+if (conf.proxy) {
+	// Create proxy server
+	if (conf.proxyAuth) {
+		httpProxy.createServer(conf.basic, {
+			target: conf.proxyTarget
+		}).listen(conf.proxyServerPort);
+	}
+	else {
+		httpProxy.createServer({
+			target: conf.proxyTarget
+		}).listen(conf.proxyServerPort);
+	}
+	
+	// Create target server.
+	http.createServer(function (req, res) {
+		res.end("Request successfully proxied!");
+	}).listen(conf.proxyTargetPort);
+	console.log('proxy server on port ' + conf.proxyServerPort + " for " + conf.proxyTarget + " request");
 }
 
 function on_connection(socket) {

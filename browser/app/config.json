@@ -30,7 +30,7 @@
 "sebScreenshot":false,
 "sebScreenshotImageType":"image/jpeg",
 "sebScreenshotSound":false,
-"sebServerEnabled":true,
+"sebServerEnabled":false,
 "sebSSLSecurityPolicy": 1,
 "sebToolbarShowReload": true,
 
@@ -183,7 +183,20 @@
 "newBrowserWindowByScriptBlockForeign":false,
 "newBrowserWindowByScriptPolicy":2,
 "pinEmbeddedCertificates":false,
-"proxies": {},
+"proxies": {
+		"ExceptionsList" : [
+			"*.local",
+			"169.254/16"
+		],
+		"HTTPProxy":"localhost",
+		"HTTPPort" : 8337,
+		"HTTPEnable": false,
+		"Auth":true,
+		"AuthType": "basic",
+		"Realm": "Basic Area",
+		"User":"demo",
+		"Password":"demo"
+},
 "quitURL":"http://localhost/quit",
 "quitURLRefererFilter":"bla.html",
 "removeBrowserProfile": true,
@@ -195,7 +208,7 @@
 "showReloadWarning" : true,
 "showTaskBar":false,
 "startURL":"https://localhost:8443/demo/test.html",
-"startURL_":"http://ipxe.org",
+"startURL_":"http://localhost:8338",
 "startURL___":"sebs://moodle-app2.let.ethz.ch/mod/resource/view.php?id=120434",
 "startURL____":"https://localhost:8443/demo/index.html",
 "taskBarHeight":0,
@@ -203,9 +216,5 @@
 "urlFilterTrustedContent":false,
 "urlFilterRegex":true,
 "whitelistURLFilter":[],
-"zoomMode":0,
-"UNASSIGNEDParams":"Config params which are not clearly assigned yet",
-"mainBrowserRestart":true,
-"mainBrowserLoad":"",
-"mainBrowserLoadReferrerInString":""
+"zoomMode":0
 }

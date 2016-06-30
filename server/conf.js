@@ -3,6 +3,11 @@ var 	fs 	= require('fs-extra'),
 	express = require('express'),
 	static = require('serve-static'),
 	basicAuth = require('basic-auth'),
+	auth = require('http-auth'),
+	basic = auth.basic({
+		realm: "Basic Area",
+		file: __dirname + "/users"
+	});
 	directory = require('serve-index'),
 	utils	= require('./utils.js');
 
@@ -11,13 +16,16 @@ const 	CA_CN 	= "Simple Signing CA",
 	ADM_CN	= "seb.admin",
 	monitorPort = 8441,
 	socketPort = 8442,
+	demoApp = true,
 	demoPort = 8443,
 	demoClientCert = false,
-	demoBasicAuth = false,
-	demoUser = 'demo',
-	demoPass = 'demo',
 	socketClientCert = false,
-	monitorClientCert = false;
+	monitorClientCert = false,
+	proxy = false,
+	proxyServerPort = 8337,
+	proxyTargetPort = 8338,
+	proxyTarget = 'http://localhost:'+proxyTargetPort,
+	proxyAuth = true;
 
 var conf = function conf() {
 	if(conf.caller != conf.getInstance){
@@ -29,13 +37,18 @@ var conf = function conf() {
 	this.admCN = ADM_CN;
 	this.monitorPort = monitorPort;
 	this.socketPort = socketPort;
+	this.demoApp = demoApp;
 	this.demoPort = demoPort;
 	this.demoClientCert = demoClientCert;
-	this.demoBasicAuth = demoBasicAuth;
-	this.demoUser = demoUser;
-	this.demoPass = demoPass;
 	this.socketClientCert = socketClientCert;
 	this.monitorClientCert = monitorClientCert;
+	this.proxy = proxy;
+	this.proxyServerPort = proxyServerPort;
+	this.proxyTargetPort = proxyTargetPort;
+	this.proxyTarget = proxyTarget;
+	this.proxyAuth = proxyAuth;
+	this.auth = auth;
+	this.basic = basic;
 	
 	this.getClientCertOptions = function() {
 		var options = 	{
@@ -67,61 +80,40 @@ var conf = function conf() {
 	
 	this.getApp = function() {
 		var app = express();
+		app["__port"] = 0;
+		var checkClientCert = false;
 		
-		
-		app.use(function(req,res,next) { // Check Auth: only SSL connection with valid client certs are allowed, otherwise ANONYMOUS (demo certs see: user.p12 and admin.p12
-			// don't request client certificates for demo web app
-			function unauthorized(res) {
-				res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
-				if (typeof(res.sendStatus) == 'function') {
-					return res.sendStatus(401);
-				}
-				else {
-					return res.status(401).send();
-				}
-			};
-			
-			var port = 0;
-			var checkClientCert = false;
+		// get port
+		app.use(function(req,res,next) {
 			if (req.socket.server && req.socket.server.address) {
-				port = req.socket.server.address().port;
+				app["__port"] = req.socket.server.address().port;
 			}
 			else {
 				if (req.socket.pair && req.socket.pair.server && req.socket.pair.server.address) {
-					port = req.socket.pair.server.address().port;
+					app["__port"] = req.socket.pair.server.address().port;
 				}
 			}
-			if (port == 0) {
+			if (app.__port == 0) {
 				console.log('can not get port');
 				res.writeHead(403, {'Content-Type': 'text/plain; charset=utf-8'});
 				res.end('can not get port');
 			}
-			
-			if (port == demoPort && demoClientCert) {
+			else {
+				next();
+			}
+		});
+		
+		// check client certs
+		app.use(function(req,res,next) { // Check Auth: only SSL connection with valid client certs are allowed, otherwise ANONYMOUS (demo certs see: user.p12 and admin.p12
+			if (app.__port == demoPort && demoClientCert) {
 				checkClientCert = true;
 			}
 			
-			if (port == demoPort && demoBasicAuth) {
-				checkClientCert = false; // don't check client cert
-				var user = basicAuth(req);
-				if (!user) {
-					console.log('no credentials recieved');
-					return unauthorized(res);
-				};
-				
-				if (user.name === demoUser && user.pass === demoPass) {
-					return next();
-				}
-				else {
-					return unauthorized(res);
-				}
-			}
-			
-			if (port == socketPort && socketClientCert) {
+			if (app.__port == socketPort && socketClientCert) {
 				checkClientCert = true;
 			}
 			
-			if (port == monitorPort && monitorClientCert) {
+			if (app.__port == monitorPort && monitorClientCert) {
 				checkClientCert = true;
 			}
 			
@@ -166,8 +158,11 @@ var conf = function conf() {
 				next();
 			}
 		});
+		
 		app.use('/',static(__dirname));
-		app.use('/demo', static('demo'));
+		app.use('/basic',auth.connect(basic));
+		app.use('/basic',static('demo'));
+		app.use('/demo', static('demo')); 
 		app.use('/websocket',static('websocket'));
 		app.use('/websocket/data',directory('websocket/data'));
 		app.use('/download', function(req, res) {
