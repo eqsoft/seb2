@@ -390,6 +390,60 @@ this.SebBrowser = {
 		}	
 	},
 	
+	initSpellChecker : function() {
+		var spellclass = "@mozilla.org/spellchecker/myspell;1";
+		if ("@mozilla.org/spellchecker/hunspell;1" in Cc) {
+			spellclass = "@mozilla.org/spellchecker/hunspell;1";
+		}
+		if ("@mozilla.org/spellchecker/engine;1" in Cc) {
+			spellclass = "@mozilla.org/spellchecker/engine;1";
+		}
+
+		spe = Cc[spellclass].getService(Ci.mozISpellCheckingEngine);
+		let dicsDir = FileUtils.getDir("ProfD", ["dictionaries"],false,false);
+		sl.debug("dictionaries directory exists: " + dicsDir.exists());
+		if (dicsDir.exists()) {
+			spe.addDirectory(dicsDir);
+		}
+		let dics = [];
+		spe.getDictionaryList(dics,{});
+		
+		/*
+		sl.debug("available dictionaries: " + dics.value);
+		let dic = su.getConfig("allowSpellCheckDictionary","string","");
+		if (dic == "") {
+			sl.debug("no dictionary defined");
+			return;
+		}
+		if (dics.value.indexOf(dic) < 0) {
+			sl.debug("dictionary " + dic + " not available");
+			return;
+		}
+		sl.debug("using dictionary " + dic);
+		spe.dictionary = dic;
+		*/
+		/*
+		gSpellCheckEngine.dictionary = 'en-US';
+
+		if (gSpellCheckEngine.check("kat")) {
+			sl.debug("X");
+			// It's spelled correctly
+		}
+		else {
+			// It's spelled incorrectly but check if the user has added "kat" as a correct word..
+			var mPersonalDictionary = Cc["@mozilla.org/spellchecker/personaldictionary;1"].getService(Ci.mozIPersonalDictionary);
+			if (mPersonalDictionary.check("kat", gSpellCheckEngine.dictionary)) {
+				sl.debug("XX");
+				// It's spelled correctly accourdly to user personal dictionary
+			}
+			else {
+				sl.debug("XXX");
+				// It's spelled incorrectly
+			}
+		}
+		*/ 
+	},
+	
 	initReconf : function(win,url,handler) {
 		sl.debug("reconfigure started");
 		base.initBrowser(win);

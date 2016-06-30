@@ -159,6 +159,7 @@ this.seb =  {
 		sn.initProxies();
 		sh.init(base);
 		sb.initSecurity();
+		sb.initSpellChecker();
 	},
 	
 	initProfile : function() {
@@ -219,14 +220,17 @@ this.seb =  {
 	initLocale : function() {
 		let loc = "en-US";
 		let osLoc = locale.getLocaleComponentForUserAgent();
+		sl.debug("getLocaleComponentForUserAgent:" + osLoc);
 		if (osLoc != "") {
 			loc = osLoc;
 		}
 		let paramLoc = base.config["browserLanguage"];
+		sl.debug("browserLanguage:" + paramLoc);
 		if (paramLoc != null && paramLoc != "") {
 			loc = paramLoc;
 		}
 		let cmdLoc = su.getCmd("language");
+		sl.debug("cmd language:" + cmdLoc);
 		if (cmdLoc != null && cmdLoc != "") {
 			loc = cmdLoc;
 		}

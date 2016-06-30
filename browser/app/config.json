@@ -9,7 +9,10 @@
 "sebNewBrowserWindowMaximized":false,
 "sebPdfJsEnabled":true,
 "sebPrefs": {
-	"network.proxy.type" 	: 0
+	"network.proxy.type" 	: 0,
+	"layout.spellcheckDefault" : 2,
+	"spellchecker.dictionary": "de-DE",
+	"extensions.ui.dictionary.hidden": false
 },
 "sebPrefsMap": {
 	"general.useragent.override" 	: "browserUserAgent",
@@ -140,10 +143,12 @@
 ],
 "allowBrowsingBackForward":true,
 "allowQuit":true,
-"allowSpellCheck":false,
+"allowSpellCheck":true,
+"allowSpellCheckDictionary":"de-DE",
 "blacklistURLFilter":[],
 "blockPopUpWindows":false,
 "browserExamKey":"SEBKEY",
+"browserLanguage":"de-DE",
 "browserMessagingPingTime":120000,
 "browserMessagingSocket":"ws://localhost:8706",
 "browserMessagingSocketEnabled":true,
@@ -209,6 +214,7 @@
 "showTaskBar":false,
 "startURL":"https://localhost:8443/demo/test.html",
 "startURL_":"http://localhost:8338",
+"startURL__":"https://davidwalsh.name/demo/spellcheck.php",
 "startURL___":"sebs://moodle-app2.let.ethz.ch/mod/resource/view.php?id=120434",
 "startURL____":"https://localhost:8443/demo/index.html",
 "taskBarHeight":0,
