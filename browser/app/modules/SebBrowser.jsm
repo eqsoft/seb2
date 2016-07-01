@@ -391,6 +391,7 @@ this.SebBrowser = {
 	},
 	
 	initSpellChecker : function() {
+		
 		var spellclass = "@mozilla.org/spellchecker/myspell;1";
 		if ("@mozilla.org/spellchecker/hunspell;1" in Cc) {
 			spellclass = "@mozilla.org/spellchecker/hunspell;1";
@@ -400,16 +401,17 @@ this.SebBrowser = {
 		}
 
 		spe = Cc[spellclass].getService(Ci.mozISpellCheckingEngine);
-		let dicsDir = FileUtils.getDir("ProfD", ["dictionaries"],false,false);
+		let dicsDir = FileUtils.getDir("ProfD", ["dictionaries"],false,false); // should only be one dic inside
 		sl.debug("dictionaries directory exists: " + dicsDir.exists());
 		if (dicsDir.exists()) {
 			spe.addDirectory(dicsDir);
 		}
+		
 		let dics = [];
 		spe.getDictionaryList(dics,{});
+		sl.debug("available dictionaries: " + dics.value);
 		
 		/*
-		sl.debug("available dictionaries: " + dics.value);
 		let dic = su.getConfig("allowSpellCheckDictionary","string","");
 		if (dic == "") {
 			sl.debug("no dictionary defined");

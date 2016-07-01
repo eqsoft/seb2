@@ -11,7 +11,7 @@
 "sebPrefs": {
 	"network.proxy.type" 	: 0,
 	"layout.spellcheckDefault" : 2,
-	"spellchecker.dictionary": "de-DE",
+	"spellchecker.dictionary": "en-US",
 	"extensions.ui.dictionary.hidden": false
 },
 "sebPrefsMap": {
@@ -144,11 +144,11 @@
 "allowBrowsingBackForward":true,
 "allowQuit":true,
 "allowSpellCheck":true,
-"allowSpellCheckDictionary":"de-DE",
+"allowSpellCheckDictionary":"en-US",
 "blacklistURLFilter":[],
 "blockPopUpWindows":false,
 "browserExamKey":"SEBKEY",
-"browserLanguage":"de-DE",
+"browserLanguage":"en-US",
 "browserMessagingPingTime":120000,
 "browserMessagingSocket":"ws://localhost:8706",
 "browserMessagingSocketEnabled":true,
