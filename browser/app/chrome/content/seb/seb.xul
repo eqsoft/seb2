@@ -12,6 +12,8 @@
 	windowtype="main" 
 	baseurl=""
 	sizemode="maximized"
+	width="1"
+	height="1"
 	accelerated="true"
 	onload="seb.onload(this);" 
 	onunload="seb.onunload(this);" 
