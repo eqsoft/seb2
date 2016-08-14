@@ -8,3 +8,6 @@ V	260419101340Z		07	unknown	/DC=org/DC=simple/O=Simple Inc/OU=Simple Signing CA/
 V	260419101430Z		08	unknown	/DC=org/DC=simple/O=Simple Inc/OU=Simple Signing CA/CN=seb.client
 V	260419101533Z		09	unknown	/DC=org/DC=simple/O=Simple Inc/OU=Simple Signing CA/CN=seb.admin
 V	260508171505Z		0A	unknown	/DC=org/DC=simple/O=Simple Inc/OU=Simple Signing CA/CN=www.simple.org
+V	260814145459Z		0B	unknown	/DC=org/DC=simple/O=Simple Inc/OU=Simple Signing CA/CN=www.simple.org
+V	260814145556Z		0C	unknown	/DC=org/DC=simple/O=Simple Inc/OU=Simple Signing CA/CN=seb.client
+V	260814145651Z		0D	unknown	/DC=org/DC=simple/O=Simple Inc/OU=Simple Signing CA/CN=seb.admin
