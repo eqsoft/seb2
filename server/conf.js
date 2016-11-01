@@ -18,6 +18,8 @@ const 	CA_CN 	= "Simple Signing CA",
 	socketPort = 8442,
 	demoApp = true,
 	demoPort = 8443,
+	sendApp = true,
+	sendPort = 8080,
 	demoClientCert = false,
 	socketClientCert = false,
 	monitorClientCert = false,
@@ -31,7 +33,7 @@ var conf = function conf() {
 	if(conf.caller != conf.getInstance){
 		throw new Error("This object cannot be instanciated");
 	}
-	
+
 	this.caCN = CA_CN;
 	this.usrCN = USR_CN;
 	this.admCN = ADM_CN;
@@ -39,6 +41,8 @@ var conf = function conf() {
 	this.socketPort = socketPort;
 	this.demoApp = demoApp;
 	this.demoPort = demoPort;
+	this.sendApp = sendApp;
+	this.sendPort = sendPort;
 	this.demoClientCert = demoClientCert;
 	this.socketClientCert = socketClientCert;
 	this.monitorClientCert = monitorClientCert;
@@ -49,13 +53,13 @@ var conf = function conf() {
 	this.proxyAuth = proxyAuth;
 	this.auth = auth;
 	this.basic = basic;
-	
+
 	this.getClientCertOptions = function() {
 		var options = 	{
 				key:    fs.readFileSync(__dirname + '/ssl/simple.org.key'),
 				cert:   fs.readFileSync(__dirname + '/ssl/simple.org.crt'),
-				ca:     [ 
-						fs.readFileSync(__dirname + '/ssl/root-ca.crt'), 
+				ca:     [
+						fs.readFileSync(__dirname + '/ssl/root-ca.crt'),
 						fs.readFileSync(__dirname + '/ssl/signing-ca.crt')
 					],
 				requestCert:        true, 	// client cert is required
@@ -63,13 +67,13 @@ var conf = function conf() {
 				}
 		return options;
 	}
-	
-	this.getOptions = function() {
+
+	this.getSSLOptions = function() {
 		var options = 	{
 				key:    fs.readFileSync(__dirname + '/ssl/simple.org.key'),
 				cert:   fs.readFileSync(__dirname + '/ssl/simple.org.crt'),
-				ca:     [ 
-						fs.readFileSync(__dirname + '/ssl/root-ca.crt'), 
+				ca:     [
+						fs.readFileSync(__dirname + '/ssl/root-ca.crt'),
 						fs.readFileSync(__dirname + '/ssl/signing-ca.crt')
 					],
 				requestCert:        false, 	// client cert is required
@@ -77,12 +81,12 @@ var conf = function conf() {
 				}
 		return options;
 	}
-	
+
 	this.getApp = function() {
 		var app = express();
 		app["__port"] = 0;
 		var checkClientCert = false;
-		
+
 		// get port
 		app.use(function(req,res,next) {
 			if (req.socket.server && req.socket.server.address) {
@@ -102,21 +106,21 @@ var conf = function conf() {
 				next();
 			}
 		});
-		
+
 		// check client certs
 		app.use(function(req,res,next) { // Check Auth: only SSL connection with valid client certs are allowed, otherwise ANONYMOUS (demo certs see: user.p12 and admin.p12
 			if (app.__port == demoPort && demoClientCert) {
 				checkClientCert = true;
 			}
-			
+
 			if (app.__port == socketPort && socketClientCert) {
 				checkClientCert = true;
 			}
-			
+
 			if (app.__port == monitorPort && monitorClientCert) {
 				checkClientCert = true;
 			}
-			
+
 			if (checkClientCert) {
 				// this should not be reached in productive ssl environments (rejectUnauthorized = true)
 				if (!req.connection.getPeerCertificate().subject) {
@@ -124,7 +128,7 @@ var conf = function conf() {
 					res.end('You need a valid client certificate: wrong client');
 				}
 				else {
-					
+
 					var subject = null;
 					var issuer = null;
 					// Safari has problems with client cert handshake on websocket connections!
@@ -158,13 +162,27 @@ var conf = function conf() {
 				next();
 			}
 		});
-		
+
 		app.use('/',static(__dirname));
 		app.use('/basic',auth.connect(basic));
 		app.use('/basic',static('demo'));
-		app.use('/demo', static('demo')); 
+		app.use('/demo', static('demo'));
+		app.use('/send', static('websocket/send.html'));
 		app.use('/websocket',static('websocket'));
 		app.use('/websocket/data',directory('websocket/data'));
+		app.use('download_basic',auth.connect(basic));
+		app.use('/download_basic', function(req, res) {
+			var file = __dirname + '/demo/res/test.seb';
+
+			var filename = path.basename(file);
+			//var mimetype = mime.lookup(file);
+
+			res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+			//res.setHeader('Content-type', mimetype);
+
+			var filestream = fs.createReadStream(file);
+			filestream.pipe(res);
+		});
 		app.use('/download', function(req, res) {
 			var file = __dirname + '/demo/res/test.seb';
 

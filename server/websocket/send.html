@@ -5,15 +5,15 @@
 		<script>
 			var ws = null;
 			var msg = {
-				
-				
+
+
 				"close" : { "Handler":"Close", "Opts":null},
 				"restartExam" : { "Handler":"RestartExam", "Opts": null},
 				"displaySettingsChanged" : { "Handler":"DisplaySettingsChanged", "Opts":{}},
 				"reload" : { "Handler":"Reload", "Opts":{}},
 				"keyboardShown" : { "Handler":"KeyboardShown", "Opts":{}},
 				"shutdown" : { "Handler":"Shutdown", "Opts":{}},
-				
+
 				"AdditionalResourcesPdfMac" :
 				{
 					"Handler": "AdditionalResources",
@@ -50,7 +50,7 @@
 					"Opts" : {}
 				}
 			};
-			
+
 			/*
 			"close":"SEB.close",
 			"restartExam":"SEB.restartExam",
@@ -59,11 +59,13 @@
 			"keyboardShown":"SEB.keyboardShown",
 			"shutdown":"SEB.shutdown",
 			*/
-			
+
 			function init() {
-				//ws = new WebSocket("ws://www.simple.org:8706", ["protocolOne", "protocolTwo"]);
-				//ws = new WebSocket("ws://192.168.1.224:8706", ["protocolOne", "protocolTwo"]);
-				ws = new WebSocket("ws://localhost:8706", ["protocolOne", "protocolTwo"]);
+				var port = "8706";
+				//var prot = (window.location.protocol === "https:") ? "wss:" : "ws:"; // for ssl
+				//var sock_url = prot + "//" + window.location.host + ":" + port;
+				var sock_url = "ws://"+ window.location.host.replace("8080",port);
+				ws = new WebSocket(sock_url, ["protocolOne", "protocolTwo"]);
 				var sel = document.getElementById("selMsg");
 				for (var key in msg) {
 					var op = document.createElement("option");
@@ -92,8 +94,8 @@
 	<body onload="init()" onunload="deinit()">
 		<select id="selMsg" name="selMsg">
 			<option value="">messages</option>
-			
-		</select> 
+
+		</select>
 		<br />
 		<br />
 		<button type="button" id="sendMsg" onclick="send();">Send</button>

@@ -13,7 +13,7 @@ var 	fs 		= require('fs-extra'),
 	handler		= {
 				"screenshot":screenshot
 			};
-var socketOptions = (conf.socketClientCert) ? conf.getClientCertOptions() : conf.getOptions();
+var socketOptions = (conf.socketClientCert) ? conf.getClientCertOptions() : conf.getSSLOptions();
 var socketServer = https.createServer(socketOptions, conf.getApp());
 var wss = new WebSocketServer({ server: socketServer });
 monitor.init(wss);
@@ -25,10 +25,16 @@ socketServer.listen(conf.socketPort);
 console.log('Websocket started on port ' + conf.socketPort);
 
 if (conf.demoApp) {
-	var demoOptions = (conf.demoClientCert) ? conf.getClientCertOptions() : conf.getOptions();
+	var demoOptions = (conf.demoClientCert) ? conf.getClientCertOptions() : conf.getSSLOptions();
 	httpsServer = https.createServer(demoOptions, conf.getApp());
 	httpsServer.listen(conf.demoPort);
 	console.log('HTTPS server for seb demo app started on port ' + conf.demoPort);
+}
+
+if (conf.sendApp) {
+	httpServer = http.createServer(conf.getApp());
+	httpServer.listen(conf.sendPort);
+	console.log('HTTP server for send app started on port ' + conf.sendPort);
 }
 
 if (conf.proxy) {
@@ -43,7 +49,7 @@ if (conf.proxy) {
 			target: conf.proxyTarget
 		}).listen(conf.proxyServerPort);
 	}
-	
+
 	// Create target server.
 	http.createServer(function (req, res) {
 		res.end("Request successfully proxied!");
@@ -70,7 +76,7 @@ function on_connection(socket) {
 			return;
 		}
 	}
-	
+
 	out("seb client connected");
 	monitor.on_seb_connection(socket);
 	socket.on('open',on_open);
@@ -81,7 +87,7 @@ function on_connection(socket) {
 	socket.on('message',monitor.on_seb_message);
 	socket.on('error',on_error);
 	socket.on('error',monitor.on_seb_error);
-	
+
 }
 
 function on_connection_error(error) {
