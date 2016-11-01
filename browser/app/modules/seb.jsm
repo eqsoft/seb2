@@ -425,7 +425,7 @@ this.seb =  {
 	loadAR: function(win, id) {
 		sl.debug("try to load additional ressource:" + id);
 		let ar = base.ars[id];
-		let url = ar["URL"];
+		let url = ar["url"];
 		let filter = ar["refererFilter"];
 		let reset = ar["resetSession"];
 		let confirm = ar["confirm"];
