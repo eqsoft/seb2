@@ -139,6 +139,25 @@
 	"modifiers":"control shift",
 	"confirm":false,
 	"showButton":""
+	},
+	{
+	"identifier": "6",
+	"additionalResources": [],
+	"active": true,
+	"autoOpen": false,
+	"title": "LinkURL6",
+	"url": "",
+	"resourceDataFilename": "linkfile.seb",
+	"resourceDataLauncher": 0,
+	"resourceData":"",
+	"linkURL" : "http://linkurl6/",
+	"resetSession":true,
+	"allowLoadingNewSettings":true,
+	"key":"H",
+	"modifiers":"control",
+	"confirm":true,
+	"confirmText":"Wirklich?",
+	"showButton":""
 	}
 ],
 "allowBrowsingBackForward":true,

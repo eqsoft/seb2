@@ -86,7 +86,8 @@ this.SebHost = {
 		};
 		base.sendHandler = {
 			"SebFile" : base.sendSebFile,
-			"ReconfigureAborted" : base.sendReconfigureAborted
+			"ReconfigureAborted" : base.sendReconfigureAborted,
+			"AdditionalRessourceTriggered" : base.sendAdditionalRessourceTriggered
 		};
 		sl.out("SebHost initialized: " + seb);
 	},
@@ -308,6 +309,11 @@ this.SebHost = {
 	
 	sendReconfigureAborted : function () {
 		let msg = {Handler:"ReconfigureAborted",Opts:{}};
+		base.sendMessage(JSON.stringify(msg));
+	},
+	
+	sendAdditionalRessourceTriggered : function(id) {
+		let msg = {Handler:"AdditionalRessourceTriggered",Opts:{"Id":id}};
 		base.sendMessage(JSON.stringify(msg));
 	},
 	

@@ -426,6 +426,12 @@ this.seb =  {
 		sl.debug("try to load additional ressource:" + id);
 		let ar = base.ars[id];
 		let url = ar["url"];
+		// check if embedded ressource is triggered
+		if (!url || url == "") {
+			sh.sendAdditionalRessourceTriggered(id);
+			return true;
+		}
+		
 		let filter = ar["refererFilter"];
 		let reset = ar["resetSession"];
 		let confirm = ar["confirm"];
