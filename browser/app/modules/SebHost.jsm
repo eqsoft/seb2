@@ -41,6 +41,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 /* SebGlobals */
 scriptloader.loadSubScript("resource://globals/prototypes.js");
+scriptloader.loadSubScript("resource://globals/const.js");
 
 /* SebModules */
 XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","SebLog");
@@ -81,6 +82,7 @@ this.SebHost = {
 			"KeyboardShown" : base.handleKeyboardShown,
 			"Shutdown" : base.handleShutdown,
 			"SebFileTransfer" : base.handleSebFileTransfer,
+			"ReconfigureAborted" : base.handleReconfigureAborted,
 			"Reconfigure" : base.handleReconfigure,
 			"ClearSession" : base.handleClearSession
 		};
@@ -291,6 +293,12 @@ this.SebHost = {
 		sl.debug("handleSebFileTransfer handled: " + opts);
 		sb.dialogHandler("SebFile transfer succeeded. Waiting for decrypted seb config...");
 	},
+	
+	handleReconfigureAborted : function(opts) {
+		sl.debug("handleReconfigureAborted handled");
+		seb.reconfState = RECONF_NO;
+		sb.dialogHandler("closeDialog");
+	}, 
 	
 	handleReconfigure : function (opts) {
 		sl.debug("handleReconfigure handled");

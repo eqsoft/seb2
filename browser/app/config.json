@@ -238,8 +238,8 @@
 "startURL____":"https://localhost:8443/demo/index.html",
 "taskBarHeight":0,
 "touchOptimized":false,
-"urlFilterTrustedContent":false,
-"urlFilterRegex":true,
+"urlFilterTrustedContent":true,
+"urlFilterRegex":false,
 "whitelistURLFilter":[],
 "zoomMode":0
 }

@@ -1,7 +1,8 @@
 var WebSocketServer = require('ws').Server
 , fs = require('fs-extra')
 , port = 8706
-, wss = new WebSocketServer({port: 8706});
+, wss = new WebSocketServer({port: 8706})
+, fakefail = false;
 
 wss.on('connection', function(ws) {
 	ws.on('message', function(message,data) {
@@ -14,18 +15,26 @@ wss.on('connection', function(ws) {
 			
 			var h = {Handler:"SebFileTransfer",Opts:false};
 			var r = {Handler:"Reconfigure",Opts:{configBase64:""}};
+			var f = {Handler:"ReconfigureAborted", Opts:{}}
 			filestream.on('finish', function () {
 				console.log("file has been written");
 				h.Opts = true;
 				wss.clients.forEach(function each(client) {
 					client.send(JSON.stringify(h));
 					setTimeout(function() { // just wait for 3 seconds
-						fs.readFile(reconfpath, 'utf8', function(err, data) {
-							r.Opts.configBase64 = data.trim();
+						if (fakefail) {
 							wss.clients.forEach(function each(client) {
-								client.send(JSON.stringify(r));
+								client.send(JSON.stringify(f));
 							});
-						 });
+						}
+						else {
+							fs.readFile(reconfpath, 'utf8', function(err, data) {
+								r.Opts.configBase64 = data.trim();
+								wss.clients.forEach(function each(client) {
+									client.send(JSON.stringify(r));
+								});
+							});
+						}
 					},3000);
 				});
 			});
