@@ -79,7 +79,7 @@ let 	seb = null,
 
 /* request Observer */
 
-requestHeaderVisitor = function () {
+let requestHeaderVisitor = function () {
         this._isSebRequest = false;
 };
 
@@ -97,7 +97,7 @@ requestHeaderVisitor.prototype.isSebRequest = function () {
 };
 
 
-requestObserver = function () {
+let requestObserver = function () {
         this.register();
         this.aborted = Cr.NS_BINDING_ABORTED;
         this.nsIHttpChannel = Ci.nsIHttpChannel;
@@ -159,6 +159,23 @@ requestObserver.prototype.observe = function ( subject, topic, data ) {
 				}
 			}
 		}
+		if (sendBrowserExamKey) {
+			var k;
+			if (reqSalt) {								
+				k = base.getRequestValue(url, reqKey);
+				sl.info("send request key with salt: " + url + " : " + reqKey + " = " + k);
+			}
+			else {
+				k = reqKey;
+				sl.info("send request key: " + url + " : " + reqKey + " = " + k);
+			}
+			subject.setRequestHeader(reqHeader, k, false);
+			sl.info("request header:");
+			sl.info("*****************");
+			aVisitor2 = new requestHeaderVisitor();
+			subject.visitRequestHeaders(aVisitor2);
+			sl.info("");
+		}
 	}
 };
 
@@ -174,7 +191,7 @@ requestObserver.prototype.unregister = function ( ) {
 
 /* response Observer */
 
-responseHeaderVisitor = function () {
+let responseHeaderVisitor = function () {
         this._isSebResponse = false;
         this._isPdfResponse = false;
 };
@@ -211,7 +228,7 @@ responseHeaderVisitor.prototype.isPdfResponse = function () {
 	return this._isPdfResponse;
 };
 
-responseObserver = function () {
+let responseObserver = function () {
         this.register();
         this.aborted = Cr.NS_BINDING_ABORTED;
         this.nsIHttpChannel = Ci.nsIHttpChannel;

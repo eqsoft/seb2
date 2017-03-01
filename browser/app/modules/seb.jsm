@@ -297,7 +297,7 @@ this.seb =  {
 
 	getArsLinksAndKeys : function () {
 		sl.debug("getArsLinksAndKeys");
-		for (k in base.ars) {
+		for (let k in base.ars) {
 			//sl.debug(JSON.stringify(base.ars[k]));
 			if (base.ars[k]["linkURL"] && base.ars[k]["linkURL"] != "") {
 				sb.linkURLS[base.ars[k]["linkURL"]] = k;
