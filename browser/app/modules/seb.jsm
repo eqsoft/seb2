@@ -78,6 +78,7 @@ this.seb =  {
 	quitIgnorePassword : false,
 	quitIgnoreWarning : false,
 	hostForceQuit : false,
+	hostQuitHandler : null,
 	reconfState : RECONF_NO,
 	arsKeys : {},
 
@@ -103,6 +104,10 @@ this.seb =  {
 							catch(e) { sl.err(e); }
 						}
 					}
+				}
+				if (typeof base.hostQuitHandler === 'function') {
+					sl.debug("apply hostQuitHandler");
+					base.hostQuitHandler.apply(sh,[]);
 				}
 			}
 		},
