@@ -252,7 +252,7 @@ this.seb =  {
 		sb.setEmbeddedCerts();
 		base.setQuitHandler(win);
 		sh.setMessageSocketHandler(win);
-		//sh.createScreenKeyboardController(win);
+		sh.createScreenKeyboardController(win);
 		sh.createFullscreenController(win);
 		ss.setSebserverSocketHandler(win);
 		base.locs = win.document.getElementById("locale");
@@ -268,7 +268,7 @@ this.seb =  {
 		base.initArsKeys(win);
 		sw.setToolbar(win);
 		sw.setSize(win);
-		//sh.createScreenKeyboardController(win);
+		sh.createScreenKeyboardController(win);
 		sh.createFullscreenController(win);
 	},
 
