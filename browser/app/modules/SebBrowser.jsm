@@ -147,17 +147,14 @@ this.SebBrowser = {
 	},
 	
 	stateListener : function(aWebProgress, aRequest, aStateFlags, aStatus) {
-		//sl.err(aRequest.name);
 		if (aRequest instanceof Ci.nsIHttpChannel) {
 			aRequest.QueryInterface(Ci.nsIHttpChannel);
 		}
 		if ((aStateFlags & startDocumentFlags) == startDocumentFlags) { // start document request event
-			/*
 			if (!(aRequest instanceof Ci.nsIHttpChannel)) { // experimental !!!
 				sl.debug("start: document not part of the http channel: " + aRequest.name + " - status: " + aStatus);
 				return;
-			}
-			*/ 
+			} 
 			this.isStarted = true;
 			this.win = sw.getChromeWin(aWebProgress.DOMWindow);
 			this.baseurl = btoa(aRequest.name);
@@ -223,12 +220,10 @@ this.SebBrowser = {
 			}
 		}
 		if ((aStateFlags & stopDocumentFlags) == stopDocumentFlags) { // stop document request event
-			/*
 			if (!(aRequest instanceof Ci.nsIHttpChannel)) { // experimental !!!
 				sl.debug("stop: document not part of the http channel: " + aRequest.name + " - status: " + aStatus);
 				return;
 			}
-			*/  
 			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name + " - status: " + aStatus);
 			//this.win = sw.getChromeWin(aWebProgress.DOMWindow);
 			if (!Components.isSuccessCode(aStatus) && aStatus != 2152398850) { // heise.de with all that advertising will not load without that skipped 2152398850 status
