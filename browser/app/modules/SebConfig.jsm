@@ -186,26 +186,38 @@ this.SebConfig =  {
 	
 	browserUserAgent : function(param) {
 		var ret = "";
-		var uaov = su.getConfig("browserUserAgentOverride","number",1);
-		var httpHandler = Cc["@mozilla.org/network/protocol;1?name=http"].getService(Ci.nsIHttpProtocolHandler);
-		var userAgent = httpHandler.userAgent;
+		var topt = su.getConfig("touchOptimized","boolean",false);
+		var uaPref = (topt === false) ? su.getConfig(BROWSER_UA_DESKTOP_PREF,"number",0) : su.getConfig(BROWSER_UA_TOUCH_PREF,"number",0);
 		var bua = su.getConfig("browserUserAgent","string","");
-		switch (uaov) {
-			case USER_AGENT_REPLACE :
-				ret = bua;
-				break;
-			case USER_AGENT_APPEND :
-			case USER_AGENT_PREPEND :
+		switch (uaPref) {
+			case BROWSER_UA_DESKTOP_DEFAULT :
+			case BROWSER_UA_TOUCH_DEFAULT :
+				var httpHandler = Cc["@mozilla.org/network/protocol;1?name=http"].getService(Ci.nsIHttpProtocolHandler);
+				var userAgent = httpHandler.userAgent;
 				var match = uaReg.exec(userAgent);
 				if (match) {
-					ret = userAgent.replace(match[2],"Firefox/"+match[1]);
-					ret = (uaov == USER_AGENT_APPEND) ? ret + " " + bua : bua + " " + ret;
+					ret = userAgent.replace(match[2],"Firefox/"+match[1]) + " " + bua;
+					if (topt === true) {
+						ret = ret.replace(match[1],match[1]+"; Touch");
+					}
 				}
 				else {
 					sl.err("Error matching user-agent: " + userAgent);
 					ret = userAgent;
 				}
 				break;
+			case BROWSER_UA_DESKTOP_CUSTOM :
+			case BROWSER_UA_TOUCH_IPAD :
+			case BROWSER_UA_TOUCH_CUSTOM :
+				if (topt === true) {
+					ret = (uaPref === BROWSER_UA_TOUCH_IPAD) ? su.getConfig(BROWSER_UA_TOUCH_IPAD_PREF,"string","") : su.getConfig(BROWSER_UA_TOUCH_CUSTOM_PREF,"string","");
+				}
+				else {
+					ret = su.getConfig(BROWSER_UA_DESKTOP_CUSTOM_PREF,"string","")
+				}
+				ret = ret + " " + bua;
+				break;
+				
 		}
 		return ret;
 	},
