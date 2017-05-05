@@ -597,7 +597,8 @@ this.SebBrowser = {
 		}
 		sl.debug("restart...");
 		sw.removeSecondaryWins();
-		let url = su.getUrl();
+		let urlConfig = su.getConfig("restartExamURL","string","");
+		let url = (urlConfig != "") ? urlConfig : su.getUrl();
 		//sw.showLoading(seb.mainWin);
 		base.loadPage(seb.mainWin,url);
 	},
