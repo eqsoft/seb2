@@ -13,10 +13,12 @@
 	<p>Welcome to the SEB WebSocket Monitor</p>
 	<p>Message:&nbsp;<span id="message"></span></p>
 	<input id="btnShutDownAll" type="button" value="shutdown all" onclick="shutdownAll();"/ >
+	<input id="btnRebootAll" type="button" value="reboot all" onclick="rebootAll();"/ >
 	<table id="sebTable">
 		<thead id="sebTableHead">
 			<th id="th-id">id</th>
 			<th id="th-ip">ip</th>
+			<th id="th-reboot">reboot</th>
 			<th id="th-shutdown">shutdown</th>
 		</thead>
 		<tbody id="sebTableBody"></tbody>

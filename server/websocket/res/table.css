@@ -26,18 +26,18 @@ td {
 }
 
 #th-id {
-	width: 40%;
+	width: 35%;
 }
 
 #th-ip {
-	width: 40%;
+	width: 35%;
 }
 
-#th-shutdown {
-	width: 20%;
+#th-shutdown, #th-reboot {
+	width: 15%;
 }
 
-.td-shutdown {
+.td-shutdown, .td-reboot {
 	text-align: center;
 }
 

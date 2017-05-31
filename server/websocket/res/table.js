@@ -148,11 +148,13 @@ function addRow(seb) {
 	idCell.className = "td-id";
 	var ipCell = row.insertCell(1);
 	ipCell.className = "td-ip";
-	var sdCell = row.insertCell(2);
-	sdCell.className = "td-shutdown";
-	
+	var rbCell = row.insertCell(2);
+	rbCell.className = "td-reboot";
+	var sdCell = row.insertCell(3);
+        sdCell.className = "td-shutdown";
 	idCell.innerHTML = seb.id;
 	ipCell.innerHTML = seb.ip;
+	rbCell.innerHTML = "<input type=\"button\" value=\"reboot\" class=\"btn-reboot\" onclick=\"reboot(\'" + seb.id + "\');\" />";
 	sdCell.innerHTML = "<input type=\"button\" value=\"shutdown\" class=\"btn-shutdown\" onclick=\"shutdown(\'" + seb.id + "\');\" />";
 }
 
@@ -184,6 +186,28 @@ function shutdownAll() {
 		ws.send(JSON.stringify({"handler":"shutdownAll","opts":{"ids":ids}}));
 	}
 	//var rows sebTableBody.getElementBy
+}
+
+function reboot(id) {
+        log("reboot: " + id);
+        var ret = confirm("Reboot " + id + "?");
+        if (ret) {
+                ws.send(JSON.stringify({"handler":"reboot","opts":{"id":id}}));
+        }
+}
+
+function rebootAll() {
+        log("rebootAll");
+        var idNodes = sebTableBody.querySelectorAll('.td-id');
+        var ids = [];
+        for (var i=0;i<idNodes.length;i++) {
+                ids.push(idNodes[i].textContent);
+        }
+        var ret = confirm("Reboot all " + defaultFilter + "?");
+        if (ret) {
+                ws.send(JSON.stringify({"handler":"rebootAll","opts":{"ids":ids}}));
+        }
+        //var rows sebTableBody.getElementBy
 }
 
 //http://caniuse.com/#feat=queryselector

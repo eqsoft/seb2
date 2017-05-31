@@ -12,7 +12,9 @@ var 	fs 		= require('fs-extra'),
 	adminsExist	= false,
 	handler		= {
 				"shutdown":shutdown,
-				"shutdownAll":shutdownAll
+				"shutdownAll":shutdownAll,
+				"reboot":reboot,
+				"rebootAll":rebootAll
 			};
 var monitorOptions = (conf.monitorClientCert) ? conf.getClientCertOptions() : conf.getSSLOptions();
 var monitorServer = https.createServer(monitorOptions, conf.getApp());
@@ -195,6 +197,26 @@ function shutdownAll(seb,data) {
 		var id = seb.ids[idx];
 		shutdown({"id":id},JSON.stringify({"handler":"shutdown","opts":{"id":id}}));
 	}
+}
+
+function reboot(seb,data) {
+        out("monitor: reboot " + seb.id);
+        var socket = _sebs[seb.id].socket;
+        try {
+                socket.send(data); // forward data (same handler and opts object expected on seb client)
+        }
+        catch(e) {
+                console.log(e);
+        }
+        //out("monitor: socket " + socket.send);
+}
+
+function rebootAll(seb,data) {
+        out("monitor: rebootAll " + JSON.stringify(seb.ids));
+        for (var idx in seb.ids) {
+                var id = seb.ids[idx];
+                reboot({"id":id},JSON.stringify({"handler":"reboot","opts":{"id":id}}));
+        }
 }
 
 // monitor
