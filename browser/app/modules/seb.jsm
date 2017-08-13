@@ -220,6 +220,27 @@ this.seb =  {
 			}
 		}
 		catch (e) { sl.err(e); return false; }
+		// delete parent.lock and startupCache (grrrrrrr)
+		lockpath = OS.Path.join(OS.Constants.Path.profileDir, ".parentlock");
+		let promise = OS.File.remove(lockpath);
+		promise = promise.then(
+			function onSuccess() {
+				dump("removed : " + lockpath);
+			},
+			function onError() {
+				dump("error removing: " + lockpath);
+			}
+		);
+		cachepath = OS.Path.join(OS.Constants.Path.profileDir, "startupCache");
+		let promise2 = OS.File.removeDir(cachepath, {ignoreAbsence:true,ignorePermissions:true});
+		promise2 = promise2.then(
+			function onSuccess() {
+				dump("removed : " + cachepath);
+			},
+			function onError() {
+				dump("error removing: " + cachepath);
+			}
+		);
 	},
 
 	initLocale : function() {
