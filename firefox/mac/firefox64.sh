@@ -1,2 +1,2 @@
 #!/bin/bash
-./Firefox.app/Contents/MacOS/firefox -profile firefoxProfile64
+./64/Firefox.app/Contents/MacOS/firefox -profile firefoxProfile64
