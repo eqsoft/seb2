@@ -1,1 +1,0 @@
-"Z:\Development\firefox\win\beta\firefox.exe" -app ..\..\app\seb.ini -no-remote -profile ..\..\..\profilewin_beta -config "Z:\Development\seb2\browser\app\config.custom.json" -jsconsole -purgecaches -debug 1
