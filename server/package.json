@@ -1,0 +1,29 @@
+{
+	"name": "seb-server",
+	"version": "1.0.0",
+	"description": "Server for seb2",
+	"main": "server.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"fs-extra": "^4.0.1",
+		"express": "^4.15.4",
+		"serve-index": "^1.9.0",
+		"ws": "^3.1.0",
+		"basic-auth": "^1.1.0",
+		"http-auth": "^3.2.3",
+		"http-proxy": "^1.16.2"
+	},
+	"keywords": [
+		"Safe-Exam-Browser",
+		"SEB",
+		"Kiosk Browser",
+		"E-Exam",
+		"seb server"
+	],
+	"author": "schneider@hrz.uni-marburg.de",
+	"license": "GPL v3",
+	"homepage": ""
+}

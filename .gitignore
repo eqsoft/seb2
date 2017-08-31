@@ -9,3 +9,5 @@ sebProfile*
 *.seb
 base64.json
 fs_overlay*
+node_modules
+package-lock.json
