@@ -30,12 +30,12 @@ git clone https://github.com/eqsoft/seb2.git
 Since Mozilla canceled the provisioning of xulrunner binaries, we restricted seb2 hosting to a native Firefox 52.x ESR.
 
 * Download Firefox ESR binaries: https://www.mozilla.org/en-US/firefox/organizations/all/
-* Proceed a **USER DEFINED(!)** installation setup to the prepared Firefox folders, otherwise your local Browser installation will be replaced!
+* Proceed a **USER DEFINED(!)** installation setup to the prepared Firefox folders, otherwise your local Browser installation will be damaged!
 ```
 ./seb2/firefox/YOUR_OS/XXBit/
 ```
-**!WARNING**: deny automatic (re)starting of Firefox after installation setup is finished, otherwise your local Firefox profile will be replaced!
-* you may start the standalone Firefox for testing or upgrading the ESR Firefox binaries, so you don't need to download and replace single 52.x ESR versions:
+**!WARNING**: deny automatic (re)starting of Firefox after installation setup is finished, otherwise your local Firefox profile will be damaged!
+* you may start the standalone Firefox for testing or upgrading the ESR Firefox binaries, so you don't need to download and replace 52.x ESR versions:
 ```
 ./seb2/firefox/YOUR_OS/firefoxXXBit.bat (or firefoxXXBit.sh for linux and mac)
 ```
@@ -48,32 +48,30 @@ The start scripts are using the prepared local profile folders:
 
 ### seb server (for developer only)
 
-For seb server and demo mode including the screenshot component you need to install node.js (http://nodejs.org/).
-After installing node.js you need to install some node modules:
+The seb server component provides:
 
-```
-npm install -g fs-extra express serve-static serve-index ws basic-auth
-```
-Switch to ``` seb2/server/ ``` folder and type:
+* a full functional web environment with webserver and client certificates signed by embedded pki ca for CN **www.simple.org** 
+* demo web application for customized testing or just as a local seb2 entry point
+* websocket server which can be used for monitoring and managing seb2 clients 
+* development environment to emulate the websocket communication for embedded seb2 (see Windows SEB: http://safeexambrowser.org/)  
 
-```
-server.sh (Linux, Mac) or server.bat (Windows)
-```
-If you get an error message that node can not find the modules try to set an environment variable in 
-​``` ~/.bashrc ``` or ``` ~/.profile ```
 
-p.e.: 
-​``` export NODE_PATH=/usr/lib/node_modules ```
+#### Installation
+For seb server you need to install node.js (http://nodejs.org/). For Linux distributions please refer to https://github.com/nodesource/distributions
+After installing node.js some node modules need to be installed
+ 
+```
+cd ./server
+npm install
+```
+
+(see /pki directory and scripts). You need to import the CA Certificate into the cert storage of your browser for trusting: . Further add the domain **www.simple.org** to your loopback device (Linux / Mac: /etc/hosts, Windows: C:\Windows\System32\drivers\etc\hosts).
+
+#### 
 
 ## Quick Start
 
-After cloning the repo and installation of a local Firefox 52.x ESR you can start seb2 with a default config:
-
-```
-
-```
-
-
+After cloning the repo and installation of a local Firefox 52.x ESR you can start seb2 with a default config.
 
 ## Configuration ##
 
