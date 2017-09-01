@@ -8,13 +8,13 @@
 		"start": "node server.js"
 	},
 	"dependencies": {
-		"fs-extra": "^4.0.1",
+		"fs-extra": "^1.0.0",
 		"express": "^4.15.4",
 		"serve-index": "^1.9.0",
-		"ws": "^3.1.0",
+		"ws": "^1.1.1",
 		"basic-auth": "^1.1.0",
-		"http-auth": "^3.2.3",
-		"http-proxy": "^1.16.2"
+		"http-auth": "^3.0.1",
+		"http-proxy": "^1.15.2"
 	},
 	"keywords": [
 		"Safe-Exam-Browser",

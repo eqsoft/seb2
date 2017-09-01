@@ -159,6 +159,7 @@ function broadcast(data) { // to all connected admin clients
 }
 
 function addSeb(socket, data) {
+	//console.dir(socket);
 	var ip = socket.upgradeReq.connection.remoteAddress.replace(/[f\:]/g,"");
 	var id = crypt.randomBytes(16).toString('hex');
 	var wskey = socket.upgradeReq.headers['sec-websocket-key'];

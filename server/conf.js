@@ -27,7 +27,7 @@ const 	CA_CN 	= "Simple Signing CA",
 	proxyServerPort = 8337,
 	proxyTargetPort = 8338,
 	proxyTarget = 'http://localhost:'+proxyTargetPort,
-	proxyAuth = true;
+	proxyAuth = false;
 
 var conf = function conf() {
 	if(conf.caller != conf.getInstance){
