@@ -65,7 +65,8 @@ debug mode:
 ./browser/bin/YOUR_OS/XXBit/debug.sh
 ```
 
-The debug mode creates a log file: ./browser/bin/YOUR_OS/sebProfileXXBit/seb.log
+The debug mode creates a log file: ./browser/bin/YOUR_OS/sebProfileXXBit/seb.log.
+
 You can increase the verbosity of the logfile in the debug.sh:
 
 ```
@@ -73,6 +74,7 @@ You can increase the verbosity of the logfile in the debug.sh:
 ``` 
 
 Closing seb2:
+
 Right click on the taskbar icon to close the main browser window. The default password is: ```password```.
 
 ## Configuration ##
@@ -107,7 +109,7 @@ The params are listed in alphabetical order:
 
 * type: boolean (true)
 * lax testing of embedded CA certificates, means that at least one trusted CA must be embedded, which signed the requested server cert. Setting to **false** means that the whole certificate chain must be embedded (p.e. root-ca and signing-ca). 
-* [embeddedCertificates](####embeddedCertificates)  
+* [embeddedCertificates](#embeddedCertificates)  
 
 #### sebBrowserRequestHeader ####
 #### sebDisableOCSP ####
