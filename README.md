@@ -1,7 +1,8 @@
 Standalone Browser Component of Safe-Exam-Browser
 =================================================
+
 This is the core browser component for Safe-Exam-Browser.
-For SEB binary releases please go to http://www.safeexambrowser.org
+For SEB binary releases please refer to http://www.safeexambrowser.org
 
 Refactored seb:
 
@@ -19,7 +20,7 @@ Refactored seb:
 
 ## Requirements ##
 
-Clone the seb2 repo:
+Cloning seb2 repo:
 
 ```
 git clone https://github.com/eqsoft/seb2.git
@@ -31,32 +32,83 @@ Since Mozilla canceled the provisioning of xulrunner binaries, we restricted seb
 
 * Download Firefox ESR binaries: https://www.mozilla.org/en-US/firefox/organizations/all/
 * Proceed a **USER DEFINED(!)** installation setup to the prepared Firefox folders, otherwise your local Browser installation will be damaged!
+
 ```
-./seb2/firefox/YOUR_OS/XXBit/
+./firefox/YOUR_OS/XXBit/
 ```
+
 **!WARNING**: deny automatic (re)starting of Firefox after installation setup is finished, otherwise your local Firefox profile will be damaged!
-* you may start the standalone Firefox for testing or upgrading the ESR Firefox binaries, so you don't need to download and replace 52.x ESR versions:
-```
-./seb2/firefox/YOUR_OS/firefoxXXBit.bat (or firefoxXXBit.sh for linux and mac)
-```
 
-The start scripts are using the prepared local profile folders:
+* you may start the standalone Firefox for testing or upgrading the ESR Firefox binaries, so manually replacing 52.x ESR versions is not required:
 
 ```
-./seb2/firefox/YOUR_OS/firefoxProfileXXBit/
+./firefox/YOUR_OS/firefoxXXBit.bat (or firefoxXXBit.sh for linux and mac)
+```
+
+The start script populates the local profile folders:
+
+```
+./firefox/YOUR_OS/firefoxProfileXXBit/
 ```
 
 ## Quick Start
 
-After cloning the repo and installation of a local Firefox 52.x ESR you can start seb2 with a default config.
+After cloning the repo and installation of a local Firefox 52.x ESR you can start seb2 with a default config:
+
+```
+./browser/bin/YOUR_OS/XXBit/start.sh
+```
+
+debug mode:
+
+```
+./browser/bin/YOUR_OS/XXBit/debug.sh
+```
+
+The debug mode creates a log file: ./browser/bin/YOUR_OS/sebProfileXXBit/seb.log
+You can increase the verbosity of the logfile in the debug.sh:
+
+```
+-debug 2
+``` 
+
+Closing seb2:
+Right click on the taskbar icon to close the main browser window. The default password is: ```password```.
 
 ## Configuration ##
 
-seb2 first loads a set of default configuration params in ./browser/app/default.json and then looks for a runtime config in the commandline param ``` -config PARAM ```. The commandline parameter might be an absolute path or any url to a local or remote config json file. The param can also be a stringified or a base64 encoded json object. A base64 encoded string param is used by windows SEB configuration of the embedded seb2.
-The custom config object will then be be merged to the default config object with the precedence of custom config params.
+seb2 first loads a set of default configuration params in ```./browser/app/default.json``` and then looks for a runtime config in the commandline param ``` -config PARAM ```. 
+The commandline parameter might be:
+* any absolute path
+* any url with file:// or http(s) protocol to a local or remote config json file. 
+* the param can also be a stringified or a base64 encoded json object. A base64 encoded string param is used by windows SEB configuration of the embedded seb2
+* just a filename p.e. ```config.dev.json``` placed in ```./browser/app/config.*.json```
 
-## Special seb params (not handled by Windows SEB) ##
+The custom config object is merged into the default config object with the precedence of custom config params.
+
+There are three kinds of configuration params:
+
+* only used in standalone seb (prefixed with seb*)
+* only used in embedded seb
+* used in both modes  
+
+The params are listed in alphabetical order:
+
+#### Parameter
+
+* type: datatype (default)
+* description
+* optional examples
+* optional links to acssociated params
+
+## seb2 (only standalone, not handled by Windows SEB) ##
+
 #### sebAllCARootTrust ####
+
+* type: boolean (true)
+* lax testing of embedded CA certificates, means that at least one trusted CA must be embedded, which signed the requested server cert. Setting to **false** means that the whole certificate chain must be embedded (p.e. root-ca and signing-ca). 
+* [embeddedCertificates](####embeddedCertificates)  
+
 #### sebBrowserRequestHeader ####
 #### sebDisableOCSP ####
 #### sebMainBrowserWindowTitlebarEnabled ####
@@ -72,7 +124,7 @@ The custom config object will then be be merged to the default config object wit
 #### SebServerEnabled ####
 #### sebSSlSecurityPolicy ####
 
-## Config params in alphabethical order (handled by Windows SEB) ##
+## SEB (handled by both: Windows SEB and embedded seb2 ) ##
 
 #### additionalResources ####
 #### allowBrowsingBackForward ####
@@ -90,7 +142,11 @@ The custom config object will then be be merged to the default config object wit
 #### browserViewMode ####
 #### browserWindowTitleSuffix ####
 #### downloadDirectoryWin ####
+
 #### embeddedCertificates ####
+* type: array ([])
+* description
+
 #### enableBrowserWindowToolbar ####
 #### enableJava ####
 #### enableJavaScript ####
