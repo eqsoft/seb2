@@ -108,15 +108,44 @@ The params are listed in alphabetical order:
 #### sebAllCARootTrust ####
 
 * type: boolean (true)
-* lax testing of embedded CA certificates, means that at least one trusted CA must be embedded, which signed the requested server cert. Setting to **false** means that the whole certificate chain must be embedded (p.e. root-ca and signing-ca). 
-* [embeddedCertificates](#embeddedcertificates)  
+* All embedded ca certificates are treated as trusted root, so only the ca-signing cert of the requested server cert needs to be included. If set to **false** (experimental) the root cert and all intermediate certs must be embedded.
+* see also: [embeddedCertificates](#embeddedcertificates)  
 
 #### sebBrowserRequestHeader ####
+
+* type: string ("X-SafeExamBrowser-RequestHash")
+* Additional custom request header field added to each request. It is not recommanded to change the name of the header field for compatibility.
+* The corresponding header key value is described in: [browserExamKey](#browserexamkey)
+
 #### sebDisableOCSP ####
+
+* type: boolean (true)
+* Disables the browser requesting any OCSP Server (Online Certificate Status Protocol). Enabling is not recommanded, because seb might hang up if the ocsp server can not be reached caused by firewall rules, server down etc. The param is mapped to the native firefox pref "security.OCSP.enabled":0|1
+
 #### sebMainBrowserWindowTitlebarEnabled ####
+
+* type: boolean (false)
+* Set or disables a titlebar frame around the main window. It is NOT recommanded to change this value because it is altered internally dependant on other parameter conditions.
+* see also: [browserView](#browserview), [touchOptimized](#touchoptimized)
+
 #### sebMainBrowserWindowMaximized ####
+
+* type: boolean (true)
+* Enables a maximized main window. It is NOT recommanded to change this value because it is altered internally dependant on other parameter conditions.
+* see also: [browserView](#browserview), [touchOptimized](#touchoptimized)
+
 #### sebNewBrowserWindowByLinkTitlebarEnabled ####
+
+* type: boolean (true)
+* Set or disables a titlebar frame around the main window. It is NOT recommanded to change this value because it is altered internally dependant on other parameter conditions.
+* see also: [browserView](#browserview), [touchOptimized](#touchoptimized)
+
 #### sebNewBrowserWindowMaximized ####
+
+* type: boolean (false)
+* Enables a maximized main window. It is NOT recommanded to change this value because it is altered internally dependant on other parameter conditions.
+* see also: [browserView](#browserview), [touchOptimized](#touchoptimized)
+
 #### sebPrefs ####
 #### sebPrefsMap ####
 #### sebServer ####
@@ -134,7 +163,10 @@ The params are listed in alphabetical order:
 #### allowSpellCheck ####
 #### blacklistURLFilter ####
 #### blockPopUpWindows ####
+
 #### browserExamKey ####
+
+
 #### browserMessagingPingTime ####
 #### browserMessagingSocket ####
 #### browserMessagingSocketEnabled ####
