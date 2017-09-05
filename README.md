@@ -114,7 +114,7 @@ The params are listed in alphabetical order:
 #### sebBrowserRequestHeader ####
 
 * type: string ("X-SafeExamBrowser-RequestHash")
-* Additional custom request header field added to each request. It is not recommanded to change the name of the header field for compatibility.
+* If [sendBrowserExamKey](#sendbrowserexamkey) is **true** a custom request header field is added to each request. It is not recommanded to change the name of the header field for compatibility issues.
 * The corresponding header key value is described in: [browserExamKey](#browserexamkey)
 
 #### sebDisableOCSP ####
@@ -166,6 +166,8 @@ The params are listed in alphabetical order:
 
 #### browserExamKey ####
 
+* type: string ("SEBKEY")
+* If [sendBrowserExamKey](#sendbrowserexamkey) is **true** each seb request adds a special key as request-header value of [sebBrowserRequestHeader](#sebbrowserrequestheader). If  [browserURLSalt](#browserurlsalt) is **true**, the key value is salted by the requested url.
 
 #### browserMessagingPingTime ####
 #### browserMessagingSocket ####
@@ -206,7 +208,13 @@ The params are listed in alphabetical order:
 #### restartExamText (not implemented) ####
 #### restartExamURL (not implemented) ####
 #### restartExamUseStartURL (not implemented) ####
+
 #### sendBrowserExamKey ####
+
+* type: boolean (true)
+* if **true** a special request header is added to each request, so the server might block any invalid and unauthorized requests.
+* see also: [sebBrowserRequestHeader](#sebbrowserrequestheader), [browserExamKey](#browserexamkey), [browserURLSalt](#browserurlsalt)
+
 #### showReloadWarning ####
 #### showTaskBar ####
 #### startURL ####
@@ -219,7 +227,9 @@ The params are listed in alphabetical order:
 
 ## Websocket Handler ##
 
+## Infos for Developer 
 
-```
+see: 
 
-```
+
+
