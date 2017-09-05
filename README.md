@@ -109,7 +109,7 @@ The params are listed in alphabetical order:
 
 * type: boolean (true)
 * lax testing of embedded CA certificates, means that at least one trusted CA must be embedded, which signed the requested server cert. Setting to **false** means that the whole certificate chain must be embedded (p.e. root-ca and signing-ca). 
-* [embeddedCertificates](#embeddedCertificates)  
+* [embeddedCertificates](#embeddedcertificates)  
 
 #### sebBrowserRequestHeader ####
 #### sebDisableOCSP ####
