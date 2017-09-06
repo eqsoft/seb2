@@ -137,15 +137,16 @@ The params are listed in alphabetical order:
 #### sebNewBrowserWindowByLinkTitlebarEnabled ####
 
 * type: boolean (true)
-* Set or disables a titlebar frame around the main window. It is NOT recommanded to change this value because it is altered internally dependant on other parameter conditions.
-* see also: [browserView](#browserview), [touchOptimized](#touchoptimized)
+* Set or disables a titlebar frame around any new window. It is NOT recommanded to change this value because it is altered internally dependant on other parameter conditions.
+* see also: [touchOptimized](#touchoptimized)
 
 #### sebNewBrowserWindowMaximized ####
 
 * type: boolean (false)
-* Enables a maximized main window. It is NOT recommanded to change this value because it is altered internally dependant on other parameter conditions.
-* see also: [browserView](#browserview), [touchOptimized](#touchoptimized)
+* Enables a maximized new window. It is NOT recommanded to change this value because it is altered internally dependant on other parameter conditions.
+* see also: [touchOptimized](#touchoptimized)
 
+#### sebPdfJsEnabled ####
 #### sebPrefs ####
 #### sebPrefsMap ####
 #### sebServer ####
@@ -172,16 +173,33 @@ The params are listed in alphabetical order:
 #### browserMessagingPingTime ####
 #### browserMessagingSocket ####
 #### browserMessagingSocketEnabled ####
+
 #### browserScreenKeyboard ####
 #### browserURLSalt ####
 #### browserUserAgent ####
+
 #### browserViewMode ####
+
+* type: number (0|1 default)
+* 0 = The main window is NOT maximized to fullscreen and the window can manually be resized by dragging the titlebar around the frame. Size and position settings are processed [mainBrowserWindowHeight](#mainbrowserwindowheight), [mainBrowserWindowPositioning](#mainbrowserwindowpositioning), [mainBrowserWindowWidth](#mainbrowserwindowwidth).
+* 1 = The main window is maximized to fullscreen without any frame around it and any size and position settings (see above) are ignored.
+* If [touchOptimized](#touchoptimized) is **true** the browserViewMode setting is ignored internally set to 1 (= maximized) for all windows
+
 #### browserWindowTitleSuffix ####
 #### downloadDirectoryWin ####
 
 #### embeddedCertificates ####
-* type: array ([])
-* description
+* type: array of cert objects ([])
+* cert objects: { ("certificateDataBase64"|"certificateDataWin") : base64string, "type": number (see TYPE_ENUM), "name": string (only mandatory on type:3(=CERT_SSL_DEBUG) }
+
+TYPE_ENUM:
+
+* CERT_SSL = **0**, normal SSL cert, needs anyway a trusted ca in the cert storage. Server certs actually not need to be embedded if a trusted ca is in the storage.
+* CERT_USER = **1**, reserved to windows host, not implemented?
+* CERT_CA = **2**, CA cert
+* CERT_SSL_DEBUG = **3**, debug SSL cert, any untrusted, expired or self-signed cert will be registered for trusted accessing the given "name":"DOMAIN" attribute. Same effect if you add an cert exception by importing a server cert in the firefox cert manager, which in fact adds this exception rule to the cert_override.txt in memory. This is really helpful if you need to access self-signed or expired ssl certs. The CERT_SSL_DEBUG is only recommanded in case of emergency or debugging.
+
+CA embedding example: ```./browser/app/config.dev.json``` with embedded root and signing ca certs from ```./pki/ca/(root|signing)-ca.crt``` 
 
 #### enableBrowserWindowToolbar ####
 #### enableJava ####
@@ -190,17 +208,62 @@ The params are listed in alphabetical order:
 #### enableZoomPage ####
 #### enableZoomText ####
 #### hashedQuitPassword ####
+
 #### mainBrowserWindowHeight ####
+* type: string|number ("NUMBER%"|"NUMBER"|NUMBER) 
+* Setting the height of the main window either in "%" or pixel size. Do not append "px" to the numbers, because the setting is implicit treated as px data.
+* On default the setting is ignored (see [browserViewMode](#browserviewmode) = 1)
+* see also [touchOptimized](#touchoptimized)
+
 #### mainBrowserWindowPositioning ####
+* type: number (0=left|1=center (default)|2=right)
+* On default the setting is ignored (see [browserViewMode](#browserviewmode) = 1)
+* see also [touchOptimized](#touchoptimized)
+
 #### mainBrowserWindowWidth ####
+* type: string|number ("NUMBER%"|"NUMBER"|NUMBER) 
+* Setting the width of the main window either in "%" or pixel size. Do not append "px" to the numbers, because the setting is implicit treated as px data.
+* On default the setting is ignored (see [browserViewMode](#browserviewmode) = 1)
+* see also [touchOptimized](#touchoptimized)
+
 #### newBrowserWindowByLinkBlockForeign ####
+
+* not implemented
+
 #### newBrowserWindowByLinkHeight ####
+
+* type: string|number ("NUMBER%"|"NUMBER"|NUMBER) 
+* Setting the height of any new window either in "%" or pixel size. Do not append "px" to the numbers, because the setting is implicit treated as px data.
+* On [touchOptimized](#touchoptimized) = **true** the size settings will be ignored (all windows = maximized)
+
 #### newBrowserWindowByLinkPolicy ####
+
+* not implemented
+
 #### newBrowserWindowByLinkPositioning ####
+
+* type: number (0=left|1=center (default)|2=right)
+* On [touchOptimized](#touchoptimized) = **true** the size settings will be ignored (all windows = maximized)
+
 #### newBrowserWindowByLinkWidth ####
+
+* type: string|number ("NUMBER%"|"NUMBER"|NUMBER) 
+* Setting the width of any new window either in "%" or pixel size. Do not append "px" to the numbers, because the setting is implicit treated as px data.
+* On [touchOptimized](#touchoptimized) = **true** the size settings will be ignored (all windows = maximized)
+
 #### newBrowserWindowByScriptBlockForeign ####
+
+* not implemented
+
 #### newBrowserWindowByScriptPolicy ####
+
+* not implemented
+
 #### pinEmbeddedCertificates ####
+
+* type: boolean (false)
+* Setting to true will remove ALL trusted default certificates from mozilla cert storage. I don't think this setting is very usefull because in my opinion it is cleaner to restrict access to any sites with white- or blacklists (). The restriction / pinning to the embedded certs by removing all trusted root ca certs might lead to uncomely error messages (try: set pinEmbeddedCertificates:true and startURL:"https://www.google.com" :-|)
+
 #### proxies ####
 #### quitURL ####
 #### removeBrowserProfile ####
@@ -219,7 +282,9 @@ The params are listed in alphabetical order:
 #### showTaskBar ####
 #### startURL ####
 #### taskBarHeight ####
+
 #### touchOptimized ####
+
 #### urlFilterTrustedContent ####
 #### urlFilterRegex ####
 #### whitelistURLFilter ####
