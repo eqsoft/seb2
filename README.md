@@ -159,7 +159,12 @@ The params are listed in alphabetical order:
 ## SEB (handled by both: Windows SEB and embedded seb2 ) ##
 
 #### additionalResources ####
+
 #### allowBrowsingBackForward ####
+
+* type: boolean (false)
+* If true: shows navigation elements in browser toolbar of the main window (if [enableBrowserWindowToolbar](#enablebrowserwindowtoolbar) is generally enabled).
+
 #### allowQuit ####
 #### allowSpellCheck ####
 #### blacklistURLFilter ####
@@ -185,6 +190,12 @@ The params are listed in alphabetical order:
 * 1 = The main window is maximized to fullscreen without any frame around it and any size and position settings (see above) are ignored.
 * If [touchOptimized](#touchoptimized) is **true** the browserViewMode setting is ignored internally set to 1 (= maximized) for all windows
 
+#### browserWindowAllowReload ####
+
+* type: boolean (true)
+* If true: allows to reload the main window, either with reload button or websocket event.
+* See also: [enableBrowserWindowToolbar](#enablebrowserwindowtoolbar), [newBrowserWindowAllowReload](#enablebrowserwindowtoolbar)
+
 #### browserWindowTitleSuffix ####
 #### downloadDirectoryWin ####
 
@@ -202,6 +213,12 @@ TYPE_ENUM:
 CA embedding example: ```./browser/app/config.dev.json``` with embedded root and signing ca certs from ```./pki/ca/(root|signing)-ca.crt``` 
 
 #### enableBrowserWindowToolbar ####
+
+* type: boolean (true)
+* enables a browser toolbar in all windows
+* **main window**: if at least one of the following configs is true: [allowBrowsingBackForward](#allowbrowsingbackforward) or [browserWindowAllowReload](#browserwindowallowreload)
+* **popup window**: if at least one of the following configs is true: [allowBrowsingBackForward](#allowbrowsingbackforward) or [browserWindowAllowReload](#browserwindowallowreload) 
+
 #### enableJava ####
 #### enableJavaScript ####
 #### enablePlugIns ####
@@ -210,21 +227,31 @@ CA embedding example: ```./browser/app/config.dev.json``` with embedded root and
 #### hashedQuitPassword ####
 
 #### mainBrowserWindowHeight ####
+
 * type: string|number ("NUMBER%"|"NUMBER"|NUMBER) 
 * Setting the height of the main window either in "%" or pixel size. Do not append "px" to the numbers, because the setting is implicit treated as px data.
 * On default the setting is ignored (see [browserViewMode](#browserviewmode) = 1)
 * see also [touchOptimized](#touchoptimized)
 
 #### mainBrowserWindowPositioning ####
+
 * type: number (0=left|1=center (default)|2=right)
 * On default the setting is ignored (see [browserViewMode](#browserviewmode) = 1)
 * see also [touchOptimized](#touchoptimized)
 
 #### mainBrowserWindowWidth ####
+
 * type: string|number ("NUMBER%"|"NUMBER"|NUMBER) 
 * Setting the width of the main window either in "%" or pixel size. Do not append "px" to the numbers, because the setting is implicit treated as px data.
 * On default the setting is ignored (see [browserViewMode](#browserviewmode) = 1)
 * see also [touchOptimized](#touchoptimized)
+
+
+#### newBrowserWindowAllowReload ####
+
+* type: boolean (true)
+* If true: allows to reload popup windows, either with reload button or websocket event.
+* See also: [browserWindowAllowReload](#browserwindowallowreload), [enableBrowserWindowToolbar](#enablebrowserwindowtoolbar)
 
 #### newBrowserWindowByLinkBlockForeign ####
 
@@ -258,6 +285,12 @@ CA embedding example: ```./browser/app/config.dev.json``` with embedded root and
 #### newBrowserWindowByScriptPolicy ####
 
 * not implemented
+
+#### newBrowserWindowNavigation ####
+
+* type: boolean (false)
+* If true: shows navigation elements in browser toolbar in popup windows (if [enableBrowserWindowToolbar](#enablebrowserwindowtoolbar) is generally enabled).
+* See also [browserWindowAllowReload](#browserwindowallowreload)
 
 #### pinEmbeddedCertificates ####
 
