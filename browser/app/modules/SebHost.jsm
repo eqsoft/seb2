@@ -326,7 +326,9 @@ this.SebHost = {
 		base.sendMessage(JSON.stringify(msg));
 	},
 	
-	sendFullScreenChanged : function(state) {
+	sendFullScreenChanged : function(state,win) {
+		//let w = (win) ? win : sw.getRecentWin();
+		//sw.hideToolbar(w)
 		let msg = {Handler:"FullScreenChanged",Opts:{"fullscreen":state}};
 		base.sendMessage(JSON.stringify(msg));
 	},
@@ -543,10 +545,10 @@ this.SebHost = {
 				return;
 			}
 			if ( win.document.fullscreenElement ) {
-				base.sendFullScreenChanged(true);
+				base.sendFullScreenChanged(true, win);
 			}
 			else {
-				base.sendFullScreenChanged(false);
+				base.sendFullScreenChanged(false, win);
 			}
 			
 		};

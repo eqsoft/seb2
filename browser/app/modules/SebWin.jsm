@@ -269,8 +269,14 @@ this.SebWin = {
 	setToolbar : function (win) {
 		var tb = win.document.getElementById("toolBar");
 		var ib = win.document.getElementById("imageBox");
+		let showMainToolbar = (su.getConfig("enableBrowserWindowToolbar", "boolean", false) && (su.getConfig("allowBrowsingBackForward", "boolean", false) || su.getConfig("browserWindowAllowReload", "boolean", false)));
+		let showPopupToolbar = (su.getConfig("enableBrowserWindowToolbar", "boolean", false) && (su.getConfig("newBrowserWindowNavigation", "boolean", false) || su.getConfig("newBrowserWindowAllowReload", "boolean", false)));
+		
+		sl.debug("showMainToolbar: " + showMainToolbar);
+		sl.debug("showPopupToolbar: " + showPopupToolbar);
+		
 		if (win === seb.mainWin) { // main win
-			if (su.getConfig("enableBrowserWindowToolbar", "boolean", false)) {
+			if (showMainToolbar) {
 				sl.debug("setToolbar visible");
 				tb.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";			
 				ib.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";
@@ -278,7 +284,7 @@ this.SebWin = {
 					win.document.getElementById("btnBack").className = "hidden";
 					win.document.getElementById("btnForward").className = "hidden";
 				}
-				if (!su.getConfig("sebToolbarShowReload","boolean",false)) {
+				if (!su.getConfig("browserWindowAllowReload","boolean",false)) {
 					win.document.getElementById("btnReload").className = "hidden";
 				}
 				/*
@@ -303,12 +309,12 @@ this.SebWin = {
 			}
 		}
 		else { // popup
-			if (su.getConfig("newBrowserWindowNavigation", "boolean", false)) {
+			if (showPopupToolbar) {
 				tb.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";
 				ib.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";
 				win.document.getElementById("btnBack").className = "hidden";
 				win.document.getElementById("btnForward").className = "hidden";
-				if (!su.getConfig("sebToolbarShowReload","boolean",false)) {
+				if (!su.getConfig("newBrowserWindowAllowReload","boolean",false)) {
 					win.document.getElementById("btnReload").className = "hidden";
 					
 				}
@@ -321,6 +327,21 @@ this.SebWin = {
 				win.document.getElementById("btnForward").className = "hidden";
 				win.document.getElementById("btnReload").className = "hidden";
 			}
+		}
+	},
+	
+	hideToolbar : function(win) {
+		var tb = win.document.getElementById("toolBar");
+		var ib = win.document.getElementById("imageBox");
+		tb.className = "tbHidden";
+		ib.className = "tbHidden";
+		try {
+			win.document.getElementById("btnBack").className = "hidden";
+			win.document.getElementById("btnForward").className = "hidden";
+			win.document.getElementById("btnReload").className = "hidden";
+		}
+		catch (e) {
+			sl.err("error hideToolbar: " + e);
 		}
 	},
 	
@@ -547,7 +568,7 @@ this.SebWin = {
 					sebwin.classList.add("winHiddenChromeMargin");
 					loadbox.style.top = "10px";
 					tb.style.marginTop = "2px";
-				}
+				} 
 				break;
 			case "DARWIN" : // maybe the best would be hidechrome and resizing
 				if (!scr.titlebarEnabled) {

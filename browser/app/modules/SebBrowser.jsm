@@ -236,6 +236,7 @@ this.SebBrowser = {
 			sl.debug("Request is instance of Ci.nsIHttpChannel");
 			sl.debug(aRequest.name);
 			aRequest.QueryInterface(Ci.nsIHttpChannel);
+			
 			let reqErr = false;
 			let reqStatus = false;
 			let reqSucceeded = false;
