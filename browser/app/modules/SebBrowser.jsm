@@ -159,18 +159,29 @@ this.SebBrowser = {
 			}
 			sl.debug("Request is instance of Ci.nsIHttpChannel");
 			sl.debug(aRequest.name);
-			aRequest.QueryInterface(Ci.nsIHttpChannel);
-				
+			try {
+				aRequest.QueryInterface(Ci.nsIHttpChannel);
+			}
+			catch(e) {
+				sl.debug("Error QueryInterface Ci.nsIHttpChannel");
+				sl.debug(aRequest.name);
+				return 0;
+			}
+			this.baseurl = btoa(aRequest.name);	
 			sl.debug("baseurl: " + this.baseurl);
 			this.isStarted = true;
 			this.win = sw.getChromeWin(aWebProgress.DOMWindow);
-			this.baseurl = btoa(aRequest.name);
+			this.domWin = aWebProgress.DOMWindow;
+			this.referrer = this.domWin.document.URL;
+			sl.debug("referrer: " + this.referrer);
+			
 			base.startLoading(this.win);
 			if (seb.quitURL === aRequest.name) {
 				if (base.quitURLRefererFilter != "") {
 					let filter = base.quitURLRefererFilter;
-					let referer = this.win.XulLibBrowser.contentDocument.location.href;
-					if (referer.indexOf(filter) < 0) {
+					//let referer = this.win.XulLibBrowser.contentDocument.location.href;
+					//if (referer.indexOf(filter) < 0) {
+					if (this.referrer.indexOf(filter) < 0) {
 						sl.debug("quitURL \"" + seb.quitURL + "\" is only allowed if string in referrer: \"" + filter + "\"");
 						aRequest.cancel(aStatus);
 						base.stopLoading(this.win);
@@ -232,11 +243,16 @@ this.SebBrowser = {
 				sl.debug(aRequest.name);
 				return 0;
 			}
-			
+			//this.win = sw.getChromeWin(aWebProgress.DOMWindow);
 			sl.debug("Request is instance of Ci.nsIHttpChannel");
 			sl.debug(aRequest.name);
-			aRequest.QueryInterface(Ci.nsIHttpChannel);
-			
+			try {
+				aRequest.QueryInterface(Ci.nsIHttpChannel);
+			}
+			catch(e) {
+				sl.debug("Error QueryInterface Ci.nsIHttpChannel");
+				return 0;
+			}
 			let reqErr = false;
 			let reqStatus = false;
 			let reqSucceeded = false;
@@ -269,12 +285,10 @@ this.SebBrowser = {
 						}
 					}
 					aRequest.cancel(aStatus);
-					
 					this.win.setTimeout(function() {
-						if (!this.isStarted) { // no new start request until now (capturing double clicks on links: experimental)
-							let flags = wnav.LOAD_FLAGS_BYPASS_HISTORY; // does not work??? why???
-							//win.content.document.location.assign("chrome://seb/content/error.xhtml?req=" + btoa(aRequest.name));
-							this.XulLibBrowser.webNavigation.loadURI("chrome://seb/content/error.xhtml?req=" + btoa(aRequest.name), flags, null, null, null);
+						if (!this.XULBrowserWindow.isStarted) { // no new start request until now (capturing double clicks on links: experimental)
+							// assign instead of replace?
+							aWebProgress.DOMWindow.location.replace("chrome://seb/content/error.xhtml?req=" + btoa(aRequest.name) + "&ref=" + btoa(this.XULBrowserWindow.referrer));
 							this.XULBrowserWindow.isStarted = false;
 						}
 					}, 100);
