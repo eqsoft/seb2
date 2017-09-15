@@ -541,6 +541,7 @@ this.SebHost = {
 		sl.debug("createFullscreenController");
 		
 		win.document.onfullscreenchange = function ( evt ) {
+			sw.setToolbar(win,true);
 			if (evt.target != evt.currentTarget) {
 				return;
 			}
@@ -549,8 +550,8 @@ this.SebHost = {
 			}
 			else {
 				base.sendFullScreenChanged(false, win);
+				
 			}
-			
 		};
 	}
 }

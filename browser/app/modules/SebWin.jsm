@@ -266,82 +266,87 @@ this.SebWin = {
 		seb.mainWin.open(url);
 	},
 	
-	setToolbar : function (win) {
-		var tb = win.document.getElementById("toolBar");
-		var ib = win.document.getElementById("imageBox");
-		let showMainToolbar = (su.getConfig("enableBrowserWindowToolbar", "boolean", false) && (su.getConfig("allowBrowsingBackForward", "boolean", false) || su.getConfig("browserWindowAllowReload", "boolean", false)));
-		let showPopupToolbar = (su.getConfig("enableBrowserWindowToolbar", "boolean", false) && (su.getConfig("newBrowserWindowNavigation", "boolean", false) || su.getConfig("newBrowserWindowAllowReload", "boolean", false)));
-		
-		sl.debug("showMainToolbar: " + showMainToolbar);
-		sl.debug("showPopupToolbar: " + showPopupToolbar);
-		
-		if (win === seb.mainWin) { // main win
-			if (showMainToolbar) {
-				sl.debug("setToolbar visible");
-				tb.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";			
-				ib.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";
-				if (!su.getConfig("allowBrowsingBackForward","boolean",false)) {
-					win.document.getElementById("btnBack").className = "hidden";
-					win.document.getElementById("btnForward").className = "hidden";
-				}
-				if (!su.getConfig("browserWindowAllowReload","boolean",false)) {
-					win.document.getElementById("btnReload").className = "hidden";
-				}
-				/*
-				if (!su.getConfig("mainBrowserRestart","boolean",false)) {
-					win.document.getElementById("btnRestart").className = "hidden";
-				}
-				if (!su.getConfig("allowQuit","boolean",false)) {
-					win.document.getElementById("btnQuit").className = "hidden";
-				}
-				*/ 
-				sb.refreshNavigation(win);	
-			}
-			else {
-				sl.debug("setToolbar invisible");
-				tb.className = "tbHidden";
-				ib.className = "tbHidden";
-				//base.resetAndhideElement(win.document.getElementById("btnBack"));
-				//base.resetAndhideElement(win.document.getElementById("btnForward"));
-				win.document.getElementById("btnBack").className = "hidden";
-				win.document.getElementById("btnForward").className = "hidden";
-				win.document.getElementById("btnReload").className = "hidden";
-			}
+	toolbarIsVisible : function(win) {
+		if (win.document.fullscreenElement) {
+			return false;
 		}
-		else { // popup
-			if (showPopupToolbar) {
-				tb.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";
-				ib.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";
-				win.document.getElementById("btnBack").className = "hidden";
-				win.document.getElementById("btnForward").className = "hidden";
-				if (!su.getConfig("newBrowserWindowAllowReload","boolean",false)) {
-					win.document.getElementById("btnReload").className = "hidden";
-					
-				}
-				sb.refreshNavigation(win);
-			}
-			else {
-				tb.className = "tbHidden";
-				ib.className = "tbHidden";
-				win.document.getElementById("btnBack").className = "hidden";
-				win.document.getElementById("btnForward").className = "hidden";
-				win.document.getElementById("btnReload").className = "hidden";
-			}
+		if (win === seb.mainWin) {
+			return (su.getConfig("enableBrowserWindowToolbar", "boolean", false) && (su.getConfig("allowBrowsingBackForward", "boolean", false) || su.getConfig("browserWindowAllowReload", "boolean", false)));
+		}
+		else {
+			return (su.getConfig("enableBrowserWindowToolbar", "boolean", false) && (su.getConfig("newBrowserWindowNavigation", "boolean", false) || su.getConfig("newBrowserWindowAllowReload", "boolean", false)));
 		}
 	},
 	
-	hideToolbar : function(win) {
+	reloadIsVisible : function(win) {
+		if (!base.toolbarIsVisible(win)) {
+			return false;
+		}
+		if (win === seb.mainWin) {
+			return su.getConfig("browserWindowAllowReload","boolean",false)
+		}
+		else {
+			return su.getConfig("newBrowserWindowAllowReload","boolean",false)
+		}
+	},
+	
+	navigationIsVisible : function(win) {
+		if (!base.toolbarIsVisible(win)) {
+			return false;
+		}
+		if (win === seb.mainWin) {
+			return su.getConfig("allowBrowsingBackForward","boolean",false)
+		}
+		else {
+			return su.getConfig("newBrowserWindowNavigation","boolean",false)
+		}
+	},
+	
+	setToolbar : function (win, toggle) {
+		var sebwin = win.document.getElementById("sebWindow");
+		var scr = base.getScreenObject(win);
 		var tb = win.document.getElementById("toolBar");
 		var ib = win.document.getElementById("imageBox");
-		tb.className = "tbHidden";
-		ib.className = "tbHidden";
-		try {
-			win.document.getElementById("btnBack").className = "hidden";
-			win.document.getElementById("btnForward").className = "hidden";
-			win.document.getElementById("btnReload").className = "hidden";
+		var rl = win.document.getElementById("btnReload");
+		var bk = win.document.getElementById("btnBack");
+		var fw = win.document.getElementById("btnForward");
+		var rlClass = (base.reloadIsVisible(win)) ? "tbBtn" : "hidden";
+		var navClass = (base.navigationIsVisible(win)) ? "tbBtn" : "hidden";
+		var showToolbar = base.toolbarIsVisible(win);
+		
+		if (showToolbar) {
+			tb.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";			
+			ib.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";	 
 		}
-		catch (e) {
-			sl.err("error hideToolbar: " + e);
+		else {
+			tb.className = "tbHidden";
+			ib.className = "tbHidden";
+		}
+		rl.className = rlClass;
+		bk.className = navClass;
+		fw.className = navClass;
+		
+		if (showToolbar) {
+			sb.refreshNavigation(win);
+		}
+		
+		if (toggle) {
+			sl.debug("toggle");
+			// Puhhh
+			switch (sh.os) {
+				case "WINNT" :
+					if (!scr.titlebarEnabled) {
+						if (showToolbar) {
+							sebwin.classList.add("winHiddenChromeMargin");
+							tb.style.marginTop = "2px"; 
+						}
+						else {
+							sebwin.classList.remove("winHiddenChromeMargin");
+							tb.style.marginTop = "-2px";
+						}
+					} 
+					break;
+			}
 		}
 	},
 	
@@ -437,10 +442,19 @@ this.SebWin = {
 		return base.popupScreen;	
 	},
 	
+	getScreenObject : function(win) {
+		if (base.getWinType(win) == "main") {
+			return base.setMainScreen();
+		}
+		else {
+			return base.setPopupScreen();
+		}
+	},
+	
 	setSize : function(win) {
 		let scr = (base.getWinType(win) == "main") ? base.setMainScreen() : base.setPopupScreen();
 		base.setTitlebar(win,scr);
-		if (scr.maximized) {
+		if (scr.maximized || win.document.fullscreenElement) {
 			return;
 		}
 		
@@ -564,10 +578,10 @@ this.SebWin = {
 		switch (sh.os) {
 			case "WINNT" :
 				if (!scr.titlebarEnabled) {
-					sebwin.setAttribute("chromemargin","0,-1,-1,-1");
+					sebwin.setAttribute("chromemargin","0,-1,-1,-1");	
 					sebwin.classList.add("winHiddenChromeMargin");
 					loadbox.style.top = "10px";
-					tb.style.marginTop = "2px";
+					tb.style.marginTop = "2px"; 
 				} 
 				break;
 			case "DARWIN" : // maybe the best would be hidechrome and resizing
