@@ -147,6 +147,11 @@ The params are listed in alphabetical order:
 * see also: [touchOptimized](#touchoptimized)
 
 #### sebPdfJsEnabled ####
+
+* type: boolean (true)
+* Use embedded pdfjs library for displaying inline PDF documents
+* 
+
 #### sebPrefs ####
 #### sebPrefsMap ####
 #### sebServer ####
