@@ -106,6 +106,9 @@ nsBrowserStatusHandler.prototype = {
 	isStarted : false,
 	win : null,
 	baseurl : null,
+	referrer : null,
+	domWin : null,
+	
 	onStateChange : function(aWebProgress, aRequest, aStateFlags, aStatus) {},
 	onStatusChange : function(aWebProgress, aRequest, aStatus, aMessage) {},
 	onProgressChange : function(aWebProgress, aRequest, aCurSelfProgress,
@@ -159,6 +162,8 @@ this.SebBrowser = {
 			}
 			sl.debug("Request is instance of Ci.nsIHttpChannel");
 			sl.debug(aRequest.name);
+			this.baseurl = btoa(aRequest.name);
+			sl.debug("baseurl: " + this.baseurl);
 			try {
 				aRequest.QueryInterface(Ci.nsIHttpChannel);
 			}
@@ -167,8 +172,7 @@ this.SebBrowser = {
 				sl.debug(aRequest.name);
 				return 0;
 			}
-			this.baseurl = btoa(aRequest.name);	
-			sl.debug("baseurl: " + this.baseurl);
+			
 			this.isStarted = true;
 			this.win = sw.getChromeWin(aWebProgress.DOMWindow);
 			this.domWin = aWebProgress.DOMWindow;
