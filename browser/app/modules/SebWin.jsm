@@ -83,7 +83,8 @@ this.SebWin = {
 	mainScreen : {},
 	popupScreen : {},
 	winTypesReg : {
-		pdfViewer : /^.*?\/pdfjs\/.*?viewer\.html\?file\=/
+		pdfViewer : /^.*?\/pdfjs\/.*?viewer\.html\?file\=/,
+		errorViewer : /^.*?error\.xhtml\?req\=.*/
 	},
 	
 	init : function(obj) {

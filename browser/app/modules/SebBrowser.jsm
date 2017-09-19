@@ -167,10 +167,17 @@ this.SebBrowser = {
 			try {
 				aRequest.QueryInterface(Ci.nsIHttpChannel);
 			}
-			catch(e) {
+			catch(e) { // local chrome urls?
 				sl.debug("Error QueryInterface Ci.nsIHttpChannel");
 				sl.debug(aRequest.name);
-				return 0;
+				if (sw.winTypesReg.pdfViewer.test(aRequest.name)) {
+					sl.debug("pdfViewer");
+					return;
+				}
+				if (sw.winTypesReg.errorViewer.test(aRequest.name)) {
+					sl.debug("errorViewer");
+					return;
+				}
 			}
 			
 			this.isStarted = true;
@@ -250,12 +257,13 @@ this.SebBrowser = {
 			//this.win = sw.getChromeWin(aWebProgress.DOMWindow);
 			sl.debug("Request is instance of Ci.nsIHttpChannel");
 			sl.debug(aRequest.name);
-			try {
-				aRequest.QueryInterface(Ci.nsIHttpChannel);
+			if (sw.winTypesReg.pdfViewer.test(aRequest.name)) {
+				sl.debug("pdfViewer");
+				return;
 			}
-			catch(e) {
-				sl.debug("Error QueryInterface Ci.nsIHttpChannel");
-				return 0;
+			if (sw.winTypesReg.errorViewer.test(aRequest.name)) {
+				sl.debug("errorViewer");
+				return;
 			}
 			let reqErr = false;
 			let reqStatus = false;

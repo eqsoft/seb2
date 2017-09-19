@@ -171,6 +171,16 @@ var conf = function conf() {
 		app.use('/websocket',static('websocket'));
 		app.use('/websocket/data',directory('websocket/data'));
 		app.use('download_basic',auth.connect(basic));
+		app.use('/download_pdf', function(req, res) {
+			var file = __dirname + '/demo/res/test.pdf';
+			var filename = path.basename(file);
+			//var mimetype = mime.lookup(file);
+			res.setHeader('Content-disposition', 'inline; filename=' + filename);
+			//res.setHeader('Content-disposition', 'inline; filename=' + filename);
+			//res.setHeader('Content-type', mimetype);
+			var filestream = fs.createReadStream(file);
+			filestream.pipe(res);
+		});
 		app.use('/download_basic', function(req, res) {
 			var file = __dirname + '/demo/res/test.seb';
 
