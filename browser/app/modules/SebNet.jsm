@@ -385,14 +385,14 @@ this.SebNet = {
 		if ( (typeof p === "boolean") && p) {
 			return 4;
 		}
-		p = proxies["AutoConfigurationEnabledWas "];
+		p = proxies["AutoConfigurationEnabled"];
 		// auto config url
 		if ( (typeof p === "boolean") && p) {
 			return 2;
 		}
 		// system proxy
-		p = proxies["proxySettingsPolicy"];
-		if ( (typeof p === "number") && p == 0) {
+		p = su.getConfig("proxySettingsPolicy","number",0);
+		if (p === 0) {
 			return 5;
 		}
 		// http(s) proxy
