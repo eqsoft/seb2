@@ -100,7 +100,7 @@ const	nsIX509CertDB = Ci.nsIX509CertDB,
 	CERT_USER = 1, //reserved to windows host
 	CERT_CA = 2,
 	CERT_SSL_DEBUG = 3;
-
+	
 function nsBrowserStatusHandler() {};
 nsBrowserStatusHandler.prototype = {
 	isStarted : false,
@@ -108,6 +108,12 @@ nsBrowserStatusHandler.prototype = {
 	baseurl : null,
 	referrer : null,
 	domWin : null,
+	aWebProgress : null,
+	aRequest : null,
+	aStateFlags : null,
+	aStatus : null,
+	startDocumentFlags : startDocumentFlags,
+	stopDocumentFlags : stopDocumentFlags,
 	
 	onStateChange : function(aWebProgress, aRequest, aStateFlags, aStatus) {},
 	onStatusChange : function(aWebProgress, aRequest, aStatus, aMessage) {},
@@ -151,6 +157,10 @@ this.SebBrowser = {
 	},
 	
 	stateListener : function(aWebProgress, aRequest, aStateFlags, aStatus) {
+		this.aWebProgress = aWebProgress;
+		this.aRequest = aRequest;
+		this.aStateFlags = aStateFlags;
+		this.aStatus = aStatus;
 		
 		if ((aStateFlags & startDocumentFlags) == startDocumentFlags) { // start document request event
 			
@@ -164,28 +174,28 @@ this.SebBrowser = {
 			sl.debug(aRequest.name);
 			this.baseurl = btoa(aRequest.name);
 			sl.debug("baseurl: " + this.baseurl);
-			try {
-				aRequest.QueryInterface(Ci.nsIHttpChannel);
-			}
-			catch(e) { // local chrome urls?
-				sl.debug("Error QueryInterface Ci.nsIHttpChannel");
-				sl.debug(aRequest.name);
-				if (sw.winTypesReg.pdfViewer.test(aRequest.name)) {
-					sl.debug("pdfViewer");
-					return;
-				}
-				if (sw.winTypesReg.errorViewer.test(aRequest.name)) {
-					sl.debug("errorViewer");
-					return;
-				}
-			}
-			
-			this.isStarted = true;
 			this.win = sw.getChromeWin(aWebProgress.DOMWindow);
 			this.domWin = aWebProgress.DOMWindow;
 			this.referrer = this.domWin.document.URL;
 			sl.debug("referrer: " + this.referrer);
 			
+			try {
+				aRequest.QueryInterface(Ci.nsIHttpChannel);
+			}
+			catch(e) { // local chrome urls and other
+				sl.debug("Error QueryInterface Ci.nsIHttpChannel");
+				//sl.debug(aRequest.name);
+				
+			}
+			if (sw.winTypesReg.pdfViewer.test(aRequest.name)) {
+				sl.debug(PDF_VIEWER_TITLE);
+				return;
+			}
+			if (sw.winTypesReg.errorViewer.test(aRequest.name)) {
+				sl.debug(ERROR_PAGE_TITLE);
+				return;
+			}
+			this.isStarted = true;
 			base.startLoading(this.win);
 			if (seb.quitURL === aRequest.name) {
 				if (base.quitURLRefererFilter != "") {
@@ -238,16 +248,43 @@ this.SebBrowser = {
 			// don't trigger if pdf is part of the query string: infinite loop
 			// don't trigger from pdfViewer itself: infinite loop
 			if (su.getConfig("sebPdfJsEnabled","boolean", true) && /^[^\?]+\.pdf$/i.test(aRequest.name) && !sw.winTypesReg.pdfViewer.test(aRequest.name)) {
-				sl.debug("pdf start request");
-				aRequest.cancel(aStatus);
-				sw.openPdfViewer(aRequest.name);
-				base.stopLoading(this.win);
+				sl.debug("redirect pdf start request");
+				this.onStateChange(aWebProgress, aRequest, stopDocumentFlags, PDF_REDIRECT);
 				return;
-			}
+			} 
 		}
 		if ((aStateFlags & stopDocumentFlags) == stopDocumentFlags) { // stop document request event
 			
+			switch (aStatus) {
+				case PDF_REDIRECT :
+					aStatus = "PDF_REDIRECT";
+					break;
+				case DOCUMENT_STOP_ERROR :
+					if (/\.pdf$/i.test(aRequest.name) && su.getConfig("sebPdfJsEnabled","boolean", true)) {
+						aStatus = "PDF_VIEWER_STOP";
+					}
+					break;
+					
+			}
+			
 			sl.debug("DOCUMENT REQUEST STOP: " + aRequest.name + " - status: " + aStatus);
+			
+			switch (aStatus) {
+				case "PDF_REDIRECT" :
+					this.isStarted = false;
+					base.stopLoading(this.win);
+					let url = aRequest.name;
+					aRequest.cancel(aStatus);
+					sw.openPdfViewer(url);
+					return;
+					break; 
+				case "PDF_VIEWER_STOP" :
+					this.isStarted = false;
+					base.stopLoading(this.win);
+					aRequest.cancel(aStatus);
+					return;
+					break;
+			}
 			
 			if (!aRequest instanceof Ci.nsIHttpChannel) { // something todo?
 				sl.debug("Request is NOT instance of Ci.nsIHttpChannel");
@@ -258,11 +295,13 @@ this.SebBrowser = {
 			sl.debug("Request is instance of Ci.nsIHttpChannel");
 			sl.debug(aRequest.name);
 			if (sw.winTypesReg.pdfViewer.test(aRequest.name)) {
-				sl.debug("pdfViewer");
+				sl.debug(PDF_VIEWER_TITLE);
+				this.win.document.title = (windowTitleSuffix == '') ? PDF_VIEWER_TITLE : PDF_VIEWER_TITLE + " - " + windowTitleSuffix;
 				return;
 			}
 			if (sw.winTypesReg.errorViewer.test(aRequest.name)) {
-				sl.debug("errorViewer");
+				sl.debug(ERROR_PAGE_TITLE);
+				this.win.document.title = (windowTitleSuffix == '') ? ERROR_PAGE_TITLE : ERROR_PAGE_TITLE + " - " + windowTitleSuffix;
 				return;
 			}
 			let reqErr = false;
@@ -278,42 +317,17 @@ this.SebBrowser = {
 			if (reqErr || !reqSucceeded || !reqStatus) {
 				sl.debug("Error document loading: " + aStatus);
 				base.stopLoading(this.win);
-				try {
-					try {
-						let mimeType = aRequest.getResponseHeader("Content-Type");
-						if (mimeTypesRegs.pdf.test(mimeType) && !/\.pdf$/i.test(aRequest.name) && su.getConfig("sebPdfJsEnabled","boolean", true)) { // pdf file requests should already catched by SebBrowser
-							sl.debug("request already aborted by httpResponseObserver, no error page!");
-							this.isStarted = false;
-							return 0;
-						}	
+				aRequest.cancel(aStatus);
+				this.isStarted = false;
+				this.win.setTimeout(function() {
+					if (!this.XULBrowserWindow.isStarted) { // no new start request until now (capturing double clicks on links: experimental)
+						// assign instead of replace?
+						// 
+						aWebProgress.DOMWindow.location.replace("chrome://seb/content/error.xhtml?req=" + btoa(aRequest.name) + "&ref=" + btoa(this.XULBrowserWindow.referrer));
+						this.XULBrowserWindow.isStarted = false;
 					}
-					catch (e) { // there is no getResponseHeader function
-						switch (e.name) {
-							case "NS_ERROR_NOT_AVAILABLE" :
-								sl.debug("handled: NS_ERROR_NOT_AVAILABLE");
-								break;
-							default: 
-								sl.debug("not handled: " + e);
-						}
-					}
-					aRequest.cancel(aStatus);
-					this.win.setTimeout(function() {
-						if (!this.XULBrowserWindow.isStarted) { // no new start request until now (capturing double clicks on links: experimental)
-							// assign instead of replace?
-							aWebProgress.DOMWindow.location.replace("chrome://seb/content/error.xhtml?req=" + btoa(aRequest.name) + "&ref=" + btoa(this.XULBrowserWindow.referrer));
-							this.XULBrowserWindow.isStarted = false;
-						}
-					}, 100);
-					return 0;
-				}
-				catch(e) {
-					sl.debug(e);
-				}
-				finally {
-					aRequest.cancel(aStatus);
-					this.isStarted = false;
-					return 1;
-				}
+				}, 100);
+				return 1;
 			}
 			else {
 				sl.debug("document loading succeeded: " + aStatus); // something to do?

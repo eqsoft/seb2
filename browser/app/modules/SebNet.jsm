@@ -277,10 +277,21 @@ responseObserver.prototype.observe = function ( subject, topic, data ) {
 			subject.visitResponseHeaders(aVisitor);
 			sl.info("");
 			if (aVisitor.isPdfResponse() && !/\.pdf$/i.test(subject.name)) {
-				sl.debug("redirect pdf response mimetype");
-				subject.cancel( this.aborted );
-				sw.openPdfViewer(subject.name);
-				return;
+			//if (aVisitor.isPdfResponse() || /\.pdf$/i.test(subject.name)) {
+				// don't do anything if request comes from pdfviewer: loop!
+				// try silent
+				let w = sw.getRecentWin();
+				let winTitle = w.document.title;
+				sl.debug("isPdfResponse from window: " + winTitle);
+				if (winTitle.indexOf(PDF_VIEWER_TITLE) > -1) {
+					sl.debug("request comes from pdf viewer do nothing...");
+				}
+				else {
+					sl.debug("redirect pdf response mimetype " + subject.name);
+					subject.cancel( this.aborted )
+					w.XULBrowserWindow.onStateChange(w.XULBrowserWindow.aWebProgress, w.XULBrowserWindow.aRequest, w.XULBrowserWindow.stopDocumentFlags, PDF_REDIRECT);
+					return;
+				}
 			}
 		}
 	}
