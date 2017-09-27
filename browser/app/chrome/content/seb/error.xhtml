@@ -25,6 +25,7 @@
 		<link rel="stylesheet" href="chrome://seb/content/css/neterror.css" type="text/css" media="all" />
 		<script type="application/javascript"><![CDATA[
 		var params;
+		var ref = null;
 		function getParams() { // window object or url string
 			var qs = {};
 			var queryString;
@@ -39,6 +40,7 @@
 			
 		function init() {
 			params = getParams();
+			//ref = params.ref;
 			var elGoBack = document.getElementById("goBack");
 			if (!/^http/g.test(params.ref)) {
 				elGoBack.disabled=true;

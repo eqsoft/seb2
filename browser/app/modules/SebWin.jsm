@@ -235,7 +235,7 @@ this.SebWin = {
 		sl.debug("openDistinctWin");
 		for (var i=base.wins.length-1;i>=0;i--) { 
 			//sl.debug(url + " = " + atob(base.wins[i].document.getElementsByTagName("window")[0].getAttribute("baseurl")));
-			sl.debug(url + " = " + atob(base.wins[i].XULBrowserWindow.baseurl));
+			//sl.out(url + " = " + atob(base.wins[i].XULBrowserWindow.baseurl));
 			try {
 				let a = btoa(url);
 				let b = btoa(url+"/"); // aRequest object adds a slash to urls

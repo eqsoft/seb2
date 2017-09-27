@@ -288,8 +288,8 @@ responseObserver.prototype.observe = function ( subject, topic, data ) {
 				}
 				else {
 					sl.debug("redirect pdf response mimetype " + subject.name);
-					subject.cancel( this.aborted )
-					w.XULBrowserWindow.onStateChange(w.XULBrowserWindow.aWebProgress, w.XULBrowserWindow.aRequest, w.XULBrowserWindow.stopDocumentFlags, PDF_REDIRECT);
+					subject.cancel( this.aborted );
+					w.XULBrowserWindow.onStatusChange(w.XULBrowserWindow.webProgress, w.XULBrowserWindow.request, STATUS_PDF_REDIRECT.status, STATUS_PDF_REDIRECT.message);
 					return;
 				}
 			}

@@ -176,8 +176,14 @@ var conf = function conf() {
 			var filename = path.basename(file);
 			//var mimetype = mime.lookup(file);
 			res.setHeader('Content-disposition', 'inline; filename=' + filename);
-			//res.setHeader('Content-disposition', 'inline; filename=' + filename);
-			//res.setHeader('Content-type', mimetype);
+			var filestream = fs.createReadStream(file);
+			filestream.pipe(res);
+		});
+		app.use('/stream_pdf', function(req, res) {
+			var file = __dirname + '/demo/res/test.pdf';
+			var filename = path.basename(file);
+			//var mimetype = mime.lookup(file);
+			res.setHeader('Content-type', 'application/pdf');
 			var filestream = fs.createReadStream(file);
 			filestream.pipe(res);
 		});
