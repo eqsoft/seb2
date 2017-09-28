@@ -23,15 +23,15 @@ const 	CA_CN 	= "Simple Signing CA",
 	demoClientCert = false,
 	socketClientCert = false,
 	monitorClientCert = false,
-	proxy = false,
+	proxy = true,
 	proxyServerPort = 8337,
 	proxyTargetPort = 8338,
-	proxyTarget = 'http://localhost:'+proxyTargetPort,
-	proxyAuth = false;
+	proxyTarget = 'http://www.simple.org:'+proxyTargetPort,
+	proxyAuth = true;
 
 var conf = function conf() {
 	if(conf.caller != conf.getInstance){
-		throw new Error("This object cannot be instanciated");
+		throw new Error("This object cannot be instantiated");
 	}
 
 	this.caCN = CA_CN;

@@ -311,10 +311,31 @@ CA embedding example: ```./browser/app/config.dev.json``` with embedded root and
 * Setting to true will remove ALL trusted default certificates from mozilla cert storage. I don't think this setting is very usefull because in my opinion it is cleaner to restrict access to any sites with white- or blacklists (). The restriction / pinning to the embedded certs by removing all trusted root ca certs might lead to uncomely error messages (try: set pinEmbeddedCertificates:true and startURL:"https://www.google.com" :-|)
 
 #### proxies ####
+
+* type : object ({})
+* example:
+
+"proxies": {
+		"ExceptionsList" : [
+			"*.local",
+			"169.254/16"
+		],
+		"HTTPProxy":"www.simple.org",
+		"HTTPPort" : 8337,
+		"HTTPEnable": true,
+		"Auth":true,
+		"AuthType": "basic",
+		"Realm": "Basic Area",
+		"User":"demo",
+		"Password":"demo"
+},
+
+* the example should work in development mode (see [Infos for Developer](#infos_for_developer)
+
 #### proxySettingsPolicy ####
 
 * type: integer (1)
-* 0 = SEB Config Proxy Settings 
+* 0 = SEB Config Proxy Settings (not recommanded, should be tested on client and network infrastructure before!)
 * 1 = System Proxy
 
 #### quitURL ####
