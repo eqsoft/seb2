@@ -171,6 +171,9 @@ The params are listed in alphabetical order:
 * If true: shows navigation elements in browser toolbar of the main window (if [enableBrowserWindowToolbar](#enablebrowserwindowtoolbar) is generally enabled).
 
 #### allowQuit ####
+
+* type: boolean (true)
+
 #### allowSpellCheck ####
 #### blacklistURLFilter ####
 #### blockPopUpWindows ####
@@ -304,6 +307,16 @@ CA embedding example: ```./browser/app/config.dev.json``` with embedded root and
 
 #### proxies ####
 #### quitURL ####
+
+* type: string ("")
+* A quitURL request will shutdown the browser. The quit
+* See also  [quitURLRefererFilter](#quiturlrefererfilter), [additionalResources](#additionalresources)
+
+#### quitURLRefererFilter ####
+
+* type: string ("")
+* If not an empty string the quitURL will only be executed, if the current page url contains the quitURLRefererFilter string.
+
 #### removeBrowserProfile ####
 #### restartExamPasswordProtected ####
 #### restartExamText (not implemented) ####
