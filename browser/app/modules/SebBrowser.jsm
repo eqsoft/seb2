@@ -515,11 +515,11 @@ this.SebBrowser = {
 				sl.debug("No proxy user or password defined");
 				return;
 			}
-			if (!seb.config.proxies.HTTPEnable || !seb.config.proxies.HTTPSEnable) {
+			if (!seb.config.proxies.HTTPEnable && !seb.config.proxies.HTTPSEnable) {
 				sl.debug("No http proxy enabled");
 				return;
 			}
-			if (!seb.config.proxies.HTTPProxy || !seb.config.proxies.HTTPPort) {
+			if (!seb.config.proxies.HTTPProxy && !seb.config.proxies.HTTPPort) {
 				sl.debug("No http proxy or port defined");
 				return;
 			}
