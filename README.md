@@ -150,7 +150,6 @@ The params are listed in alphabetical order:
 
 * type: boolean (true)
 * Use embedded pdfjs library for displaying inline PDF documents
-* 
 
 #### sebPrefs ####
 #### sebPrefsMap ####
@@ -173,6 +172,9 @@ The params are listed in alphabetical order:
 #### allowQuit ####
 
 * type: boolean (true)
+* If set to false, the quit function will be disabled. The param will be ignored if the the quit event is fired by the windows (hostForceQuit) host or a quitURL is detected.
+The quit concepts are really complicated see: seb.jsm "quit: function"
+* see also: [quitURL](#quiturl), [quitURLRefererFilter](#quiturlrefererfilter), [hashedQuitPassword](#hashedquitpassword)
 
 #### allowSpellCheck ####
 #### blacklistURLFilter ####
@@ -233,6 +235,9 @@ CA embedding example: ```./browser/app/config.dev.json``` with embedded root and
 #### enableZoomPage ####
 #### enableZoomText ####
 #### hashedQuitPassword ####
+
+* type: base64String ("5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8" = "password")
+* If not empty a password dialog needs to be confirmed before browser quit (ignored on quitURL)
 
 #### mainBrowserWindowHeight ####
 
@@ -306,6 +311,12 @@ CA embedding example: ```./browser/app/config.dev.json``` with embedded root and
 * Setting to true will remove ALL trusted default certificates from mozilla cert storage. I don't think this setting is very usefull because in my opinion it is cleaner to restrict access to any sites with white- or blacklists (). The restriction / pinning to the embedded certs by removing all trusted root ca certs might lead to uncomely error messages (try: set pinEmbeddedCertificates:true and startURL:"https://www.google.com" :-|)
 
 #### proxies ####
+#### proxySettingsPolicy ####
+
+* type: integer (1)
+* 0 = SEB Config Proxy Settings 
+* 1 = System Proxy
+
 #### quitURL ####
 
 * type: string ("")
@@ -315,7 +326,7 @@ CA embedding example: ```./browser/app/config.dev.json``` with embedded root and
 #### quitURLRefererFilter ####
 
 * type: string ("")
-* If not an empty string the quitURL will only be executed, if the current page url contains the quitURLRefererFilter string.
+* If not empty the quitURL will only be executed if the current page url contains the quitURLRefererFilter string.
 
 #### removeBrowserProfile ####
 #### restartExamPasswordProtected ####
@@ -344,8 +355,3 @@ CA embedding example: ```./browser/app/config.dev.json``` with embedded root and
 ## Websocket Handler ##
 
 ## Infos for Developer 
-
-see: 
-
-
-

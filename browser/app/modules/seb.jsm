@@ -510,7 +510,7 @@ this.seb =  {
 			return;
 		}
 
-		if (!base.allowQuit) { // on shutdown url the global variable "shutdownEnabled" is set to true
+		if (!base.allowQuit) { // on quitURL the global variable "allowQuit" is set to true
 			sl.out("no way! seb is locked :-)");
 		}
 		else {

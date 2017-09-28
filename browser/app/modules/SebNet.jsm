@@ -385,7 +385,7 @@ this.SebNet = {
 		}
 		p = proxies["ExceptionsList"];
 		if (typeof p === "object" && p != null) {
-			//p = p.join(",") + ",localhost,127.0.0.1";
+			p = p.join(",") + ",localhost,127.0.0.1";
 			prefs.setCharPref("network.proxy.no_proxies_on",p);
 			sl.debug("network.proxy.no_proxies_on:"+p);
 		}

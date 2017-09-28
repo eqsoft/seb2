@@ -10,6 +10,7 @@
 "sebPdfJsEnabled":true,
 "sebPrefs": {
 	"network.proxy.type" 	: 0,
+	"network.proxy.no_proxies_on" : "localhost,127.0.0.1",
 	"layout.spellcheckDefault" : 2,
 	"spellchecker.dictionary": "en-US",
 	"extensions.ui.dictionary.hidden": false,
