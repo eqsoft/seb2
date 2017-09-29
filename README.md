@@ -158,7 +158,16 @@ The params are listed in alphabetical order:
 #### sebScreenshotImageType ####
 #### sebScreenshotSound ####
 #### SebServerEnabled ####
+
 #### sebSSlSecurityPolicy ####
+
+* type: integer (1)
+
+* **SSL_SEC_NONE = 0** : allow all http and https and mixed contents
+* **SSL_SEC_BLOCK_MIXED_ACTIVE = 1** : default: block mixed active contents (scripts...), display contents are allowed (img, css...) = firefox default behaviour
+* **SSL_SEC_BLOCK_MIXED_ALL = 2** : block all mixed contents
+* **SSL_SEC_FORCE_HTTPS = 3** : try redirecting http to https. Beware! this is not a common browser behaviour! The web app should be fixed instead of rewriting the request on the client side!
+* **SSL_SEC_BLOCK_HTTP = 4** : block all http requests
 
 ## SEB (handled by both: Windows SEB and embedded seb2 ) ##
 
@@ -178,6 +187,11 @@ The quit concepts are really complicated see: seb.jsm "quit: function"
 
 #### allowSpellCheck ####
 #### blacklistURLFilter ####
+
+* type: string ("")
+* semicolon seperated list of blocked url rules.  
+* see also: [whitelistURLFilter](whitelisturlfilter), [urlFilterRegex](#urlfilterregex), [urlFilterTrustedContent](#urlfiltertrustedcontent)
+
 #### blockPopUpWindows ####
 
 #### browserExamKey ####
@@ -315,6 +329,7 @@ CA embedding example: ```./browser/app/config.dev.json``` with embedded root and
 * type : object ({})
 * example:
 
+```
 "proxies": {
 		"ExceptionsList" : [
 			"*.local",
@@ -329,8 +344,9 @@ CA embedding example: ```./browser/app/config.dev.json``` with embedded root and
 		"User":"demo",
 		"Password":"demo"
 },
+```
 
-* the example should work in development mode (see [Infos for Developer](#infos_for_developer)
+* the example above should work in development mode (see [Infos for Developer](#infos_for_developer)
 
 #### proxySettingsPolicy ####
 
@@ -369,8 +385,23 @@ CA embedding example: ```./browser/app/config.dev.json``` with embedded root and
 #### touchOptimized ####
 
 #### urlFilterTrustedContent ####
+
+* type: boolean (true)
+* If set to **false** EVERY resource request (html, css, js, images ....) request is validated by the whitelistURLFilter and blacklistURLFilter. 
+Invalid document requests are blocked with alert message, invalid embedded ressources are blocked silently. The default setting **true** only validates the document url and validation check is skipped for embedded ressources.
+
 #### urlFilterRegex ####
+
+* type: boolean (false)
+* If set to **true** the filter rules are treated as regex patterns
+* see also: [blacklistURLFilter](blacklisturlfilter), [whitelistURLFilter](whitelisturlfilter)
+
 #### whitelistURLFilter ####
+
+* type: string ("")
+* semicolon seperated list of allowed url rules.  
+* see also: [blacklistURLFilter](blacklisturlfilter), [urlFilterRegex](#urlfilterregex), [urlFilterTrustedContent](#urlfiltertrustedcontent)
+
 #### zoomMode ####
 
 ## Websocket Handler ##

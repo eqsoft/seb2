@@ -146,7 +146,9 @@ requestObserver.prototype.observe = function ( subject, topic, data ) {
 		if (httpReg.test(url)) {
 			if (base.blockHTTP) {
 				sl.debug("block http request");
+				let w = sw.getRecentWin();
 				subject.cancel( this.abort );
+				w.XULBrowserWindow.onStatusChange(w.XULBrowserWindow.webProgress, w.XULBrowserWindow.request, STATUS_BLOCK_HTTP.status, STATUS_BLOCK_HTTP.message);
 				return;
 			}
 			if (base.forceHTTPS) { // non common browser behaviour, experimental
