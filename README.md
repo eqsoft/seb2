@@ -188,8 +188,8 @@ The quit concepts are really complicated see: seb.jsm "quit: function"
 #### allowSpellCheck ####
 #### blacklistURLFilter ####
 
-* type: string ("")
-* semicolon seperated list of blocked url rules.  
+* type: string|array ([])
+* array or semicolon seperated list of blocked url rules. The rules are processed before whitelistURLFilter. 
 * see also: [whitelistURLFilter](whitelisturlfilter), [urlFilterRegex](#urlfilterregex), [urlFilterTrustedContent](#urlfiltertrustedcontent)
 
 #### blockPopUpWindows ####
@@ -398,8 +398,8 @@ Invalid document requests are blocked with alert message, invalid embedded resso
 
 #### whitelistURLFilter ####
 
-* type: string ("")
-* semicolon seperated list of allowed url rules.  
+* type: string|array ([])
+* array or semicolon seperated list of allowed url rules. The rules are processed after blacklistURLFilter.
 * see also: [blacklistURLFilter](blacklisturlfilter), [urlFilterRegex](#urlfilterregex), [urlFilterTrustedContent](#urlfiltertrustedcontent)
 
 #### zoomMode ####

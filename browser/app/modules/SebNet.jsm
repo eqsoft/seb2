@@ -490,7 +490,18 @@ this.SebNet = {
 	},
 	
 	isValidUrl : function (url) {
-		if (whiteListRegs.length == 0 && blackListRegs.length == 0) return true;
+		if (whiteListRegs.length == 0 && blackListRegs.length == 0) {
+			return true;
+		}
+		// special internal pages
+		if (sw.winTypesReg.pdfViewer.test(url)) {
+			return true;
+		}
+		
+		if (sw.winTypesReg.errorViewer.test(url)) {
+			return true;
+		}
+		 
 		var m = false;
 		var msg = "";		
 		sl.debug("check url: " + url);

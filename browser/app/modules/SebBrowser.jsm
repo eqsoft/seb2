@@ -168,15 +168,7 @@ this.SebBrowser = {
 			}
 			sl.debug("Request is instance of Ci.nsIHttpChannel: " + aRequest.name);
 			
-			// special chrome pdfViewer
-			if (sw.winTypesReg.pdfViewer.test(aRequest.name)) {
-				sl.debug(PDF_VIEWER_TITLE);
-			}
-			// special chrome errorPage
-			if (sw.winTypesReg.errorViewer.test(aRequest.name)) {
-				sl.debug(ERROR_PAGE_TITLE);
-			}
-			
+			// needed?
 			if (!sw.winTypesReg.pdfViewer.test(aRequest.name) && !sw.winTypesReg.errorViewer.test(aRequest.name)) {
 				// ignore non nsIHttpChannel requests (QueryInterface failes on local resources, maybe on cached ressources too?)
 				try {
@@ -231,26 +223,35 @@ this.SebBrowser = {
 				return;
 			}
 			
+			// special chrome pdfViewer
+			if (sw.winTypesReg.pdfViewer.test(aRequest.name)) {
+				sl.debug(PDF_VIEWER_TITLE);
+				return;
+			}
+			// special chrome errorPage
+			if (sw.winTypesReg.errorViewer.test(aRequest.name)) {
+				sl.debug(ERROR_PAGE_TITLE);
+				return;
+			}
 			if (!sn.isValidUrl(aRequest.name) || !sn.isValidUrl(aRequest.name.replace(/\/$/,""))) {
 				this.onStatusChange(aWebProgress, aRequest, STATUS_INVALID_URL.status, STATUS_INVALID_URL.message);
 				return;
 			}
-			
+		
 			if (httpReg.test(aRequest.name)) {
 				if (sn.blockHTTP) {
 					this.onStatusChange(aWebProgress, aRequest, STATUS_BLOCK_HTTP.status, STATUS_BLOCK_HTTP.message);
 					return;	
 				}
 			}
-			
 			// PDF Handling
 			// don't trigger if pdf is part of the query string: infinite loop
 			// don't trigger from pdfViewer itself: infinite loop
-			if (su.getConfig("sebPdfJsEnabled","boolean", true) && /^[^\?]+\.pdf$/i.test(aRequest.name) && !sw.winTypesReg.pdfViewer.test(aRequest.name)) {
+			if (su.getConfig("sebPdfJsEnabled","boolean", true) && /^[^\?]+\.pdf$/i.test(aRequest.name)) {
 				sl.debug("redirect pdf start request");
 				this.onStatusChange(aWebProgress, aRequest, STATUS_PDF_REDIRECT.status, STATUS_PDF_REDIRECT.message);
 				return;
-			}  
+			} 
 		}
 		
 		if ((aStateFlags & stopDocumentFlags) == stopDocumentFlags) { // stop document request event
@@ -259,6 +260,8 @@ this.SebBrowser = {
 					case STATUS_PDF_REDIRECT.status :
 					case STATUS_QUIT_URL_STOP.status :
 					case STATUS_QUIT_URL_WRONG_REFERRER.status :
+					case STATUS_BLOCK_HTTP.status :
+					case STATUS_INVALID_URL.status :
 						sl.debug("DOCUMENT REQUEST STOP CUSTOM STATUS: " + aRequest.name + " status: " + aRequest.status);
 					return;
 				} 
@@ -423,6 +426,7 @@ this.SebBrowser = {
 					this.isStarted = false;
 					base.stopLoading(this.win);
 					prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
+					//this.onStateChange(aWebProgress, aRequest, this.stopDocumentFlags, aStatus);
 					break;
 				case STATUS_BLOCK_HTTP.status :
 					aRequest.cancel(aStatus);
