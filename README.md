@@ -173,6 +173,64 @@ The params are listed in alphabetical order:
 
 #### additionalResources ####
 
+* type: object ({})
+* nested object tree with additional embedded ressources from different types.
+* examples:
+
+* An external ressource is triggered by another embedded link. 
+The same external ressource can also be triggered by pressing Ctrl-L.
+
+```
+{
+	"identifier": "0",
+	"additionalResources": [],
+	"active": true,
+	"autoOpen": false,
+	"title": "LinkURL",
+	"url": "https://www.simple.org:8443/demo/index.html",
+	"resourceDataFilename": "",
+	"resourceDataLauncher": 0,
+	"resourceData":"",
+	"linkURL" : "https://www.simple.org:8443/linkurl",
+	"refererFilter":"test.html",
+	"resetSession":true,
+	"allowLoadingNewSettings":false,
+	"key":"L",
+	"modifiers":"control",
+	"confirm":true,
+	"showButton":""
+}
+
+```
+
+* In standalone mode ARS p.e. may be used to trigger a quitURL by an embedded link or system keys (here only keys Ctrl-Q):
+
+
+```
+{
+	"identifier": "1",
+	"additionalResources": [],
+	"active": true,
+	"autoOpen": false,
+	"title": "quitURL",
+	"url": "https://www.simple.org:8443/quit",
+	"resourceDataFilename": "",
+	"resourceDataLauncher": 0,
+	"resourceData":"",
+	"linkURL" : "",
+	"refererFilter":"test.html",
+	"resetSession":true,
+	"allowLoadingNewSettings":false,
+	"key":"Q",
+	"modifiers":"control",
+	"confirm":true,
+	"showButton":""
+}
+```
+
+* the example above should work in development mode. 
+* The ARS are used in Windows SEB mainly for accessing embedded ressources or seb files for reconfiguration.
+
 #### allowBrowsingBackForward ####
 
 * type: boolean (false)
