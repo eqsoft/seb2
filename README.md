@@ -122,6 +122,11 @@ The params are listed in alphabetical order:
 * type: boolean (true)
 * Disables the browser requesting any OCSP Server (Online Certificate Status Protocol). Enabling is not recommanded, because seb might hang up if the ocsp server can not be reached caused by firewall rules, server down etc. The param is mapped to the native firefox pref "security.OCSP.enabled":0|1
 
+#### sebErrorPage ####
+
+* type: boolean (true)
+* If **false** internal error page is disabled
+
 #### sebMainBrowserWindowTitlebarEnabled ####
 
 * type: boolean (false)
@@ -152,12 +157,84 @@ The params are listed in alphabetical order:
 * Use embedded pdfjs library for displaying inline PDF documents
 
 #### sebPrefs ####
+
+* type: object
+* default:
+
+```
+"sebPrefs": {
+	"network.proxy.type" 	: 0,
+	"network.proxy.no_proxies_on" : "localhost,127.0.0.1",
+	"layout.spellcheckDefault" : 2,
+	"spellchecker.dictionary": "en-US",
+	"extensions.ui.dictionary.hidden": false,
+	"media.navigator.video.enabled" : false,
+	"media.getusermedia.audiocapture.enabled" : false
+},
+```
+
+* generic default firefox preferences, maybe overridden by other config params.
+* see also:  [sebPrefsMap](#sebprefsmap)
+
 #### sebPrefsMap ####
+
+* type: object
+* default:
+
+```
+"sebPrefsMap": {
+	"browser.download.dir" 		: "downloadDirectoryWIN",
+	"dom.disable_open_during_load" 	: "blockPopUpWindows",
+	"javascript.enabled" 		: "enableJavaScript",
+	"media.navigator.video.enabled" : "allowVideoCapture",
+        "media.getusermedia.audiocapture.enabled" : "allowAudioCapture",
+	"general.useragent.override" 	: { "cb" : "browserUserAgent"},
+	"browser.zoom.full" 		: { "cb" : "browserZoomFull" },
+	"zoom.maxPercent" 		: { "cb" : "zoomMaxPercent" },
+	"zoom.minPercent" 		: { "cb" : "zoomMinPercent" },
+	"plugin.state.flash"		: { "cb" : "pluginEnableFlash" },
+	"plugin.state.java"		: { "cb" : "pluginEnableJava" },
+	"layout.spellcheckDefault" 	: { "cb" : "spellcheckDefault" }
+},
+```
+
+* Generic Firefox preferences values are dedicated to seb config params or callback functions for extended processing. They are iterated in ```app/modules/SebConfig.jsm```.
+
+#### sebRebootKeyEnabled ####
+
+* type: boolean (false)
+* Key for reboot the OS (default: Ctrl-Alt-Shift-F10, see ```browser/app/chrome/content/seb/seb.xul```). Only used in Linux environments.
+
 #### sebServer ####
-#### sebScreenshot ####
-#### sebScreenshotImageType ####
-#### sebScreenshotSound ####
+
+* type: object
+* default:
+
+```
+{
+	"url"    : "https://www.simple.org:8442/websocket/index.html",
+	"socket" : "wss://www.simple.org:8442"
+},
+```
+
+* websocket server: Only used in Linux environments and development mode.
+
+#### sebScreenshot (not used, experimental) ####
+
+* type: boolean (false)
+
+#### sebScreenshotImageType (not used, experimental) ####
+
+* type: string ("image/jpeg")
+
+#### sebScreenshotSound (not used, experimental) ####
+
+* type: boolean (false)
+
 #### SebServerEnabled ####
+
+* type: boolean (false)
+* see also: [sebServer](#sebserver)
 
 #### sebSSlSecurityPolicy ####
 
@@ -231,6 +308,12 @@ The same external ressource can also be triggered by pressing Ctrl-L.
 * the example above should work in development mode. 
 * The ARS are used in Windows SEB mainly for accessing embedded ressources or seb files for reconfiguration.
 
+#### allowAudioCapture ####
+
+* type: boolean (true)
+* capturing system sound
+* see also: [sebPrefsMap](#sebprefsmap)
+
 #### allowBrowsingBackForward ####
 
 * type: boolean (false)
@@ -244,6 +327,16 @@ The quit concepts are really complicated see: seb.jsm "quit: function"
 * see also: [quitURL](#quiturl), [quitURLRefererFilter](#quiturlrefererfilter), [hashedQuitPassword](#hashedquitpassword)
 
 #### allowSpellCheck ####
+
+* type: boolean (false)
+* allows spellchecking in input fields (<textarea>, <input type="text">, ...) 
+* **false** is mapped to layout.spellcheckDefault:0, **true** is mapped layout.spellcheckDefault:2 (in multi and single line inputfields)
+* see also: [sebPrefsMap](#sebprefsmap), http://kb.mozillazine.org/Layout.spellcheckDefault
+
+#### allowSpellCheckDictionary (not in use?) ####
+
+* type: string ("de-DE")
+
 #### blacklistURLFilter ####
 
 * type: string|array ([])

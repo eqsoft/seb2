@@ -90,7 +90,14 @@ let 	base = null,
 	},
 	sebReg = new RegExp(/.*?\.seb/i),
 	httpReg = new RegExp(/^http\:/i),
-	windowTitleSuffix = "";
+	windowTitleSuffix = "",
+	installedDics = {
+		"de-DE":"de-DE@dictionaries.addons.mozilla.org",
+		"de-CH":"de_CH@dicts.j3e.de",
+		"en-US":"en-US@dictionaries.addons.mozilla.org",
+		"en-GB":"marcoagpinto@mail.telepac.pt",
+		"fr-classic":"fr-dicollecte@dictionaries.addons.mozilla.org"
+	};
 	
 const	nsIX509CertDB = Ci.nsIX509CertDB,
 	nsIX509CertDB2 = Ci.nsIX509CertDB2,
@@ -537,7 +544,28 @@ this.SebBrowser = {
 	},
 	
 	initSpellChecker : function() {
+		sl.debug("initSpellChecker");
+		var spellclass = "@mozilla.org/spellchecker/myspell;1";
 		
+		if ("@mozilla.org/spellchecker/hunspell;1" in Cc) {
+			spellclass = "@mozilla.org/spellchecker/hunspell;1";
+		}
+		if ("@mozilla.org/spellchecker/engine;1" in Cc) {
+			spellclass = "@mozilla.org/spellchecker/engine;1";
+		}
+		let spe = Cc[spellclass].getService(Ci.mozISpellCheckingEngine);
+		let dics = [];
+		for (var dic in installedDics) {
+			let dicsDir = FileUtils.getDir("ProfD", ["extensions",installedDics[dic],"dictionaries"],false,false);
+			if (dicsDir.exists()) {
+				//sl.debug("add dicDir: " + dicsDir.path);
+				spe.addDirectory(dicsDir);
+			} 
+		}
+		spe.getDictionaryList(dics,{});
+		sl.debug("available dictionaries: " + dics.value);
+		
+		/*
 		var spellclass = "@mozilla.org/spellchecker/myspell;1";
 		if ("@mozilla.org/spellchecker/hunspell;1" in Cc) {
 			spellclass = "@mozilla.org/spellchecker/hunspell;1";
@@ -546,7 +574,7 @@ this.SebBrowser = {
 			spellclass = "@mozilla.org/spellchecker/engine;1";
 		}
 
-		spe = Cc[spellclass].getService(Ci.mozISpellCheckingEngine);
+		let spe = Cc[spellclass].getService(Ci.mozISpellCheckingEngine);
 		let dicsDir = FileUtils.getDir("ProfD", ["dictionaries"],false,false); // should only be one dic inside
 		sl.debug("dictionaries directory exists: " + dicsDir.exists());
 		if (dicsDir.exists()) {
@@ -556,6 +584,8 @@ this.SebBrowser = {
 		let dics = [];
 		spe.getDictionaryList(dics,{});
 		sl.debug("available dictionaries: " + dics.value);
+		*/
+		
 		
 		/*
 		let dic = su.getConfig("allowSpellCheckDictionary","string","");

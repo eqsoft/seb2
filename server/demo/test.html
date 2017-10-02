@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html lang="en">
+<html>
 <head>
 	<title>Screenshot Demo: Test Page</title>
 	<link rel="stylesheet" href="res/q.css" type="text/css"></link>
@@ -25,8 +25,14 @@
 		<p><a href="http://dfgdfgsdfg.br" target="_top">dead link: no dn entry, no server available</a></p>
 		<p><a href="https://www.simple.org:8443/demo/no_ressource" target="_top">dead link: server available, no ressource</a></p>
 		<p><a href="https://www.simple.org:8443/quit" target="_top">Quit URL</a></p>
-		<p><a href="https://www.bennish.net/mixed-content.html" target="_top">Mixed Content Test Page</p>
-		<p><a href="https://www.simple.org:8443/linkurl" target="_top">link url defined in ars that trigger another ressource</p>
+		<p><a href="https://www.bennish.net/mixed-content.html" target="_top">Mixed Content Test Page</a></p>
+		<p><a href="https://www.simple.org:8443/linkurl" target="_top">link url defined in ars that trigger another ressource</a></p>
+		<p>Spellchecking "en":</p>
+		<textarea spellcheck="true" lang="en"></textarea>
+		<p>Spellchecking "de":</p>
+		<textarea spellcheck="true" lang="de"></textarea>
+		<p>Spellchecking ohne Angabe (wird die Sprache der Seite genommen "en")</p>
+		<textarea spellcheck="true"></textarea>
 		
 		
 		<!--
