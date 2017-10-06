@@ -303,6 +303,26 @@ this.SebWin = {
 		}
 	},
 	
+	setMainNavigation : function(win) {
+		var cmdBack =  win.document.getElementById("sebCmdBack");
+		var CmdForward =  win.document.getElementById("sebCmdForward");
+		if (!su.getConfig("allowBrowsingBackForward","boolean",false)) {
+			sl.debug("setMainNavigation: disabled");
+			cmdBack.setAttribute("disabled", true);
+			CmdForward.setAttribute("disabled", true);
+		}
+	},
+	
+	setPopupNavigation : function(win) {
+		var cmdBack =  win.document.getElementById("sebCmdBack");
+		var CmdForward =  win.document.getElementById("sebCmdForward");
+		if (!su.getConfig("newBrowserWindowNavigation","boolean",false)) {
+			sl.debug("setPopupNavigation: disabled");
+			cmdBack.setAttribute("disabled", true);
+			CmdForward.setAttribute("disabled", true);
+		}
+	},
+	
 	setToolbar : function (win, toggle) {
 		var sebwin = win.document.getElementById("sebWindow");
 		var scr = base.getScreenObject(win);

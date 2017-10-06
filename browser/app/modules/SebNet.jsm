@@ -148,7 +148,7 @@ requestObserver.prototype.observe = function ( subject, topic, data ) {
 				sl.debug("block http request");
 				let w = sw.getRecentWin();
 				subject.cancel( this.abort );
-				w.XULBrowserWindow.onStatusChange(w.XULBrowserWindow.webProgress, w.XULBrowserWindow.request, STATUS_BLOCK_HTTP.status, STATUS_BLOCK_HTTP.message);
+				w.XULBrowserWindow.onStatusChange(w.XULBrowserWindow.progress, w.XULBrowserWindow.request, STATUS_BLOCK_HTTP.status, STATUS_BLOCK_HTTP.message);
 				return;
 			}
 			if (base.forceHTTPS) { // non common browser behaviour, experimental
@@ -291,7 +291,7 @@ responseObserver.prototype.observe = function ( subject, topic, data ) {
 				else {
 					sl.debug("redirect pdf response mimetype " + subject.name);
 					subject.cancel( this.aborted );
-					w.XULBrowserWindow.onStatusChange(w.XULBrowserWindow.webProgress, w.XULBrowserWindow.request, STATUS_PDF_REDIRECT.status, STATUS_PDF_REDIRECT.message);
+					w.XULBrowserWindow.onStatusChange(w.XULBrowserWindow.progress, w.XULBrowserWindow.request, STATUS_PDF_REDIRECT.status, STATUS_PDF_REDIRECT.message);
 					return;
 				}
 			}
@@ -504,7 +504,7 @@ this.SebNet = {
 		 
 		var m = false;
 		var msg = "";		
-		sl.debug("check url: " + url);
+		sl.info("check url: " + url);
 		msg = "NOT VALID: " + url + " is not allowed!";							
 		for (var i=0;i<blackListRegs.length;i++) {
 			if (blackListRegs[i].test(url)) {
@@ -520,7 +520,6 @@ this.SebNet = {
 			return true;
 		}
 		for (var i=0;i<whiteListRegs.length;i++) {
-			sl.debug(whiteListRegs[i]);
 			if (whiteListRegs[i].test(url)) {
 				m = true;
 				break;

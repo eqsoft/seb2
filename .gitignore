@@ -1,7 +1,6 @@
 .DS_Store
 log.txt
 sebProfile*
-firefoxProfile*
 /profile*
 /certdb/profile*
 *.old
