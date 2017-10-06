@@ -822,7 +822,7 @@ this.SebBrowser = {
 			return false;
 		}
 		// Changed reload from hard to soft reload, to not break offline functionality with Service Workers
- 		//win.XulLibBrowser.webNavigation.reload(wnav.LOAD_FLAGS_BYPASS_CACHE);
+ 		// win.XulLibBrowser.webNavigation.reload(wnav.LOAD_FLAGS_BYPASS_CACHE);
 		win.XulLibBrowser.reload();
 	},
 	
