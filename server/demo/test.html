@@ -26,6 +26,9 @@
 		<p><a href="https://www.simple.org:8443/demo/no_ressource" target="_top">dead link: server available, no ressource</a></p>
 		<p><a href="https://www.simple.org:8443/quit" target="_top">Quit URL</a></p>
 		<p><a href="https://www.bennish.net/mixed-content.html" target="_top">Mixed Content Test Page</a></p>
+		<p><a href="https://www.bennish.net/mixed-content.html" target="_new">Mixed Content Test Page (Popup)</a></p>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content" target="_top">Mixed Content MDN</a></p>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content" target="_new">Mixed Content MDN (Popup)</a></p>
 		<p><a href="https://www.simple.org:8443/linkurl" target="_top">link url defined in ars that trigger another ressource</a></p>
 		<p>Spellchecking "en":</p>
 		<textarea spellcheck="true" lang="en"></textarea>
@@ -33,7 +36,16 @@
 		<textarea spellcheck="true" lang="de"></textarea>
 		<p>Spellchecking ohne Angabe (wird die Sprache der Seite genommen "en")</p>
 		<textarea spellcheck="true"></textarea>
-		
+		<br />
+		<iframe src="https://www.simple.org:8443/demo/q1.html" title="" width="400" height="300"></iframe>
+		<form ref='uploadForm' 
+			id='uploadForm' 
+			action='/upload'
+			method='post' 
+			encType="multipart/form-data">
+			<input type="file" name="sampleFile" />
+			<input type='submit' value='Upload!' />
+		</form> 
 		
 		<!--
 		<p><a href="http://ipxe.org" target="_top">ipxe.org</a></p>

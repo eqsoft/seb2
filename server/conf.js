@@ -2,6 +2,7 @@ var 	fs 	= require('fs-extra'),
 	path	= require('path'),
 	express = require('express'),
 	static = require('serve-static'),
+	fileUpload = require('express-fileupload'),
 	basicAuth = require('basic-auth'),
 	auth = require('http-auth'),
 	basic = auth.basic({
@@ -211,6 +212,23 @@ var conf = function conf() {
 			var filestream = fs.createReadStream(file);
 			filestream.pipe(res);
 		});
+		app.use(fileUpload());
+		app.post('/upload', function(req, res) {
+			if (!req.files) 
+				return res.status(400).send('No files were uploaded.');
+
+			
+			let sampleFile = req.files.sampleFile;
+
+			// Use the mv() method to place the file somewhere on your server
+			sampleFile.mv('./upload/upload.file', function(err) {
+				if (err)
+					return res.status(500).send(err);
+
+				res.send('File uploaded!');
+			});
+		});
+		
 		return app;
 	}
 }
