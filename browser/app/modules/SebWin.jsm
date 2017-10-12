@@ -268,7 +268,6 @@ this.SebWin = {
 	},
 	
 	toolbarIsVisible : function(win) {
-		//sl.debug("XXXX" + win.XULBrowserWindow);
 		if (win.document.fullscreenElement) {
 			return false;
 		}
@@ -276,6 +275,7 @@ this.SebWin = {
 			return (su.getConfig("enableBrowserWindowToolbar", "boolean", false) && (su.getConfig("allowBrowsingBackForward", "boolean", false) || su.getConfig("browserWindowAllowReload", "boolean", false)));
 		}
 		else {
+			//sl.debug("XXXX: " + win.XULBrowserWindow.baseurl);
 			return (su.getConfig("enableBrowserWindowToolbar", "boolean", false) && (su.getConfig("newBrowserWindowNavigation", "boolean", false) || su.getConfig("newBrowserWindowAllowReload", "boolean", false)));
 		}
 	},

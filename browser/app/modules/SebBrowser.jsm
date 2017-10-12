@@ -341,6 +341,10 @@ this.SebBrowser = {
 					this.wintype = sw.getWinType(sw.getChromeWin(progress.DOMWindow));
 					this.redirecting = false;
 					this.mainPageURI = request.URI;
+					if (!sn.isValidUrl(uri)) {
+						this.onStatusChange(progress, request, STATUS_INVALID_URL.status, STATUS_INVALID_URL.message);
+						return;
+					}
 					return;
 				}
 				else if (this.isFromMainWindow(loadContext)) { // loading ressources after main request is loaded
