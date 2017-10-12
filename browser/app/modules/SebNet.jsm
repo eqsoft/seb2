@@ -130,6 +130,7 @@ requestObserver.prototype.observe = function ( subject, topic, data ) {
 		sl.info("");
 		if ( aVisitor.isSebRequest() && base.isValidUrl(subject.name) ) { // Check if RECONF_SUCCESS!
 			sl.debug("abort seb request");
+			let w = sw.getRecentWin();
 			if (seb.reconfState == RECONF_SUCCESS && !seb.allowLoadSettings) {
 				sl.debug("abort seb reconfigure request: Already reconfigured!");
 				subject.cancel( this.aborted );
@@ -138,8 +139,8 @@ requestObserver.prototype.observe = function ( subject, topic, data ) {
 			}
 			else {
 				subject.cancel( this.aborted );
+				w.XULBrowserWindow.onStatusChange(w.XULBrowserWindow.progress, w.XULBrowserWindow.request, STATUS_REDIRECT_TO_SEB_FILE_DOWNLOAD_DIALOG.status, STATUS_REDIRECT_TO_SEB_FILE_DOWNLOAD_DIALOG.message);
 				seb.reconfState = RECONF_NO;
-				sb.openSebFileDialog(subject.name);
 				return;
 			}
 		}

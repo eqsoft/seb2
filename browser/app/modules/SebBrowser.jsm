@@ -120,6 +120,7 @@ nsBrowserStatusHandler.prototype = {
 	request : null,
 	flags : null,
 	status : null,
+	wintype : null,
 	
 	onStateChange : function(aWebProgress, aRequest, aStateFlags, aStatus) {},
 	onStatusChange : function(aWebProgress, aRequest, aStatus, aMessage) {},
@@ -272,6 +273,7 @@ this.SebBrowser = {
 					this.progress = progress;
 					this.flags = flags;
 					this.status = status;
+					this.wintype = sw.getWinType(sw.getChromeWin(progress.DOMWindow));
 					if (!sw.winTypesReg.errorViewer.test(progress.DOMWindow.document.URL)) {
 						this.referrer = progress.DOMWindow.document.URL;
 					}
@@ -296,7 +298,7 @@ this.SebBrowser = {
 						this.onStatusChange(progress, request, STATUS_LOAD_AR.status, STATUS_LOAD_AR.message);
 						return;
 					}
-			
+					
 					// special chrome pdfViewer
 					if (sw.winTypesReg.pdfViewer.test(uri)) {
 						sl.debug(PDF_VIEWER_TITLE);
@@ -336,6 +338,7 @@ this.SebBrowser = {
 					this.progress = progress;
 					this.flags = flags;
 					this.status = status; 
+					this.wintype = sw.getWinType(sw.getChromeWin(progress.DOMWindow));
 					this.redirecting = false;
 					this.mainPageURI = request.URI;
 					return;
@@ -371,6 +374,7 @@ this.SebBrowser = {
 				this.progress = progress;
 				this.flags = flags;
 				this.status = status; 
+				this.wintype = sw.getWinType(sw.getChromeWin(progress.DOMWindow));
 				return;
 			}
 			if (this.isTransferDone(flags)) {
@@ -386,6 +390,7 @@ this.SebBrowser = {
 						case STATUS_QUIT_URL_WRONG_REFERRER.status :
 						case STATUS_BLOCK_HTTP.status :
 						case STATUS_INVALID_URL.status :
+						case STATUS_REDIRECT_TO_SEB_FILE_DOWNLOAD_DIALOG :
 							sl.debug("custom request stop: " + uri + " status: " + request.status);
 						return;
 					}
@@ -395,6 +400,12 @@ this.SebBrowser = {
 				let domWin = progress.DOMWindow;
 				base.stopLoading(win);
 				this.mainPageURI = null;
+				
+				// ReconfDialog
+				if (this.wintype == RECONFIG_TYPE) {
+					sl.debug("wintype: " + this.wintype);
+					return;
+				}
 				
 				//
 				if (!sw.winTypesReg.errorViewer.test(domWin.document.URL)) {
@@ -581,6 +592,13 @@ this.SebBrowser = {
 					base.stopLoading(sw.getChromeWin(progress.DOMWindow));
 					prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
 					break;
+				case STATUS_REDIRECT_TO_SEB_FILE_DOWNLOAD_DIALOG.status :
+					request.cancel(status);
+					this.mainPageURI = null;
+					base.stopLoading(sw.getChromeWin(progress.DOMWindow));
+					base.openSebFileDialog(uri);
+					break;
+					
 			}
 		}
 	},

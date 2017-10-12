@@ -107,6 +107,7 @@ this.SebLog = {
 	err : function(msg) {
 		let str = appinfo.name + " err : " + msg;
 		Cu.reportError(str);
+		console.logStringMessage(str);
 		dump(str + lf);
 		sh.sendLog(str);
 	},
