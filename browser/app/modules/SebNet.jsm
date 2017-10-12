@@ -113,7 +113,7 @@ requestObserver.prototype.observe = function ( subject, topic, data ) {
 	if ( subject instanceof this.nsIHttpChannel ) {
 		sl.info("");
 		sl.info("-> http request modify: " + subject.name);
-		origUrl = subject.URI.spec;
+		origUrl = subject.URI.spec.replace(/\/$/,"");
 		url = origUrl.split("#"); // url fragment is not transmitted to the server!
 		url = url[0];
 		
@@ -246,7 +246,7 @@ responseObserver.prototype.observe = function ( subject, topic, data ) {
 	if ( subject instanceof this.nsIHttpChannel ) {
 		sl.info("");
 		sl.info("<- http response examine: " + subject.name);
-		origUrl = subject.URI.spec;
+		origUrl = subject.URI.spec.replace(/\/$/,"");
 		url = origUrl.split("#"); // url fragment is not transmitted to the server!
 		url = url[0];
 		
@@ -494,8 +494,8 @@ this.SebNet = {
 			return true;
 		}
 
-        // Trim a possible trailing slash "/" from the URL
-        url = url.replace(/\/+$/, '');
+		// Trim a possible trailing slash "/" from the URL
+		url = url.replace(/\/+$/, '');
 
 		// special internal pages
 		if (sw.winTypesReg.pdfViewer.test(url)) {

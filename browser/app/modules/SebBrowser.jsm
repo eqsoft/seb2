@@ -250,7 +250,7 @@ this.SebBrowser = {
 		    // ignore requests that are not a channel
 		    return
 		}
-		let uri = request.URI.spec;
+		let uri = request.URI.spec.replace(/\/$/,"");
 		let loadContext = this.getLoadContext(request);
 
 		if (!this.isFromMainWindow(loadContext)) {
@@ -278,7 +278,7 @@ this.SebBrowser = {
 					this.originRequestURI = request.URI;
 					this.mainPageURI = request.URI;
 					
-					if (seb.quitURL == request.URI.spec || seb.quitURL == request.URI.spec.replace(/\/$/,"")) {
+					if (seb.quitURL == uri) {
 						if (base.quitURLRefererFilter != "") {
 							let filter = base.quitURLRefererFilter;
 							
@@ -292,28 +292,28 @@ this.SebBrowser = {
 						return;
 					}
 					
-					if (base.linkURLS[request.URI.spec] || base.linkURLS[request.URI.spec.replace(/\/$/,"")]) {
+					if (base.linkURLS[uri]) {
 						this.onStatusChange(progress, request, STATUS_LOAD_AR.status, STATUS_LOAD_AR.message);
 						return;
 					}
 			
 					// special chrome pdfViewer
-					if (sw.winTypesReg.pdfViewer.test(request.URI.spec)) {
+					if (sw.winTypesReg.pdfViewer.test(uri)) {
 						sl.debug(PDF_VIEWER_TITLE);
 						return;
 					}
 					// special chrome errorPage
-					if (sw.winTypesReg.errorViewer.test(request.URIspec)) {
+					if (sw.winTypesReg.errorViewer.test(uri)) {
 						sl.debug(ERROR_PAGE_TITLE);
 						return;
 					}
 					
-					if (!sn.isValidUrl(request.URI.spec) || !sn.isValidUrl(request.URI.spec.replace(/\/$/,""))) {
+					if (!sn.isValidUrl(uri)) {
 						this.onStatusChange(progress, request, STATUS_INVALID_URL.status, STATUS_INVALID_URL.message);
 						return;
 					}
 				
-					if (httpReg.test(request.URI.spec)) {
+					if (httpReg.test(uri)) {
 						if (sn.blockHTTP) {
 							this.onStatusChange(progress, request, STATUS_BLOCK_HTTP.status, STATUS_BLOCK_HTTP.message);
 							return;	
@@ -323,7 +323,7 @@ this.SebBrowser = {
 					// PDF Handling
 					// don't trigger if pdf is part of the query string: infinite loop
 					// don't trigger from pdfViewer itself: infinite loop
-					if (su.getConfig("sebPdfJsEnabled","boolean", true) && /^[^\?]+\.pdf$/i.test(request.URI.spec)) {
+					if (su.getConfig("sebPdfJsEnabled","boolean", true) && /^[^\?]+\.pdf$/i.test(uri)) {
 						sl.debug("redirect pdf start request");
 						this.onStatusChange(progress, request, STATUS_PDF_REDIRECT.status, STATUS_PDF_REDIRECT.message);
 						return;
@@ -365,8 +365,8 @@ this.SebBrowser = {
 			if (this.isStart(flags)) {
 				sl.debug("main request transfer started: " + uri);
 				base.startLoading(sw.getChromeWin(progress.DOMWindow));
-				this.baseurl = btoa(this.originRequestURI.spec); // origin (not redirected) requests URI for identifiying distinct windows
-				sl.debug("baseurl: "+ this.originRequestURI.spec + " : " + this.baseurl);
+				this.baseurl = btoa(this.originRequestURI.spec.replace(/\/$/,"")); // origin (not redirected) requests URI for identifiying distinct windows
+				sl.debug("baseurl: "+ this.originRequestURI.spec.replace(/\/$/,"") + " : " + this.baseurl);
 				this.request = request;
 				this.progress = progress;
 				this.flags = flags;
@@ -386,7 +386,7 @@ this.SebBrowser = {
 						case STATUS_QUIT_URL_WRONG_REFERRER.status :
 						case STATUS_BLOCK_HTTP.status :
 						case STATUS_INVALID_URL.status :
-							sl.debug("custom request stop: " + request.URI.spec + " status: " + request.status);
+							sl.debug("custom request stop: " + uri + " status: " + request.status);
 						return;
 					}
 				}
@@ -401,13 +401,13 @@ this.SebBrowser = {
 					this.referrer = domWin.document.URL;
 				}
 				
-				if (sw.winTypesReg.pdfViewer.test(request.URI.spec)) {
+				if (sw.winTypesReg.pdfViewer.test(uri)) {
 					let title = PDF_VIEWER_TITLE + ": " + win.XulLibBrowser.contentDocument.title;
 					win.document.title = (windowTitleSuffix == '') ? title : title + " - " + windowTitleSuffix;
 					return;
 				}
 				
-				if (sw.winTypesReg.errorViewer.test(request.URI.spec)) {
+				if (sw.winTypesReg.errorViewer.test(uri)) {
 					win.document.title = (windowTitleSuffix == '') ? ERROR_PAGE_TITLE : ERROR_PAGE_TITLE + " - " + windowTitleSuffix;
 					return;
 				}
@@ -418,7 +418,7 @@ this.SebBrowser = {
 				}
 				catch(e) { // local chrome urls and other. Maybe something to do like handling of cached ressources?
 					sl.debug("Error QueryInterface Ci.nsIHttpChannel");
-					sl.debug(request.URI.spec);
+					sl.debug(uri);
 					return;
 				}
 				
@@ -445,7 +445,7 @@ this.SebBrowser = {
 					catch(e) { }
 					// a simple workaround for the errorpage back button that always links to the last page with successful response
 					if (reqSucceeded) {
-						this.lastSuccess = request.URI.spec;
+						this.lastSuccess = uri;
 					}
 					else { 
 						this.referrer = this.lastSuccess;
@@ -479,14 +479,20 @@ this.SebBrowser = {
 					request.cancel(status);
 					win.setTimeout(function() {
 						if (this.XULBrowserWindow.mainPageURI == null) { // no new start request until now (capturing double clicks on links: experimental)
-							progress.DOMWindow.location.replace("chrome://seb/content/error.xhtml?req=" + btoa(request.URI.spec) + "&ref=" + btoa(this.XULBrowserWindow.referrer));
+							progress.DOMWindow.location.replace("chrome://seb/content/error.xhtml?req=" + btoa(uri) + "&ref=" + btoa(this.XULBrowserWindow.referrer));
 							this.XULBrowserWindow.mainPageURI = null;
 						}
 					}, 100);
 					return;
 				}
 				else {
-					sl.debug("document request stop " + request.URI.spec + " status: " + status);
+					sl.debug("document request stop " + uri + " status: " + status);
+					try { // main window focus?
+						win.focus();
+					}
+					catch(e) {
+						sl.err("Fokus Error: " + e);
+					}
 				}
 				
 				var w = domWin.wrappedJSObject;
@@ -526,14 +532,19 @@ this.SebBrowser = {
 	progressListener : function(aWebProgress, aRequest, curSelf, maxSelf, curTot, maxTot) {},
 	
 	statusListener : function(progress, request, status, message) {
+		if (!(request instanceof Ci.nsIChannel || "URI" in request)) {
+		    // ignore requests that are not a channel
+		    return
+		}
 		if (status > 0 && status < 10) {
 			sl.debug("custom request handling: " + status + " - " + message);
+			let uri = request.URI.spec.replace(/\/$/,"");
 			switch (status) {
 				case STATUS_PDF_REDIRECT.status :
 					request.cancel(status);
 					this.mainPageURI = null;
 					base.stopLoading(sw.getChromeWin(progress.DOMWindow));
-					sw.openPdfViewer(request.URI.spec);
+					sw.openPdfViewer(uri);
 					break;  
 				case STATUS_QUIT_URL_STOP.status :
 					request.cancel(status);

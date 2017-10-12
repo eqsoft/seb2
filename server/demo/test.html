@@ -6,7 +6,7 @@
 	<script>
 
 	function openWin(href) {
-		window.open(href, "_blank", "toolbar=yes, scrollbars=yes, resizable=yes, top=500, left=500, width=400, height=400");
+		window.open(href, "Distinct", "toolbar=yes, scrollbars=yes, resizable=yes, top=500, left=500, width=400, height=400");
 	}
 	</script>
 </head>
@@ -26,11 +26,13 @@
 		<p><a href="https://www.simple.org:8443/demo/no_ressource" target="_top">dead link: server available, no ressource</a></p>
 		<p><a href="https://www.simple.org:8443/quit" target="_top">Quit URL</a></p>
 		<p><a href="https://www.bennish.net/mixed-content.html" target="_top">Mixed Content Test Page</a></p>
-		<p><a href="https://www.bennish.net/mixed-content.html" target="_new">Mixed Content Test Page (Popup)</a></p>
+		<p><a href="https://www.bennish.net/mixed-content.html" target="_blank">Mixed Content Test Page (Popup)</a></p>
 		<p><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content" target="_top">Mixed Content MDN</a></p>
-		<p><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content" target="_new">Mixed Content MDN (Popup)</a></p>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content" target="_blank">Mixed Content MDN (Popup)</a></p>
 		<p><a href="https://www.simple.org:8443/linkurl" target="_top">link url defined in ars that trigger another ressource</a></p>
 		<p><a href="http://www.imdb.com" target="_top">imdb.com</a></p>
+		<p><a href="http://www.google.com" target="_blank">google popup blank</a></p>
+		<p><a href="http://www.google.com" onclick="openWin(this.href);return false;">google popup javascript</a></p>
 		<p><a href="http://online-pruefungen.let.ethz.ch" target="_top">Online Prüfungen LET</a></p>
 		<p><a href="https://www.simple.org:8443/error" target="_top">Error: Server not available</a></p>
 		<p>Spellchecking "en":</p>
@@ -58,7 +60,7 @@
 		<p><a href="http://wikipedia.de" target="_self">Wikipedia</a></p>
 		<p><a href="https://www.simple.org:8443/quit" target="_self">Beenden</a></p>
 		<p><a href="/demo/q1.html" target="_blank">new Window per _blank link</a></p>
-		<p><a href="/demo/q1.html" target="_new">new Window per _new link</a></p>
+		<p><a href="/demo/q1.html" target="_blank">new Window per _new link</a></p>
 		<p><a href="/demo/q1.html" onclick="openWin(this.href);return false">new Window per javascript</a></p>
 		<p><a href="sebs://192.168.224.1:8443/demo/res/test.seb">sebs file (192.)</a></p>
 		<p><a href="sebs://www.simple.org:8443/basic/res/test.seb">sebs file (simple.org basic auth)</a></p>
