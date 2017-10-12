@@ -228,6 +228,10 @@ var conf = function conf() {
 				res.send('File uploaded!');
 			});
 		});
+		app.use('/error', function(req, res) {
+			res.statusMessage = "Kein Kontakt";
+			res.status(503).end();
+		});
 		
 		return app;
 	}

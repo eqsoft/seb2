@@ -423,14 +423,26 @@ this.SebBrowser = {
 				}
 				
 				let reqErr = false;
-				let reqStatus = false;
-				let reqSucceeded = false;
+				let reqStatus = false; // throw err notAvailable if failed
+				let reqSucceeded = false; // possible content but not 200 status p.e. 404 Custom server page reqSucceeded = false, is skipped for lastSuccess bur not processed for errorPage
 				let notAvailable = false; // request did not started
+				let contentLength = 1; // use only if explicit value = 0
+				let contentType = "";
 				try {
 					reqStatus = request.responseStatus;
 					sl.debug("reqStatus: " + reqStatus);
 					reqSucceeded = request.requestSucceeded;
 					sl.debug("reqSucceeded: " + reqSucceeded);
+					try {
+						contentType = request.getResponseHeader("content-type");
+						sl.debug("contentType: " + contentType);
+					}
+					catch(e) { }
+					try {
+						contentLength = request.getResponseHeader("content-length");
+						sl.debug("contentLength: " + contentLength);
+					}
+					catch(e) { }
 					// a simple workaround for the errorpage back button that always links to the last page with successful response
 					if (reqSucceeded) {
 						this.lastSuccess = request.URI.spec;
@@ -448,7 +460,7 @@ this.SebBrowser = {
 				
 				let showErrorPage = false;
 				if (su.getConfig("sebErrorPage","boolean",true)) { // only enable if config set
-					if (reqErr || !reqSucceeded || !reqStatus) { // any error?
+					if (reqErr || !reqStatus || contentLength == 0) { // any error?
 						if (this.lastSuccess === null) { // firstPage failed, no referrer -> showing ErrorPage is better than blank page
 							showErrorPage = true;
 						}
