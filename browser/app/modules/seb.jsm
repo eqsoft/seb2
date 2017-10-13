@@ -91,6 +91,10 @@ this.seb =  {
 	quitObserver : {
 		observe	: function(subject, topic, data) {
 			if (topic == "xpcom-shutdown") {
+				if (base.reconfWinStart) {
+					sl.debug("quitObserver skipped");
+					return;
+				}
 				if (base.config["removeBrowserProfile"]) {
 					sl.debug("removeProfile");
 					for (var i=0;i<base.profile.dirs.length;i++) { // don't delete data folder
@@ -360,13 +364,17 @@ this.seb =  {
 	setQuitHandler : function(win) {
 		sl.debug("setQuitHandler");
 		win.addEventListener("close", base.quit, true); // controlled shutdown for main window
-		base.quitObserver.register();
+		if (!base.reconfWinStart) {
+			base.quitObserver.register();
+		}
 	},
 
 	removeQuitHandler : function(win) {
 		sl.debug("removeQuitHandler");
 		win.removeEventListener("close", base.quit); // controlled shutdown for main window
-		base.quitObserver.unregister();
+		if (!base.reconfWinStart) {
+			base.quitObserver.unregister();
+		}
 	},
 
 	/* events */
@@ -449,10 +457,14 @@ this.seb =  {
 		sw.resetWindows();
 		base.reconfWinStart = true;
 		let lastWin = seb.mainWin;
+		//lastWin.removeEventListener("close", seb.quit);
+		//lastWin.removeEventListener("close", seb.onclose);
+		//base.removeQuitHandler(lastWin);
 		base.reconfWin = sw.openWin(su.getUrl());
-		base.removeQuitHandler(lastWin);
-		lastWin.close();
 		sl.debug(base.reconfWin);
+		sl.debug(lastWin === seb.mainWin);
+		lastWin.close();
+		
 		//base.mainWin.document.location.reload(true);
 	},
 
@@ -501,6 +513,10 @@ this.seb =  {
 
 	quit: function(e) {
 		sl.debug("try to quit...");
+		if (base.reconfWinStart) {
+			sl.debug("don't use quitHandler on reconf transaction");
+			return;
+		}
 		var w = base.mainWin;
 
 		if (base.hostForceQuit) {

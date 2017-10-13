@@ -268,6 +268,7 @@ this.SebWin = {
 	},
 	
 	toolbarIsVisible : function(win) {
+		sl.debug("toolbarIsVisible");
 		if (win.document.fullscreenElement) {
 			return false;
 		}
