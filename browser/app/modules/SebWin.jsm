@@ -588,6 +588,9 @@ this.SebWin = {
 				default :
 					// do nothing
 			}
+			if ((scr.width == "100%") && (scr.height == "100%")) {
+				win.maximize();
+			}
 		}
 	},
 	

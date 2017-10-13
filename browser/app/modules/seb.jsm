@@ -384,10 +384,18 @@ this.seb =  {
 		sw.addWin(win);
 		sb.setBrowserHandler(win);
 		if (sw.getWinType(win) == "main") {
-			base.mainWin = win;
-			base.initMain(win);
-			if (base.reconfWinStart) {
-				base.lastWin.close();
+			if (base.reconfWinStart) { // new main window is loaded 
+				sl.debug("new main window is loaded");
+				base.reconfWin = win;
+				sl.debug("send message to host for closing the old main window...");
+				sl.debug("wait until unload event, and continue initializing new window...");
+				sh.sendReconfigure();
+				win.setTimeout(function () { seb.onunload(null); }, 500 ); // simulation
+				return;
+			}
+			else {
+				base.mainWin = win;
+				base.initMain(win);
 			}
 		}
 		else {
@@ -400,6 +408,8 @@ this.seb =  {
 		if (base.reconfWinStart) {
 			sl.debug("reconf finished: old main window closed");
 			base.reconfWinStart = false;
+			base.mainWin = base.reconfWin;
+			base.initMain(base.reconfWin);
 			return;
 		}
 		if (sw.getWinType(win) == "main") {
@@ -460,11 +470,12 @@ this.seb =  {
 		sg.initCustomConfig(config);
 		sw.resetWindows();
 		base.reconfWinStart = true;
-		base.lastWin = base.mainWin;
+		//base.lastWin = base.mainWin;
 		//lastWin.removeEventListener("close", seb.quit);
 		//lastWin.removeEventListener("close", seb.onclose);
 		//base.removeQuitHandler(lastWin);
-		base.reconfWin = sw.openWin(su.getUrl());
+		// base.reconfWin = sw.openWin(su.getUrl());
+		sw.openWin(su.getUrl());
 		sl.debug(base.reconfWin);
 		//base.mainWin.document.location.reload(true);
 	},

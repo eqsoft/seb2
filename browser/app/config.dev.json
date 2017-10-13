@@ -17,7 +17,8 @@
 	"spellchecker.dictionary": "fr-classic",
 	"extensions.ui.dictionary.hidden": false,
 	"media.navigator.video.enabled" : false,
-	"media.getusermedia.audiocapture.enabled" : false
+	"media.getusermedia.audiocapture.enabled" : false,
+	"dom.allow_scripts_to_close_windows" : true
 },
 "sebPrefsMap": {
 	"browser.download.dir" 		: "downloadDirectoryWIN",
