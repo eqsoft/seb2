@@ -81,6 +81,7 @@ this.seb =  {
 	hostQuitHandler : null,
 	reconfState : RECONF_NO,
 	reconfWin : null,
+	lastWin : null,
 	reconfWinStart : false,
 	arsKeys : {},
 
@@ -385,6 +386,9 @@ this.seb =  {
 		if (sw.getWinType(win) == "main") {
 			base.mainWin = win;
 			base.initMain(win);
+			if (base.reconfWinStart) {
+				base.lastWin.close();
+			}
 		}
 		else {
 			base.initSecondary(win);
@@ -456,15 +460,12 @@ this.seb =  {
 		sg.initCustomConfig(config);
 		sw.resetWindows();
 		base.reconfWinStart = true;
-		let lastWin = seb.mainWin;
+		base.lastWin = base.mainWin;
 		//lastWin.removeEventListener("close", seb.quit);
 		//lastWin.removeEventListener("close", seb.onclose);
 		//base.removeQuitHandler(lastWin);
 		base.reconfWin = sw.openWin(su.getUrl());
 		sl.debug(base.reconfWin);
-		sl.debug(lastWin === seb.mainWin);
-		lastWin.close();
-		
 		//base.mainWin.document.location.reload(true);
 	},
 
