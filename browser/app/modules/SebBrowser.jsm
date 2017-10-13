@@ -269,6 +269,9 @@ this.SebBrowser = {
 			if (this.mainPageURI == null) { // new window request
 				if (this.isLoadRequested(flags)) {
 					sl.debug("load uri: " + uri);
+					if (request.URI.spec == "xul://reconf") {
+						return;
+					}
 					this.request = request;
 					this.progress = progress;
 					this.flags = flags;

@@ -80,6 +80,8 @@ this.seb =  {
 	hostForceQuit : false,
 	hostQuitHandler : null,
 	reconfState : RECONF_NO,
+	reconfWin : null,
+	reconfWinStart : false,
 	arsKeys : {},
 
 	toString : function() {
@@ -269,7 +271,9 @@ this.seb =  {
 		sw.setToolbar(win);
 		sw.setSize(win);
 		//sw.showContent(win); still required?
-		sb.loadPage(win,base.url);
+		if (!base.reconfWinStart) {
+			sb.loadPage(win,base.url);
+		}
 	},
 
 	initSecondary : function(win) {
@@ -381,6 +385,11 @@ this.seb =  {
 
 	onunload : function(win) {
 		sl.debug("onunload");
+		if (base.reconfWinStart) {
+			sl.debug("reconf finished: old main window closed");
+			base.reconfWinStart = false;
+			return;
+		}
 		if (sw.getWinType(win) == "main") {
 			sh.closeMessageSocket();
 			// sebserver and other handler?
@@ -438,7 +447,13 @@ this.seb =  {
 		}
 		sg.initCustomConfig(config);
 		sw.resetWindows();
-		base.mainWin.document.location.reload(true);
+		base.reconfWinStart = true;
+		let lastWin = seb.mainWin;
+		base.reconfWin = sw.openWin(su.getUrl());
+		base.removeQuitHandler(lastWin);
+		lastWin.close();
+		sl.debug(base.reconfWin);
+		//base.mainWin.document.location.reload(true);
 	},
 
 	loadAR: function(win, id) {

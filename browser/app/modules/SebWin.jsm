@@ -264,7 +264,7 @@ this.SebWin = {
 	},
 	
 	openWin : function(url) {
-		seb.mainWin.open(url);
+		return seb.mainWin.open(url);
 	},
 	
 	toolbarIsVisible : function(win) {
@@ -337,7 +337,7 @@ this.SebWin = {
 		var showToolbar = base.toolbarIsVisible(win);
 		
 		if (showToolbar) {
-			tb.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";			
+			tb.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";
 			ib.className = (su.getConfig("touchOptimized", "boolean", false)) ? "tbTouch" : "tbDesktop";	 
 		}
 		else {
@@ -422,7 +422,8 @@ this.SebWin = {
 	},
 	
 	setMainScreen : function() {
-		if (base.mainScreen['initialized']) { return base.mainScreen; }	 
+		//if (base.mainScreen['initialized']) { return base.mainScreen; }
+		sl.debug("setMainScreen");	 
 		base.mainScreen['titlebarEnabled'] = su.getConfig("sebMainBrowserWindowTitlebarEnabled","boolean",false);
 		base.mainScreen['maximized'] = su.getConfig("sebMainBrowserWindowMaximized","boolean",true);
 		//template browserViewMode
