@@ -390,7 +390,7 @@ this.seb =  {
 				sl.debug("send message to host for closing the old main window...");
 				sl.debug("wait until unload event, and continue initializing new window...");
 				sh.sendReconfigure();
-				win.setTimeout(function () { seb.onunload(null); }, 500 ); // simulation
+				//win.setTimeout(function () { seb.onunload(null); }, 500 ); // simulation
 				return;
 			}
 			else {
@@ -470,13 +470,7 @@ this.seb =  {
 		sg.initCustomConfig(config);
 		sw.resetWindows();
 		base.reconfWinStart = true;
-		//base.lastWin = base.mainWin;
-		//lastWin.removeEventListener("close", seb.quit);
-		//lastWin.removeEventListener("close", seb.onclose);
-		//base.removeQuitHandler(lastWin);
-		// base.reconfWin = sw.openWin(su.getUrl());
 		sw.openWin(su.getUrl());
-		sl.debug(base.reconfWin);
 		//base.mainWin.document.location.reload(true);
 	},
 
