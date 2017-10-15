@@ -389,7 +389,7 @@ this.seb =  {
 				base.reconfWin = win;
 				sl.debug("send message to host for closing the old main window...");
 				sl.debug("wait until unload event, and continue initializing new window...");
-				sh.sendReconfigure();
+				sh.sendReconfigureSuccess();
 				//win.setTimeout(function () { seb.onunload(null); }, 500 ); // simulation
 				return;
 			}
