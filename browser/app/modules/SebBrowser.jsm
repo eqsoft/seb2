@@ -251,7 +251,7 @@ this.SebBrowser = {
 		    // ignore requests that are not a channel
 		    return
 		}
-		if (seb.reconfState == RECONF_START) {
+		if (seb.reconfWinStart) {
 			return;
 		}
 		let uri = request.URI.spec.replace(/\/$/,"");
@@ -273,9 +273,6 @@ this.SebBrowser = {
 			if (this.mainPageURI == null) { // new window request
 				if (this.isLoadRequested(flags)) {
 					sl.debug("load uri: " + uri);
-					if (request.URI.spec == "xul://reconf") {
-						return;
-					}
 					this.request = request;
 					this.progress = progress;
 					this.flags = flags;
@@ -554,7 +551,7 @@ this.SebBrowser = {
 	progressListener : function(aWebProgress, aRequest, curSelf, maxSelf, curTot, maxTot) {},
 	
 	statusListener : function(progress, request, status, message) {
-		if (seb.reconfState == RECONF_START) {
+		if (seb.reconfWinStart) {
 			return;
 		}
 		if (!(request instanceof Ci.nsIChannel || "URI" in request)) {
