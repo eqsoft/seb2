@@ -251,12 +251,8 @@ this.SebBrowser = {
 		    // ignore requests that are not a channel
 		    return
 		}
-		if (seb.reconfWinStart) {
-			return;
-		}
 		let uri = request.URI.spec.replace(/\/$/,"");
 		let loadContext = this.getLoadContext(request);
-
 		if (!this.isFromMainWindow(loadContext)) {
 			if (this.isLoadRequested(flags)) {
 				sl.info("Frame loading: " + uri);
@@ -272,7 +268,16 @@ this.SebBrowser = {
 		try {
 			if (this.mainPageURI == null) { // new window request
 				if (this.isLoadRequested(flags)) {
-					sl.debug("load uri: " + uri);
+					// QueryInterface nsIHttpChannel  for async seb file download
+					try {
+						request.QueryInterface(Ci.nsIHttpChannel);
+						if (request.getRequestHeader(SEB_FILE_HEADER)) {
+							sl.debug("seb file request ist handled by http request observer...")
+							return;
+						} 
+					}
+					catch(e) {}
+					sl.debug("load uri: " + uri); 
 					this.request = request;
 					this.progress = progress;
 					this.flags = flags;
@@ -409,12 +414,14 @@ this.SebBrowser = {
 				base.stopLoading(win);
 				this.mainPageURI = null;
 				
+				// sl.debug("wintype: " + this.wintype);
 				// ReconfDialog
+				/*
 				if (this.wintype == RECONFIG_TYPE) {
-					sl.debug("wintype: " + this.wintype);
+					sl.debug("reconf: " + this.wintype);
 					return;
 				}
-				
+				*/
 				//
 				if (!sw.winTypesReg.errorViewer.test(domWin.document.URL)) {
 					this.referrer = domWin.document.URL;
@@ -551,7 +558,7 @@ this.SebBrowser = {
 	progressListener : function(aWebProgress, aRequest, curSelf, maxSelf, curTot, maxTot) {},
 	
 	statusListener : function(progress, request, status, message) {
-		if (seb.reconfWinStart) {
+		if (seb.reconfWinStart) { // don't track anything in reconf transaction
 			return;
 		}
 		if (!(request instanceof Ci.nsIChannel || "URI" in request)) {
@@ -741,7 +748,7 @@ this.SebBrowser = {
 	initReconf : function(win,url,handler) {
 		sl.debug("reconfigure started");
 		base.initBrowser(win);
-		seb.reconfState = RECONF_START;
+		//seb.reconfState = RECONF_START;
 		base.dialogHandler = handler;
 		//base.setBrowserHandler(win);
 		base.loadPage(win,url);

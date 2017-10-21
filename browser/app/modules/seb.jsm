@@ -460,7 +460,7 @@ this.seb =  {
 		sw.resetWindows();
 		base.reconfWinStart = true;
 		var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].getService(Ci.nsIWindowWatcher);
-		var win = ww.openWindow(null, "chrome://seb/content/seb.xul","reconfWin", "chrome,dialog=no,resizable=yes,scrollbars=yes", null);
+		var win = ww.openWindow(null, SEB_URL,"reconfWin", SEB_FEATURES, null);
 		//sw.openWin(su.getUrl());
 		//base.mainWin.document.location.reload(true);
 	},
