@@ -62,7 +62,6 @@ this.SebConfig =  {
 	init : function(obj) {
 		base = this;
 		seb = obj;
-		sl.out("SebConfig initialized: " + seb);
 		base.prefsMap["browserUserAgent"] = base.browserUserAgent;
 		base.prefsMap["browserZoomFull"] = base.browserZoomFull;
 		base.prefsMap["zoomMaxPercent"] = base.zoomMaxPercent;
@@ -70,6 +69,7 @@ this.SebConfig =  {
 		base.prefsMap["pluginEnableFlash"] = base.pluginEnableFlash;
 		base.prefsMap["pluginEnableJava"] = base.pluginEnableJava;
 		base.prefsMap["spellcheckDefault"] = base.spellcheckDefault;
+		sl.out("SebConfig initialized: " + seb);
 	},
 
 	initConfig : function(callback) {
@@ -193,18 +193,16 @@ this.SebConfig =  {
 		switch (uaPref) {
 			case BROWSER_UA_DESKTOP_DEFAULT :
 			case BROWSER_UA_TOUCH_DEFAULT :
-				var httpHandler = Cc["@mozilla.org/network/protocol;1?name=http"].getService(Ci.nsIHttpProtocolHandler);
-				var userAgent = httpHandler.userAgent;
-				var match = uaReg.exec(userAgent);
+				var match = uaReg.exec(su.userAgent);
 				if (match) {
-					ret = userAgent.replace(match[2],"Firefox/"+match[1]) + " " + bua;
+					ret = su.userAgent.replace(match[2],"Firefox/"+match[1]) + " " + bua;
 					if (topt === true) {
 						ret = ret.replace(match[1],match[1]+"; Touch");
 					}
 				}
 				else {
-					sl.err("Error matching user-agent: " + userAgent);
-					ret = userAgent;
+					sl.err("Error matching user-agent: " + su.userAgent);
+					ret = su.userAgent;
 				}
 				break;
 			case BROWSER_UA_DESKTOP_CUSTOM :

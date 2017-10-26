@@ -156,7 +156,7 @@ this.seb =  {
 			try {
 				prefs.readUserPrefs(prefFile);
 				prefs.readUserPrefs(null); // tricky: for current prefs file use profile prefs, so my original prefs will never be overridden ;-)
-				prefs.savePrefFile(null);
+				//prefs.savePrefFile(null);
 			}
 			catch (e) { sl.err(e); }
 		}
@@ -194,7 +194,7 @@ this.seb =  {
 						sl.debug("push local profile: " + localProfilePath);
 						base.profile["dirs"].push(localProfileDir);
 					}
-				}
+				}e
 			}
 			if (defaultProfile.exists()) {
 				let entries = defaultProfile.directoryEntries;
@@ -368,11 +368,13 @@ this.seb =  {
 	setQuitHandler : function(win) {
 		sl.debug("setQuitHandler");
 		win.addEventListener("close", base.quit, true); // controlled shutdown for main window
+		base.quitObserver.register();
 	},
 
 	removeQuitHandler : function(win) {
 		sl.debug("removeQuitHandler");
 		win.removeEventListener("close", base.quit); // controlled shutdown for main window
+		base.quitObserver.unregister();
 	},
 
 	/* events */
@@ -399,12 +401,15 @@ this.seb =  {
 	onunload : function(win) {
 		sl.debug("onunload");
 		if (sw.isDeprecatedMain(win)) {
+			sl.debug("deprecated win");
 			return;
 		}
 		if (sw.getWinType(win) == "main") {
+			sl.debug("close message socket");
 			sh.closeMessageSocket();
 		}
 		else {
+			sl.debug("remove secondary win");
 			sw.removeWin(win);
 		}
 	},
