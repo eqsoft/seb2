@@ -97,20 +97,10 @@ this.seb =  {
 					return;
 				}
 				if (base.config["removeBrowserProfile"]) {
-					sl.debug("removeProfile");
-					for (var i=0;i<base.profile.dirs.length;i++) { // don't delete data folder
-						sl.debug("try to remove everything from profile folder: " + base.profile.dirs[i].path);
-						let entries = base.profile.dirs[i].directoryEntries;
-						while(entries.hasMoreElements()) {
-							let entry = entries.getNext();
-							entry.QueryInterface(Ci.nsIFile);
-							try {
-								sl.debug("remove: " + entry.path);
-								entry.remove(true);
-							}
-							catch(e) { sl.err(e); }
-						}
-					}
+					base.removeBrowserProfileFiles(true);
+				}
+				else {
+					base.removeBrowserProfileFiles();
 				}
 				if (typeof base.hostQuitHandler === 'function') {
 					sl.debug("apply hostQuitHandler");
@@ -406,6 +396,7 @@ this.seb =  {
 		}
 		if (sw.getWinType(win) == "main") {
 			sl.debug("close message socket");
+			//base.removeBrowserProfileFiles();
 			sh.closeMessageSocket();
 		}
 		else {
@@ -442,18 +433,20 @@ this.seb =  {
 					sb.reload(win);
 				}
 			}
-        } else {
-            if (su.getConfig("newBrowserWindowAllowReload","boolean",true)) {
-                if (su.getConfig("newBrowserWindowShowReloadWarning","boolean",true)) {
-                    var result = prompt.confirm(null, su.getLocStr("seb.reload.warning.title"), su.getLocStr("seb.reload.warning"));
-                    if (result) {
-                        sb.reload(win);
-                    }
-                } else {
-                    sb.reload(win);
-                }
-            }
-        }
+		} 
+		else {
+		    if (su.getConfig("newBrowserWindowAllowReload","boolean",true)) {
+			if (su.getConfig("newBrowserWindowShowReloadWarning","boolean",true)) {
+			    var result = prompt.confirm(null, su.getLocStr("seb.reload.warning.title"), su.getLocStr("seb.reload.warning"));
+			    if (result) {
+				sb.reload(win);
+			    }
+			} 
+			else {
+			    sb.reload(win);
+			}
+		    }
+		}
 	},
 
 	reconfigure: function(config) {
@@ -504,6 +497,47 @@ this.seb =  {
 		base.arsKeys = {};
 	},
 
+	removeBrowserProfileFiles : function (all) {
+		try {
+			let alltxt = (all) ? "all " : "";
+			let profileFiles = su.getConfig("removeBrowserProfileFiles","object",[]);
+			//sl.debug("profileFilesType: " + typeof profileFiles);
+			for (var i=0;i<base.profile.dirs.length;i++) { // don't delete data folder
+				sl.debug("try to remove files " + alltxt + "from profile folder: " + base.profile.dirs[i].path);
+				let entries = base.profile.dirs[i].directoryEntries;
+				if (all) {
+					sl.debug("removeBrowserProfileFiles all");
+					while(entries.hasMoreElements()) {
+						let entry = entries.getNext();
+						entry.QueryInterface(Ci.nsIFile);
+						try {
+							sl.debug("remove: " + entry.path);
+							entry.remove(true);
+						}
+						catch(e) { sl.err(e); }
+					}
+				}
+				else {
+					sl.debug("removeBrowserProfileFiles from array");
+					while(entries.hasMoreElements()) {
+						let entry = entries.getNext();
+						entry.QueryInterface(Ci.nsIFile);
+						if (profileFiles.includes(entry.leafName)) {
+							try {
+								sl.debug("remove: " + entry.path);
+								entry.remove(true);
+							}
+							catch(e) { sl.err(e); }
+						}
+					}
+				}
+			}
+		}
+		catch (e) {
+			dump(e);
+		}
+	},
+	
 	loadAR: function(win, id) {
 		sl.debug("try to load additional ressource:" + id);
 		let ar = base.ars[id];
