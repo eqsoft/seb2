@@ -157,7 +157,7 @@ this.SebBrowser = {
 				var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
 				var xhr2 = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
 				aRequest.suspend();
-				base.dialogHandler("try to get seb file response header");
+				base.dialogHandler("Trying to get SEB Config File response header");
 				//xhr.responseType = "arraybuffer";
 				var assertSebFile = false;
 				xhr.onload = function (evt) {
@@ -176,14 +176,14 @@ this.SebBrowser = {
 							}
 							catch(e) {}
 							if (assertSebFile) {
-								base.dialogHandler("try seb file download...");
+								base.dialogHandler("Trying to download SEB Config File...");
 								xhr2.onload = function() {
 									if (xhr2.readyState === 4) {
 										sl.debug("async get request done");
 										if (xhr2.status === 200) {
 											var blob = xhr2.response;
 											sl.debug(blob.size);
-											base.dialogHandler("try seb file download. " blob.size);
+											base.dialogHandler("Trying to download SEB Config File. " blob.size);
 											sh.sendMessage(blob);
 										}
 									}
@@ -246,7 +246,7 @@ this.SebBrowser = {
 			
 			
 			if (aRequest.getRequestHeader("Content-type") == SEB_MIME_TYPE) {
-				sl.debug("SEB File Loading...");
+				sl.debug("SEB Config File Loading...");
 				aRequest.cancel(Cr.NS_BINDING_ABORTED);
 				seb.reconfState = RECONF_START;
 				seb.mainWin.openDialog(RECONFIG_URL,"",RECONFIG_FEATURES,aRequest.name,base.initReconf).focus();
