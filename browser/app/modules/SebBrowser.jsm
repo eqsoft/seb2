@@ -272,7 +272,7 @@ this.SebBrowser = {
 					try {
 						request.QueryInterface(Ci.nsIHttpChannel);
 						if (request.getRequestHeader(SEB_FILE_HEADER)) {
-							sl.debug("seb file request ist handled by http request observer...")
+							sl.debug("seb file request is handled by http request observer..."+request.getRequestHeader(SEB_FILE_HEADER) +  "XXX" + SEB_FILE_HEADER)
 							return;
 						} 
 					}
