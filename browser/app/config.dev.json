@@ -109,6 +109,7 @@
 "browserViewMode":1,
 "browserWindowAllowReload":true,
 "browserWindowTitleSuffix": "",
+"downloadAndOpenSebConfig": true, 
 "downloadDirectoryWin":"/tmp",
 "embeddedCertificates":
 [
