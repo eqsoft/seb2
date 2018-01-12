@@ -23,6 +23,8 @@ pref("browser.chromeURL", "chrome://seb/content/seb.xul");
 pref("browser.startup.homepage_override.mstone", "ignore");
 pref("browser.download.manager.retention", 0);
 pref("browser.download.manager.useWindow", false);
+pref("browser.download.folderList", 2);
+pref("browser.download.useDownloadDir", true);
 pref("browser.link.open_newwindow", 2);
 pref("browser.startup.homepage_override.mstone", "ignore");
 pref("browser.zoom.full", true);
@@ -60,4 +62,5 @@ pref("datareporting.policy.dataSubmissionEnabled.v2", false);
 pref("browser.shell.skipDefaultBrowserCheckOnFirstRun", true);
 pref("browser.shell.defaultBrowserCheckCount",1);
 pref("browser.shell.checkDefaultBrowser",false);
+pref("dom.ipc.plugins.flash.disable-protected-mode", true);
 //see also: https://www.ghacks.net/2015/08/18/a-comprehensive-list-of-firefox-privacy-and-security-settings/
