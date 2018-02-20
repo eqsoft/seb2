@@ -34,7 +34,9 @@ this.EXPORTED_SYMBOLS = ["SebBrowser"];
 
 /* Modules */
 const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu, Constructor: CC } = Components,
-	{ prompt, scriptloader, obs } = Cu.import("resource://gre/modules/Services.jsm").Services;
+	{ prompt, scriptloader, obs } = Cu.import("resource://gre/modules/Services.jsm").Services,
+	{ OS } = Cu.import("resource://gre/modules/osfile.jsm");
+	
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/FileUtils.jsm");
@@ -91,6 +93,9 @@ let 	base = null,
 	sebReg = new RegExp(/.*?\.seb/i),
 	httpReg = new RegExp(/^http\:/i),
 	windowTitleSuffix = "",
+	additionalDictionariesPath = "";
+	
+	/*
 	installedDics = {
 		"de-DE":"de-DE@dictionaries.addons.mozilla.org",
 		"de-CH":"de_CH@dicts.j3e.de",
@@ -98,6 +103,7 @@ let 	base = null,
 		"en-GB":"marcoagpinto@mail.telepac.pt",
 		"fr-classic":"fr-dicollecte@dictionaries.addons.mozilla.org"
 	};
+	*/  
 	
 const	nsIX509CertDB = Ci.nsIX509CertDB,
 	nsIX509CertDB2 = Ci.nsIX509CertDB2,
@@ -724,23 +730,136 @@ this.SebBrowser = {
 	
 	initSpellChecker : function() {
 		sl.debug("initSpellChecker");
+		// if allowSpellCheck false, abort
+		if (!su.getConfig("allowSpellCheck","boolean",false)) {
+			sl.debug("spell checking is not allowed");
+			return;
+		}
+		// get array of allowSpellCheckDictionary in config (must be an array NOT comma seperated list) 
+		let allowedDics = su.getConfig("allowSpellCheckDictionary","object",[]);
+		// abort if no allowed dictionaries are defined
+		if (allowedDics.length == 0) {
+			sl.debug("no allowed dictionaries defined");
+			return;
+		}
 		var spellclass = "@mozilla.org/spellchecker/myspell;1";
-		
-		if ("@mozilla.org/spellchecker/hunspell;1" in Cc) {
-			spellclass = "@mozilla.org/spellchecker/hunspell;1";
-		}
-		if ("@mozilla.org/spellchecker/engine;1" in Cc) {
-			spellclass = "@mozilla.org/spellchecker/engine;1";
-		}
+		spellclass = "@mozilla.org/spellchecker/engine;1";
 		let spe = Cc[spellclass].getService(Ci.mozISpellCheckingEngine);
 		let dics = [];
-		for (var dic in installedDics) {
-			let dicsDir = FileUtils.getDir("ProfD", ["extensions",installedDics[dic],"dictionaries"],false,false);
-			if (dicsDir.exists()) {
-				//sl.debug("add dicDir: " + dicsDir.path);
-				spe.addDirectory(dicsDir);
+		let dicsPath = su.getDicsPath();
+		let dicsDir = new FileUtils.File(dicsPath);
+		// try to load all allowSpellCheckDictionary from app/dictionaries/DIC_NAME/* 
+		// requires exact matching of allowSpellCheckDictionary in config array and DIC_NAME!
+		for (var i=0; i<allowedDics.length; i++) {
+			let dic = allowedDics[i];
+			let dicDir = new FileUtils.File(OS.Path.join(dicsDir.path,dic));
+			if (dicDir.exists()) {
+				spe.addDirectory(dicDir);
+				 // set first as default spellcheck language (?)
+				if (i == 0) {
+					spe.dictionary = dic;
+				}
+			}
+			else {
+				sl.debug("dictionary " + dic + " does not exist, maybe loaded later via websocket...")
+			}
+		} 
+		spe.getDictionaryList(dics,{});
+		sl.debug("available dictionaries: " + dics.value);
+		sl.debug("current spellcheck language: " + spe.language);
+	},
+	
+	addAdditionalDictionaries : function(opt) {
+		sl.debug("addDictionaries: " + opt.path);
+		additionalDictionariesPath = opt.path;
+		// if allowSpellCheck false, abort
+		// DANIEL: abort even on websocket event?
+		if (!su.getConfig("allowSpellCheck","boolean",false)) {
+			sl.debug("spell checking is not allowed");
+			return;
+		}
+		// get array of allowSpellCheckDictionary in config (must be an array NOT comma seperated list) 
+		// DANIEL: abort even on websocket event?
+		let allowedDics = su.getConfig("allowSpellCheckDictionary","object",[]);
+		// abort if no allowed dictionaries are defined
+		if (allowedDics.length == 0) {
+			sl.debug("no allowed dictionaries defined");
+			return;
+		}
+		
+		var spellclass = "@mozilla.org/spellchecker/myspell;1";
+		spellclass = "@mozilla.org/spellchecker/engine;1";
+		let spe = Cc[spellclass].getService(Ci.mozISpellCheckingEngine);
+		let dics = [];
+		let dicsPath = opt.path;
+		let dicsDir = new FileUtils.File(dicsPath);
+		if (!dicsDir.exists() || !dicsDir.isDirectory()) {
+			sl.err('invalid dictionary path: ' + dicsPath)
+		}
+		let entries = dicsDir.directoryEntries;						
+		while(entries.hasMoreElements()) {
+			let entry = entries.getNext();
+			entry.QueryInterface(Components.interfaces.nsIFile);
+			// DANIEL: process config entry allowSpellCheckDictionary?
+			if (entry.isDirectory() && allowedDics.includes(entry.leafName)) {
+				sl.debug('add addtional dictionary ' + entry.leafName)
+				spe.addDirectory(entry);
+			}
+		} 
+		spe.getDictionaryList(dics,{});
+		sl.debug("available dictionaries: " + dics.value);
+	},
+	
+	resetDictionaries : function() {
+		if (!su.getConfig("allowSpellCheck","boolean",false)) {
+			sl.debug("spell checking is not allowed");
+			return;
+		}
+		// get array of allowSpellCheckDictionary in config (must be an array NOT comma seperated list) 
+		let allowedDics = su.getConfig("allowSpellCheckDictionary","object",[]);
+		// abort if no allowed dictionaries are defined
+		if (allowedDics.length == 0) {
+			sl.debug("no allowed dictionaries defined");
+			return;
+		} 
+		var spellclass = "@mozilla.org/spellchecker/myspell;1";
+		spellclass = "@mozilla.org/spellchecker/engine;1";
+		let spe = Cc[spellclass].getService(Ci.mozISpellCheckingEngine);
+		let dics = []; 
+		let dicsPath = "";
+		let dicsDir = null;
+		if (additionalDictionariesPath != "") {
+			dicsPath = additionalDictionariesPath;
+			dicsDir = new FileUtils.File(dicsPath);
+			if (!dicsDir.exists() || !dicsDir.isDirectory()) {
+				sl.err('invalid dictionary path: ' + dicsPath)
+			}
+			let entries = dicsDir.directoryEntries;						
+			while(entries.hasMoreElements()) {
+				let entry = entries.getNext();
+				entry.QueryInterface(Components.interfaces.nsIFile);
+				if (entry.isDirectory()) {
+					sl.debug('remove addtional dictionary ' + entry.leafName)
+					spe.removeDirectory(entry);
+				}
 			} 
 		}
+		
+		dicsPath = su.getDicsPath();
+		dicsDir = new FileUtils.File(dicsPath);
+		// try to remove all allowSpellCheckDictionary from app/dictionaries/DIC_NAME/* 
+		for (var i=0; i<allowedDics.length; i++) {
+			let dic = allowedDics[i];
+			let dicDir = new FileUtils.File(OS.Path.join(dicsDir.path,dic));
+			if (dicDir.exists()) {
+				sl.debug('remove addtional dictionary ' + dicDir.leafName)
+				spe.removeDirectory(dicDir);
+			}
+			else {
+				sl.debug("dictionary " + dic + " does not exist")
+			}
+		}
+		dics = [];
 		spe.getDictionaryList(dics,{});
 		sl.debug("available dictionaries: " + dics.value);
 	},

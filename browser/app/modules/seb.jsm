@@ -154,6 +154,7 @@ this.seb =  {
 	},
 
 	initAfterConfig : function() {
+		sl.debug("initAfterConfig");
 		base.initLocale();
 		base.initAdditionalResources();
 		base.getArsLinksAndKeys();
@@ -495,6 +496,7 @@ this.seb =  {
 		base.lastWin = null;
 		//reconfWinStart : false,
 		base.arsKeys = {};
+		sb.resetDictionaries();
 	},
 
 	removeBrowserProfileFiles : function (all) {
