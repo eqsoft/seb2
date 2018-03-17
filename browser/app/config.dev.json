@@ -184,7 +184,7 @@
 "startURL_":"http://imdb.com",
 "startURL_":"http://get.adobe.com/de/flashplayer/about/",
 "taskBarHeight":0,
-"touchOptimized":true,
+"touchOptimized":false,
 "urlFilterTrustedContent":true,
 "urlFilterRegex":false,
 "whitelistURLFilter":[],
