@@ -84,7 +84,8 @@ this.SebHost = {
 			"SebFileTransfer" : base.handleSebFileTransfer,
 			"ReconfigureAborted" : base.handleReconfigureAborted,
 			"Reconfigure" : base.handleReconfigure,
-			"ClearSession" : base.handleClearSession
+			"ClearSession" : base.handleClearSession,
+			"AdditionalDictionaries" : base.handleAdditionalDictionaries
 		};
 		base.sendHandler = {
 			"SebFile" : base.sendSebFile,
@@ -336,6 +337,11 @@ this.SebHost = {
 	handleClearSession : function (opts) {
 		sl.debug("handleClearSession handled");
 		sb.clearSession();
+	},
+	
+	handleAdditionalDictionaries : function (opts) {
+		sl.debug("handleAdditionalDictionaries handled");
+		sb.addAdditionalDictionaries(opts);
 	},
 	
 	sendSebFile : function (base64) {
