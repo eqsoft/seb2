@@ -18,7 +18,8 @@
 	"extensions.ui.dictionary.hidden": false,
 	"media.navigator.video.enabled" : false,
 	"media.getusermedia.audiocapture.enabled" : false,
-	"dom.allow_scripts_to_close_windows" : true
+	"dom.allow_scripts_to_close_windows" : true,
+	"security.fileuri.strict_origin_policy" : true
 },
 "sebPrefsMap": {
 	"browser.download.dir" 		: "downloadDirectoryWin",
@@ -68,6 +69,25 @@
 	},
 	{
 		"identifier": "1",
+		"additionalResources": [],
+		"active": true,
+		"autoOpen": false,
+		"title": "embedded PDF",
+		"url": "",
+		"resourceDataFilename": "pdfjs.pdf",
+		"resourceDataLauncher": 0,
+		"resourceData":"",
+		"linkURL" : "https://www.simple.org:8443/embeddedpdf",
+		"refererFilter":"test.html",
+		"resetSession":false,
+		"allowLoadingNewSettings":false,
+		"key":"E",
+		"modifiers":"control",
+		"confirm":true,
+		"showButton":""
+	},
+	{
+		"identifier": "2",
 		"additionalResources": [],
 		"active": true,
 		"autoOpen": false,
@@ -184,7 +204,7 @@
 "startURL_":"http://imdb.com",
 "startURL_":"http://get.adobe.com/de/flashplayer/about/",
 "taskBarHeight":0,
-"touchOptimized":true,
+"touchOptimized":false,
 "urlFilterTrustedContent":true,
 "urlFilterRegex":false,
 "whitelistURLFilter":[],
