@@ -659,7 +659,18 @@ this.SebBrowser = {
 		if (!br) {
 			sl.debug("no seb.browser in ChromeWindow!");
 			return false;
-		}	
+		}
+		// 	see: http://bugs.conkeror.org/issue513
+		//	https://hg.mozilla.org/mozilla-central/diff/6a563348b8be/toolkit/components/passwordmgr/nsLoginManagerPrompter.js
+		// 	gBrowser is the gloabel tabbrowser element in firefox: https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/tabbrowser
+		//	for inspection:
+		//	chrome://browser/content/browser.xul
+		//	chrome://browser/content/browser.js
+		win.gBrowser = {
+			getBrowserForContentWindow : function (aWin) {
+				return br;
+			}
+		}
 		win.XulLibBrowser = br; // extend window property to avoid multiple getBrowser() calls
 		win.XULBrowserWindow = new nsBrowserStatusHandler();
 		win.XULBrowserWindow.browser = br;
