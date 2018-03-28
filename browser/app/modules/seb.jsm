@@ -96,6 +96,12 @@ this.seb =  {
 					sl.debug("quitObserver skipped");
 					return;
 				}
+				try {
+					sb.clearSession();
+				}
+				catch(e) {
+					sl.err(e);
+				}
 				if (base.config["removeBrowserProfile"]) {
 					base.removeBrowserProfileFiles(true);
 				}
