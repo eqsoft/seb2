@@ -96,12 +96,6 @@ this.seb =  {
 					sl.debug("quitObserver skipped");
 					return;
 				}
-				try {
-					sb.clearSession();
-				}
-				catch(e) {
-					sl.err(e);
-				}
 				if (base.config["removeBrowserProfile"]) {
 					base.removeBrowserProfileFiles(true);
 				}
@@ -495,6 +489,12 @@ this.seb =  {
 		base.quitIgnorePassword = false;
 		base.quitIgnoreWarning = false;
 		base.hostForceQuit = false;
+		try {
+			sg.setPref("general.useragent.override",su.userAgent);
+		}
+		catch(e) {
+			sl.err(e);
+		}
 		//hostQuitHandler : null,
 		//reconfState : RECONF_NO,
 		//base.reconfWin = null;
@@ -603,6 +603,18 @@ this.seb =  {
 				return true;
 			}
 			else {
+				try {
+					sb.clearSession();
+				}
+				catch(e) {
+					sl.err(e);
+				}
+				try {
+					sg.setPref("general.useragent.override",su.userAgent);
+				}
+				catch(e) {
+					sl.err(e);
+				}
 				sw.closeAllWin();
 				sl.debug("quit");
 				return;
