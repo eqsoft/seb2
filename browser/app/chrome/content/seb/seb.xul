@@ -6,6 +6,10 @@
 	%sebDtdLocal;
 	<!ENTITY % sebDtdConst SYSTEM "chrome://seb/content/seb.dtd">
 	%sebDtdConst;
+	<!ENTITY % browserDTD SYSTEM "chrome://browser/locale/browser.dtd" >
+	%browserDTD;
+	<!ENTITY % baseMenuDTD SYSTEM "chrome://browser/locale/baseMenuOverlay.dtd" >
+	%baseMenuDTD;
 ]>
 <window id="sebWindow" 
 	title="&seb.title;" 
@@ -60,6 +64,12 @@
 		<key id="seb.reboot" keycode="VK_F10" modifiers="control alt shift" command="sebCmdReboot"/>
 		<key id="seb.shutdown" keycode="VK_F12" modifiers="control alt shift" command="sebCmdShutdown"/>
 	</keyset>
+	<menupopup id="spellCheckMenu">
+		<menuitem id="spell-check-enabled"
+			label="Rechtschreibung prüfen"
+			type="checkbox" />
+                
+	</menupopup>
 	<stack id="browser.stack" flex="1">
 		<vbox flex="1">
 			<hbox id="toolBar" class="tbHidden">

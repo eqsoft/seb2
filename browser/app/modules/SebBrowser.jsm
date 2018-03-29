@@ -34,12 +34,14 @@ this.EXPORTED_SYMBOLS = ["SebBrowser"];
 
 /* Modules */
 const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu, Constructor: CC } = Components,
-	{ prompt, scriptloader, obs } = Cu.import("resource://gre/modules/Services.jsm").Services,
-	{ OS } = Cu.import("resource://gre/modules/osfile.jsm");
+	{ prompt, scriptloader, obs, appinfo } = Cu.import("resource://gre/modules/Services.jsm").Services,
+	{ OS } = Cu.import("resource://gre/modules/osfile.jsm"),
+	{ SpellCheckHelper } = Cu.import("resource://gre/modules/InlineSpellChecker.jsm");
 	
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/FileUtils.jsm");
+Cu.import("resource://gre/modules/InlineSpellCheckerContent.jsm");
 Cu.importGlobalProperties(['Blob']);
 /* Services */
 let	wpl = Ci.nsIWebProgressListener,
@@ -1061,6 +1063,34 @@ this.SebBrowser = {
 				forward.className = "tbBtn disabled";
 				//forward.removeEventListener("click",base.forward,false);
 			}
+		}
+	},
+	
+	createSpellCheckController : function (win) {
+		if (!su.getConfig("allowSpellCheck","boolean",false)) {
+			return;
+		}
+		sl.debug("createSpellCheckController");
+		let ctxMenu = win.document.getElementById("spellCheckMenu");
+		win.document.addEventListener("click",onClick,false);
+		function onClick(evt) {
+			if (evt.button !== 2) return;
+			sl.debug("SpellCheckController Right Click");
+			let editFlags = SpellCheckHelper.isEditable(evt.target, win);
+			let spellInfo;
+			if (editFlags & (SpellCheckHelper.EDITABLE | SpellCheckHelper.CONTENTEDITABLE)) {
+				//sl.debug("isEditable")
+				spellInfo = InlineSpellCheckerContent.initContextMenu(evt, editFlags, win.XulLibBrowser.messageManager);
+				if (spellInfo.overMisspelling) {
+					ctxMenu.openPopupAtScreen(evt.screenX+5,evt.screenY+10,true);
+				}
+				//sl.debug(JSON.stringify(spellInfo));
+				
+				/*
+				sl.debug("canSpellCheck:" + spellInfo.canSpellCheck);
+				sl.debug("suggestions:" + spellInfo.canSpellCheck);
+				*/ 
+			}	
 		}
 	}
 }
