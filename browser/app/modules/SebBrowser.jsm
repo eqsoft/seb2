@@ -1071,9 +1071,7 @@ this.SebBrowser = {
 			return;
 		}
 		sl.debug("createSpellCheckController");
-		
-		
-		
+		let ctxMenu = win.document.getElementById("spellCheckMenu");
 		win.document.addEventListener("click",onClick,false);
 		function onClick(evt) {
 			if (evt.button !== 2) return;
@@ -1084,6 +1082,10 @@ this.SebBrowser = {
 				//sl.debug("isEditable")
 				spellInfo = InlineSpellCheckerContent.initContextMenu(evt, editFlags, win.XulLibBrowser.messageManager);
 				sl.debug(JSON.stringify(spellInfo));
+				if (spellInfo.overMisspelling) {
+					ctxMenu.openPopupAtScreen(evt.screenX+5,evt.screenY+10,true);
+				}
+				//sl.debug(JSON.stringify(spellInfo));
 				/*
 				sl.debug("canSpellCheck:" + spellInfo.canSpellCheck);
 				sl.debug("suggestions:" + spellInfo.canSpellCheck);
