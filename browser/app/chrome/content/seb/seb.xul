@@ -48,6 +48,8 @@
 		<command id="sebCmdShowMessage" oncommand="sw.showMessage(window,true);"/>
 		<command id="sebCmdShutdown" oncommand="sh.shutdownKey();"/>
 		<command id="sebCmdReboot" oncommand="sh.rebootKey();"/>
+		<command id="sebCmdRestart" oncommand="sb.restart();"/>
+		<command id="sebCmdToggleSpellCheckEnabled" oncommand="sb.toggleSpellCheckEnabled(window);"/>
 	</commandset>
 	<audio xmlns="http://www.w3.org/1999/xhtml" id="seb.snapshot" src="chrome://seb/content/sounds/snapshot.ogg" preload="auto"></audio>
 	<!-- keysets -->
@@ -64,10 +66,12 @@
 		<key id="seb.reboot" keycode="VK_F10" modifiers="control alt shift" command="sebCmdReboot"/>
 		<key id="seb.shutdown" keycode="VK_F12" modifiers="control alt shift" command="sebCmdShutdown"/>
 	</keyset>
-	<menupopup id="spellCheckMenu">
+	<menupopup id="spellCheckMenu" onpopuphiding="if (event.target != this) { return }; sb.spellCheckClosed();">
 		<menuitem id="spell-check-enabled"
-			label="Rechtschreibung prüfen"
-			type="checkbox" />
+			label="&spellCheckToggle.label;"
+			type="checkbox" 
+			checked = "false"
+			command = "sebCmdToggleSpellCheckEnabled" />
                 
 	</menupopup>
 	<stack id="browser.stack" flex="1">

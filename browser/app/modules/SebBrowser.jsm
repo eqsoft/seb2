@@ -1072,25 +1072,38 @@ this.SebBrowser = {
 		}
 		sl.debug("createSpellCheckController");
 		let ctxMenu = win.document.getElementById("spellCheckMenu");
+		let ctxSpellEnabled = win.document.getElementById("spell-check-enabled");
 		win.document.addEventListener("click",onClick,false);
 		function onClick(evt) {
-			if (evt.button !== 2) return;
+			if (evt.button !== 2) return; // only right click
 			sl.debug("SpellCheckController Right Click");
 			let editFlags = SpellCheckHelper.isEditable(evt.target, win);
 			let spellInfo;
-			if (editFlags & (SpellCheckHelper.EDITABLE | SpellCheckHelper.CONTENTEDITABLE)) {
+			if (editFlags & (SpellCheckHelper.EDITABLE | SpellCheckHelper.CONTENTEDITABLE)) { // only editable text and input fields
 				//sl.debug("isEditable")
 				spellInfo = InlineSpellCheckerContent.initContextMenu(evt, editFlags, win.XulLibBrowser.messageManager);
-				sl.debug(JSON.stringify(spellInfo));
-				if (spellInfo.overMisspelling) {
-					ctxMenu.openPopupAtScreen(evt.screenX+5,evt.screenY+10,true);
+				if (!spellInfo.canSpellCheck) {
+					sl.debug("canSpellCheck = false");
+					return;
 				}
+				if (spellInfo.overMisspelling) {
+					InlineSpellCheckerContent._spellChecker.addSuggestionsToMenu(ctxMenu,ctxSpellEnabled,5);
+				}
+				ctxSpellEnabled.setAttribute("checked", spellInfo.enableRealTimeSpell);
 				//sl.debug(JSON.stringify(spellInfo));
-				/*
-				sl.debug("canSpellCheck:" + spellInfo.canSpellCheck);
-				sl.debug("suggestions:" + spellInfo.canSpellCheck);
-				*/ 
+				//
+				let m = ctxMenu.openPopupAtScreen(evt.screenX+5,evt.screenY+10,true);
+				sl.debug(m);
 			}	
 		}
+	},
+	
+	spellCheckClosed : function () {
+		InlineSpellCheckerContent._spellChecker.clearSuggestionsFromMenu(); // using private variable directly instead of messages
+	},
+	
+	toggleSpellCheckEnabled : function (win) {
+		sl.debug("toggleSpellCheckEnabled");
+		InlineSpellCheckerContent._spellChecker.toggleEnabled(win); // using private variable directly instead of messages
 	}
 }
