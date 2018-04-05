@@ -67,12 +67,20 @@
 		<key id="seb.shutdown" keycode="VK_F12" modifiers="control alt shift" command="sebCmdShutdown"/>
 	</keyset>
 	<menupopup id="spellCheckMenu" onpopuphiding="if (event.target != this) { return }; sb.spellCheckClosed();">
+		<menuitem id="spell-no-suggestions"
+			disabled="true"
+			label="&spellNoSuggestions.label;" 
+			hidden="true" />
+                <menuseparator id="sep-enabled" hidden="true" />
 		<menuitem id="spell-check-enabled"
 			label="&spellCheckToggle.label;"
 			type="checkbox" 
 			checked = "false"
 			command = "sebCmdToggleSpellCheckEnabled" />
-                
+		<menu id="spell-dictionaries" label="&spellDictionaries.label;" hidden="true">
+			<menupopup id="spell-dictionaries-menu" onpopupshowing="sb.createDictionaryList(this);" onpopuphiding="if (event.target != this) { return }; sb.clearDictionaryList(this);">
+			</menupopup>
+		</menu>
 	</menupopup>
 	<stack id="browser.stack" flex="1">
 		<vbox flex="1">

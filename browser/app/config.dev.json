@@ -109,7 +109,7 @@
 "allowBrowsingBackForward":true,
 "allowQuit":true,
 "allowSpellCheck":true,
-"allowSpellCheckDictionary": ["fr-classic","sv_FI","de-DE"],
+"allowSpellCheckDictionary": ["fr-classic","sv_FI","de-DE","en-US"],
 "allowVideoCapture":true,
 "blacklistURLFilter":[],
 "blockPopUpWindows":false,

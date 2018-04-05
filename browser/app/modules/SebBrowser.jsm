@@ -1073,6 +1073,10 @@ this.SebBrowser = {
 		sl.debug("createSpellCheckController");
 		let ctxMenu = win.document.getElementById("spellCheckMenu");
 		let ctxSpellEnabled = win.document.getElementById("spell-check-enabled");
+		let ctxNoSuggestions = win.document.getElementById("spell-no-suggestions");
+		let ctxSepEnabled = win.document.getElementById("sep-enabled");
+		let ctxDics = win.document.getElementById("spell-dictionaries");
+		
 		win.document.addEventListener("click",onClick,false);
 		function onClick(evt) {
 			if (evt.button !== 2) return; // only right click
@@ -1087,14 +1091,25 @@ this.SebBrowser = {
 					return;
 				}
 				if (spellInfo.overMisspelling) {
-					InlineSpellCheckerContent._spellChecker.addSuggestionsToMenu(ctxMenu,ctxSpellEnabled,5);
+					ctxSepEnabled.setAttribute("hidden","true");
+					if (spellInfo.spellSuggestions.length > 0) {
+						ctxNoSuggestions.setAttribute("hidden","true");
+						InlineSpellCheckerContent._spellChecker.addSuggestionsToMenu(ctxMenu,ctxSpellEnabled,5);
+					}
+					else {
+						ctxNoSuggestions.setAttribute("hidden","false");
+					}
 				}
 				ctxSpellEnabled.setAttribute("checked", spellInfo.enableRealTimeSpell);
+				if (spellInfo.enableRealTimeSpell) {
+					ctxDics.setAttribute("hidden","false");
+				}
+				else {
+					ctxDics.setAttribute("hidden","true");
+				}
 				//sl.debug(JSON.stringify(spellInfo));
-				//
-				let m = ctxMenu.openPopupAtScreen(evt.screenX+5,evt.screenY+10,true);
-				sl.debug(m);
-			}	
+				ctxMenu.openPopupAtScreen(evt.screenX+5,evt.screenY+10,true);
+			}
 		}
 	},
 	
@@ -1105,5 +1120,15 @@ this.SebBrowser = {
 	toggleSpellCheckEnabled : function (win) {
 		sl.debug("toggleSpellCheckEnabled");
 		InlineSpellCheckerContent._spellChecker.toggleEnabled(win); // using private variable directly instead of messages
+	},
+	
+	createDictionaryList : function (menu) {
+		sl.debug("createDictionaryList");
+		InlineSpellCheckerContent._spellChecker.addDictionaryListToMenu(menu,null);
+	},
+	
+	clearDictionaryList : function (menu) {
+		sl.debug("clearDictionaryList");
+		InlineSpellCheckerContent._spellChecker.clearDictionaryListFromMenu();
 	}
 }
