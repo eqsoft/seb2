@@ -260,6 +260,7 @@ this.seb =  {
 		sh.createScreenKeyboardController(win);
 		sh.createFullscreenController(win);
 		ss.setSebserverSocketHandler(win);
+		sb.createSpellCheckController(win);
 		base.locs = win.document.getElementById("locale");
 		base.consts = win.document.getElementById("const");
 		sw.setMainNavigation(win);
@@ -282,6 +283,7 @@ this.seb =  {
 		sw.setSize(win);
 		sh.createScreenKeyboardController(win);
 		sh.createFullscreenController(win);
+		sb.createSpellCheckController(win);
 	},
 
 	initAdditionalResources : function (obj) {

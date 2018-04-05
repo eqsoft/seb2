@@ -256,12 +256,7 @@ this.SebUtils =  {
 	},
 	
 	getExternalDicsPath : function() { // only for windows hosting
-		if ("winAppDataDir" in OS.Constants.Path) {
-			return OS.Path.join(OS.Constants.Path.winAppDataDir,"SafeExamBrowser","Dictionaries");
-		}
-		else {
-			return null;
-		}
+		return OS.Path.join(OS.Path.dirname(OS.Constants.Path.profileDir),"Dictionaries");
 	},
 	
 	getConfig : function(v,t,d) { // val, type, default
