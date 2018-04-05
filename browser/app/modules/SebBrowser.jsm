@@ -776,7 +776,8 @@ this.SebBrowser = {
 				sl.debug("dictionary " + dic + " does not exist, maybe provided in external dics path...")
 			}
 		}
-		let xDicsDir = new FileUtils.File(su.getExternalDicsPath());
+		let xDicsPath = su.getExternalDicsPath();
+		let xDicsDir = new FileUtils.File(xDicsPath);
 		if (xDicsDir.exists()) {
 			for (var i=0; i<allowedDics.length; i++) {
 				let dic = allowedDics[i];
@@ -789,7 +790,7 @@ this.SebBrowser = {
 				}
 			}
 		}
-		
+
 		spe.getDictionaryList(dics,{});
 		sl.debug("available dictionaries: " + dics.value);
 		sl.debug("current spellcheck language: " + spe.language);
@@ -1105,14 +1106,18 @@ this.SebBrowser = {
 					return;
 				}
 				if (spellInfo.overMisspelling) {
-					ctxSepEnabled.setAttribute("hidden","true");
+					ctxSepEnabled.setAttribute("hidden","false");
 					if (spellInfo.spellSuggestions.length > 0) {
+						InlineSpellCheckerContent._spellChecker.addSuggestionsToMenu(ctxMenu,ctxNoSuggestions,5);
 						ctxNoSuggestions.setAttribute("hidden","true");
-						InlineSpellCheckerContent._spellChecker.addSuggestionsToMenu(ctxMenu,ctxSpellEnabled,5);
 					}
 					else {
 						ctxNoSuggestions.setAttribute("hidden","false");
 					}
+				}
+				else {
+					ctxSepEnabled.setAttribute("hidden","true");
+					ctxNoSuggestions.setAttribute("hidden","true");
 				}
 				ctxSpellEnabled.setAttribute("checked", spellInfo.enableRealTimeSpell);
 				if (spellInfo.enableRealTimeSpell) {
@@ -1139,6 +1144,15 @@ this.SebBrowser = {
 	createDictionaryList : function (menu) {
 		sl.debug("createDictionaryList");
 		InlineSpellCheckerContent._spellChecker.addDictionaryListToMenu(menu,null);
+		// check allowed dics, p.e. after reconfiguration changes
+		let allowedDics = su.getConfig("allowSpellCheckDictionary","object",[]);
+		let items = InlineSpellCheckerContent._spellChecker.mDictionaryItems;
+		for (var i=0;i<items.length;i++) {
+			let dicId = items[i].id.replace('spell-check-dictionary-','');
+			if (!allowedDics.includes(dicId)) {
+				items[i].setAttribute("hidden","true");
+			}
+		}
 	},
 	
 	clearDictionaryList : function (menu) {
