@@ -1095,14 +1095,14 @@ this.SebBrowser = {
 		win.document.addEventListener("click",onClick,false);
 		function onClick(evt) {
 			if (evt.button !== 2) return; // only right click
-			sl.debug("SpellCheckController Right Click");
+			//sl.debug("SpellCheckController Right Click");
 			let editFlags = SpellCheckHelper.isEditable(evt.target, win);
 			let spellInfo;
 			if (editFlags & (SpellCheckHelper.EDITABLE | SpellCheckHelper.CONTENTEDITABLE)) { // only editable text and input fields
 				//sl.debug("isEditable")
 				spellInfo = InlineSpellCheckerContent.initContextMenu(evt, editFlags, win.XulLibBrowser.messageManager);
 				if (!spellInfo.canSpellCheck) {
-					sl.debug("canSpellCheck = false");
+					//sl.debug("canSpellCheck = false");
 					return;
 				}
 				if (spellInfo.overMisspelling) {
