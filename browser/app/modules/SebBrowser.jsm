@@ -773,9 +773,23 @@ this.SebBrowser = {
 				}
 			}
 			else {
-				sl.debug("dictionary " + dic + " does not exist, maybe loaded later via websocket...")
+				sl.debug("dictionary " + dic + " does not exist, maybe provided in external dics path...")
 			}
-		} 
+		}
+		let xDicsDir = new FileUtils.File(su.getExternalDicsPath());
+		if (xDicsDir.exists()) {
+			for (var i=0; i<allowedDics.length; i++) {
+				let dic = allowedDics[i];
+				let dicDir = new FileUtils.File(OS.Path.join(xDicsDir.path,dic));
+				if (dicDir.exists()) {
+					spe.addDirectory(dicDir);
+				}
+				else {
+					//sl.debug("dictionary " + dic + " does not exist")
+				}
+			}
+		}
+		
 		spe.getDictionaryList(dics,{});
 		sl.debug("available dictionaries: " + dics.value);
 		sl.debug("current spellcheck language: " + spe.language);

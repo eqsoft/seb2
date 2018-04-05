@@ -34,7 +34,8 @@ this.EXPORTED_SYMBOLS = ["SebUtils"];
 /* Modules */
 const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components,
 	{ appinfo, io, prefs, scriptloader } = Cu.import("resource://gre/modules/Services.jsm").Services,
-	{ FileUtils } = Cu.import("resource://gre/modules/FileUtils.jsm",{});
+	{ FileUtils } = Cu.import("resource://gre/modules/FileUtils.jsm",{}),
+	{ OS } = Cu.import("resource://gre/modules/osfile.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 /* Services */
@@ -252,6 +253,15 @@ this.SebUtils =  {
 	
 	getDicsPath : function() {
 		return fph.getFileFromURLSpec(base.getUriFromChrome(SEB_URL).spec.replace('/chrome/content/seb/seb.xul','/dictionaries')).path;
+	},
+	
+	getExternalDicsPath : function() { // only for windows hosting
+		if ("winAppDataDir" in OS.Constants.Path) {
+			return OS.Path.join(OS.Constants.Path.winAppDataDir,"SafeExamBrowser","Dictionaries");
+		}
+		else {
+			return null;
+		}
 	},
 	
 	getConfig : function(v,t,d) { // val, type, default
