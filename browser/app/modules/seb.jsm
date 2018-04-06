@@ -66,6 +66,7 @@ this.seb =  {
 	INFO : false,
 	cmdline : null,
 	defaultConfig : null,
+	locale : "en-US",
 	config : null,
 	url : "",
 	mainWin : null,
@@ -220,7 +221,6 @@ this.seb =  {
 	},
 
 	initLocale : function() {
-		let loc = "en-US";
 		/*
 		try {
 			let osLoc = locale.getAppLocale();
@@ -236,16 +236,16 @@ this.seb =  {
 		let paramLoc = base.config["browserLanguage"];
 		sl.debug("browserLanguage:" + paramLoc);
 		if (paramLoc != null && paramLoc != "") {
-			loc = paramLoc;
+			base.locale = paramLoc;
 		}
 		let cmdLoc = su.getCmd("language");
 		sl.debug("cmd language:" + cmdLoc);
 		if (cmdLoc != null && cmdLoc != "") {
-			loc = cmdLoc;
+			base.locale = cmdLoc;
 		}
-		sl.debug("locale: " + loc);
-		sg.setPref("general.useragent.locale",loc);
-		sg.setPref("intl.accept_languages",loc);
+		sl.debug("locale: " + base.locale);
+		sg.setPref("general.useragent.locale",base.locale);
+		sg.setPref("intl.accept_languages",base.locale);
 	},
 
 	initMain : function(win) {

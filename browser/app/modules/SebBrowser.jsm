@@ -767,7 +767,7 @@ this.SebBrowser = {
 			let dicDir = new FileUtils.File(OS.Path.join(dicsDir.path,dic));
 			if (dicDir.exists()) {
 				spe.addDirectory(dicDir);
-				 // set first as default spellcheck language (?)
+				 // set first as default spellcheck language, but is overridden by seb.locale if exists
 				if (i == 0) {
 					spe.dictionary = dic;
 				}
@@ -792,6 +792,10 @@ this.SebBrowser = {
 			}
 		}
 		spe.getDictionaryList(dics,{});
+		if (dics.value.includes(seb.locale) && allowedDics.includes(seb.locale)) {
+			sl.debug("override default spellcheck language with seb.locale: " + seb.locale);
+			spe.dictionary = seb.locale;
+		}
 		sl.debug("available dictionaries: " + dics.value);
 		sl.debug("current spellcheck language: " + spe.language);
 	},
