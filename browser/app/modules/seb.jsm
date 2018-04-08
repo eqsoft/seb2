@@ -252,7 +252,7 @@ this.seb =  {
 		sl.debug("initMain");
 		base.url = su.getUrl();
 		base.allowQuit = su.getConfig("allowQuit","boolean",false);
-		base.quitURL =su.getConfig("quitURL","string","");
+		base.quitURL =su.getConfig("quitURL","string","").replace(/\/$/,"");
 		base.initArsKeys(win);
 		sb.setEmbeddedCerts();
 		base.setQuitHandler(win);
