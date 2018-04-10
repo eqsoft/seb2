@@ -60,9 +60,11 @@
 		<key id="seb.back" keycode="VK_LEFT" modifiers="control shift" command="sebCmdBack"/>
 		<key id="seb.forward" keycode="VK_RIGHT" modifiers="control shift" command="sebCmdForward"/>
 		<key id="seb.showall" keycode="VK_F1" command="sebCmdShowAll"/>
+		<!--
 		<key id="seb.showcontent" key="1" modifiers="control" command="sebCmdShowContent"/>
 		<key id="seb.showserver" key="2" modifiers="control" command="sebCmdShowServer"/>
 		<key id="seb.showmessage" key="3" modifiers="control" command="sebCmdShowMessage"/>
+		-->
 		<key id="seb.reboot" keycode="VK_F10" modifiers="control alt shift" command="sebCmdReboot"/>
 		<key id="seb.shutdown" keycode="VK_F12" modifiers="control alt shift" command="sebCmdShutdown"/>
 	</keyset>
