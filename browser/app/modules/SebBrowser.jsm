@@ -586,13 +586,22 @@ this.SebBrowser = {
 					request.cancel(status);
 					this.mainPageURI = null;
 					base.stopLoading(sw.getChromeWin(progress.DOMWindow));
-					var tmpQuit = seb.allowQuit; // store default shutdownEnabled
-					var tmpIgnorePassword = seb.quitIgnorePassword; // store default quitIgnorePassword
-					seb.allowQuit = true; // set to true
-					seb.quitIgnorePassword = true;
-					seb.quit();				
-					seb.allowQuit = tmpQuit; // set default shutdownEnabled
-					seb.quitIgnorePassword = tmpIgnorePassword; // set default shutdownIgnorePassword
+					if (seb.quitURL == seb.url.replace(/\/$/,"")) {
+						seb.hostForceQuit = true;
+						seb.quitIgnoreWarning = true;
+						seb.quitIgnorePassord = true;
+						seb.allowQuit = true;
+						seb.quit();
+					}
+					else {
+						var tmpQuit = seb.allowQuit; // store default shutdownEnabled
+						var tmpIgnorePassword = seb.quitIgnorePassword; // store default quitIgnorePassword
+						seb.allowQuit = true; // set to true
+						seb.quitIgnorePassword = true;
+						seb.quit();
+						seb.allowQuit = tmpQuit; // set default shutdownEnabled
+						seb.quitIgnorePassword = tmpIgnorePassword; // set default shutdownIgnorePassword
+					}
 					break;
 				case STATUS_QUIT_URL_WRONG_REFERRER.status : 
 					request.cancel(status);
