@@ -608,7 +608,12 @@ this.SebBrowser = {
 				case  STATUS_INVALID_URL.status :
 					request.cancel(status);
 					this.mainPageURI = null;
-					base.stopLoading(sw.getChromeWin(progress.DOMWindow));
+					let w = sw.getChromeWin(progress.DOMWindow);
+					base.stopLoading(w);
+					if (sw.getWinType(w) !== "main") {
+						w.close();
+						seb.mainWin.focus();
+					}
 					prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
 					break;
 				case STATUS_BLOCK_HTTP.status :
