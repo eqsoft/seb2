@@ -5,7 +5,7 @@ body {
 
 #sebTable {
 	margin-top: 20px;
-	width : 80%;
+	width : 100%;
 }
 
 th {
@@ -33,11 +33,12 @@ td {
 	width: 35%;
 }
 
-#th-shutdown, #th-reboot {
-	width: 15%;
+#th-shutdown, #th-reboot, #th-runtest {
+	width: 10%;
+	white-space: nowrap;
 }
 
-.td-shutdown, .td-reboot {
+.td-shutdown, .td-reboot, #td-runtest {
 	text-align: center;
 }
 

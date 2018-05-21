@@ -43,7 +43,7 @@
 "sebScreenshot":false,
 "sebScreenshotImageType":"image/jpeg",
 "sebScreenshotSound":false,
-"sebServerEnabled":false,
+"sebServerEnabled":true,
 "sebSSLSecurityPolicy": 1,
 "SEBParams":"Config params in alphabethical order (handled by both Windows SEB and Core seb)",
 "additionalResources": [
@@ -117,7 +117,7 @@
 "browserLanguage":"de-DE",
 "browserMessagingPingTime":120000,
 "browserMessagingSocket":"ws://www.simple.org:8706",
-"browserMessagingSocketEnabled":true,
+"browserMessagingSocketEnabled":false,
 "browserScreenKeyboard":false,
 "browserURLSalt":false,
 "browserUserAgent":"SEB 2.2",
@@ -178,7 +178,7 @@
 		"Password":"demo"
 },
 "proxySettingsPolicy":1,
-"quitURL":"https://www.simple.org:8443/quit",
+"quitURL":"https://www.simple.org/quit/",
 "quitURLRefererFilter":"test.html",
 "removeBrowserProfile": false,
 "removeBrowserProfileFiles" : ["prefs.js"],

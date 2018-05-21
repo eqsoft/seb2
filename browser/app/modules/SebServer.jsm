@@ -46,6 +46,7 @@ scriptloader.loadSubScript("resource://globals/prototypes.js");
 XPCOMUtils.defineLazyModuleGetter(this,"sl","resource://modules/SebLog.jsm","SebLog");
 XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","SebUtils");
 XPCOMUtils.defineLazyModuleGetter(this,"sh","resource://modules/SebHost.jsm","SebHost");
+XPCOMUtils.defineLazyModuleGetter(this,"sb","resource://modules/SebBrowser.jsm","SebBrowser");
 
 /* ModuleGlobals */
 let 	base = null,
@@ -66,6 +67,7 @@ this.SebServer = {
 		base.handler["shutdown"] = base.shutdown;
 		base.handler["reboot"] = base.reboot;
 		base.handler["sendScreenshotData"] = base.sendScreenshotData;
+		base.handler["runTest"] = base.runTest;
 	},
 	
 	sebserverSocketListener : function (e) {
@@ -148,6 +150,10 @@ this.SebServer = {
 
 	sendScreenshotData : function(file) {
 		sc.sendScreenshotData(file);
+	},
+	
+	runTest : function(opts) {
+		sb.runTest(opts);
 	},
 	
 	send : function(obj) {

@@ -152,10 +152,13 @@ function addRow(seb) {
 	rbCell.className = "td-reboot";
 	var sdCell = row.insertCell(3);
         sdCell.className = "td-shutdown";
+        var rtCell = row.insertCell(4);
+        rtCell.className = "td-runtest";
 	idCell.innerHTML = seb.id;
 	ipCell.innerHTML = seb.ip;
 	rbCell.innerHTML = "<input type=\"button\" value=\"reboot\" class=\"btn-reboot\" onclick=\"reboot(\'" + seb.id + "\');\" />";
 	sdCell.innerHTML = "<input type=\"button\" value=\"shutdown\" class=\"btn-shutdown\" onclick=\"shutdown(\'" + seb.id + "\');\" />";
+	rtCell.innerHTML = "<input type=\"button\" value=\"runtest\" class=\"btn-runtest\" onclick=\"runTest(\'" + seb.id + "\');\" />";
 }
 
 function removeRow(seb) {
@@ -206,6 +209,30 @@ function rebootAll() {
         var ret = confirm("Reboot all " + defaultFilter + "?");
         if (ret) {
                 ws.send(JSON.stringify({"handler":"rebootAll","opts":{"ids":ids}}));
+        }
+        //var rows sebTableBody.getElementBy
+}
+
+function runTest(id) {
+        log("runTest: " + id);
+        var ret = confirm("Run Test " + id + "?");
+        var test = document.querySelector('#inputTest').value;
+        if (ret) {
+                ws.send(JSON.stringify({"handler":"runTest","opts":{"id":id,"test":test}}));
+        }
+}
+
+function runTestAll() {
+        log("runTestAll");
+        var idNodes = sebTableBody.querySelectorAll('.td-id');
+        var ids = [];
+        for (var i=0;i<idNodes.length;i++) {
+                ids.push(idNodes[i].textContent);
+        }
+        var ret = confirm("Run Test all " + defaultFilter + "?");
+        if (ret) {
+		var test = document.querySelector('#inputTest').value;
+                ws.send(JSON.stringify({"handler":"runTestAll","opts":{"ids":ids,"test":test}}));
         }
         //var rows sebTableBody.getElementBy
 }

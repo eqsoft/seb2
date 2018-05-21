@@ -14,12 +14,15 @@
 	<p>Message:&nbsp;<span id="message"></span></p>
 	<input id="btnShutDownAll" type="button" value="shutdown all" onclick="shutdownAll();"/ >
 	<input id="btnRebootAll" type="button" value="reboot all" onclick="rebootAll();"/ >
+	<input id="btnRunTestAll" type="button" value="run test all" onclick="runTestAll();"/ >
+	<input id="inputTest" type="text" value="file:///data/tests/exam.js" / >
 	<table id="sebTable">
 		<thead id="sebTableHead">
 			<th id="th-id">id</th>
 			<th id="th-ip">ip</th>
 			<th id="th-reboot">reboot</th>
 			<th id="th-shutdown">shutdown</th>
+			<th id="th-runtest">run test</th>
 		</thead>
 		<tbody id="sebTableBody"></tbody>
 	</table>

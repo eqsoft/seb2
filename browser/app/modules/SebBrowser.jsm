@@ -538,7 +538,11 @@ this.SebBrowser = {
 				}
 				if (su.getConfig("enableBrowserWindowToolbar","boolean",false)) {
 					base.refreshNavigation(win);
-				} 
+				}
+				
+				if (base.testIsRunning) {
+					base.run(win.XulLibBrowser.contentDocument);
+				}
 				return;
 			}
 			if (flags & Ci.nsIWebProgressListener.STATE_REDIRECTING) {
@@ -1176,5 +1180,61 @@ this.SebBrowser = {
 	clearDictionaryList : function (menu) {
 		sl.debug("clearDictionaryList");
 		InlineSpellCheckerContent._spellChecker.clearDictionaryListFromMenu();
+	},
+	
+	// for automated test runs
+	runTest : function(opts) {
+		//sl.debug("runTest: " + JSON.stringify(opts));
+		if (!base.testRun) {
+			scriptloader.loadSubScript(opts.test, base);
+		}
+		base.testRun.init();
+		base.run(seb.mainWin.XulLibBrowser.contentDocument);
+	},
+	
+	// run tests from stack
+	run : function(doc) {
+		let ts = base.testRun.tests;
+		if (ts && ts.length === 0) {
+			sl.debug('no more tests available');
+			base.testIsRunning = false;
+			return;
+		}
+		
+		let t = ts.shift(); // shift test from tests[] stack 
+		if (!base.testIsRunning) { // test start p.e. from websocket command
+			base.testIsRunning = true;
+			doc.defaultView.setTimeout(function(){t.call(base,doc)},base.testRun.startDelay);
+		}
+		else {  // triggered by onload event in SebBrowser.jsm statushandler
+			doc.defaultView.setTimeout(function(){t.call(base,doc)},base.testRun.executeDelay);
+		}
+	},
+	
+	clickReturn : function(doc, el) {
+		var evt = doc.createEvent( 'KeyboardEvent' );
+
+		// Init the options
+		evt.initKeyEvent(
+			     "keypress",        //  the kind of event
+			      true,             //  boolean "can it bubble?"
+			      true,             //  boolean "can it be cancelled?"
+			      null,             //  specifies the view context (usually window or null)
+			      false,            //  boolean "Ctrl key?"
+			      false,            //  boolean "Alt key?"
+			      false,            //  Boolean "Shift key?"
+			      false,            //  Boolean "Meta key?"
+			       13,              //  the keyCode
+			       0);              //  the charCode
+
+		// Dispatch the event on the element
+		doc.defaultView.setTimeout(el.dispatchEvent( evt ), 500);
+	},
+	
+	// for exam login names
+	getHostname : function () {
+		var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+		//return env.get("host"); // should work in netpoint9
+		return "macbookhrz1.local";
 	}
 }

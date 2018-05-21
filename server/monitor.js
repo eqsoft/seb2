@@ -14,7 +14,9 @@ var 	fs 		= require('fs-extra'),
 				"shutdown":shutdown,
 				"shutdownAll":shutdownAll,
 				"reboot":reboot,
-				"rebootAll":rebootAll
+				"rebootAll":rebootAll,
+				"runTest":runTest,
+				"runTestAll":runTestAll
 			};
 var monitorOptions = (conf.monitorClientCert) ? conf.getClientCertOptions() : conf.getSSLOptions();
 var monitorServer = https.createServer(monitorOptions, conf.getApp());
@@ -88,7 +90,7 @@ function on_close(code, message) {
 }
 
 function on_message(data, flags) {
-	out("admin: on_message: " + data + " flags: " + JSON.stringify(flags));
+	//out("admin: on_message: " + data + " flags: " + JSON.stringify(flags));
 	var obj = JSON.parse(data);
 	var h = handler[obj.handler];
 	if (typeof h === 'function') {
@@ -220,6 +222,27 @@ function rebootAll(seb,data) {
         }
 }
 
+function runTest(seb,data) {
+	out("monitor: runTest " + seb.id);
+        var socket = _sebs[seb.id].socket;
+        try {
+                socket.send(data); // forward data (same handler and opts object expected on seb client)
+        }
+        catch(e) {
+                console.log(e);
+        }
+}
+
+function runTestAll(seb,data) {
+	out("monitor: runTestAll " + JSON.stringify(seb.ids));
+	let obj = JSON.parse(data);
+	let test = obj.opts.test;
+	out("monitor: test " + test);
+        for (var idx in seb.ids) {
+                var id = seb.ids[idx];
+                runTest({"id":id},JSON.stringify({"handler":"runTest","opts":{"id":id,"test":test}})); //ToDo: parameter input field
+        }
+}
 // monitor
 var monitor = function () {
 	if(monitor.caller != monitor.getInstance) {
