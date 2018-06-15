@@ -94,6 +94,7 @@
 "newBrowserWindowShowReloadWarning" : false,
 "pinEmbeddedCertificates":false,
 "proxies": {},
+"quitOnMessageSocketClose":true,
 "quitURL":"https://github.com/eqsoft/seb2/quit",
 "quitURLRefererFilter":"",
 "removeBrowserProfile": false,

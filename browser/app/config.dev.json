@@ -178,6 +178,7 @@
 		"Password":"demo"
 },
 "proxySettingsPolicy":1,
+"quitOnMessageSocketClose":true,
 "quitURL":"https://www.simple.org:8443/quit",
 "quitURLRefererFilter":"test.html",
 "removeBrowserProfile": false,
