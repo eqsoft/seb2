@@ -127,10 +127,11 @@ this.SebHost = {
 			sl.debug("messageSocket close: " + e);
 			messageSocket = null;
 			messageServer = false;
-			if (su.getConfig("quitOnMessageSocketClose","boolean",false)) {
-				base.quitFromHost();
+			if (su.getConfig("lockOnMessageSocketClose","boolean",false)) {
+				seb.lock();
+				//base.quitFromHost();
 			} 
-		}; 
+		} 
 		
 		messageSocket.onmessage = function(evt) { 
 			// ToDo: message handling !!
