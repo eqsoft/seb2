@@ -85,6 +85,7 @@ this.seb =  {
 	lastWin : null,
 	reconfWinStart : false,
 	arsKeys : {},
+	isLocked : false,
 
 	toString : function() {
 		return appinfo.name;
@@ -602,7 +603,7 @@ this.seb =  {
 	},
 	
 	lock : function() {
-		sl.debug("seb lock!")
+		sl.debug("seb lock");
 		for (var i=0;i<sw.wins.length;i++) {
 			try {
 				let lockBrowser = sw.wins[i].document.getElementById("seb.lockscreen");
@@ -615,13 +616,74 @@ this.seb =  {
 			}
 			catch(e) {
 				sl.err(e);
+				return;
+			}
+		}
+		base.isLocked = true;
+		base.setUnconnectedMessage();
+		sh.reconnect();
+	},
+	
+	setUnconnectedMessage : function() {
+		sl.debug("setUnconnectedMessage");
+		for (var i=0;i<sw.wins.length;i++) {
+			try {
+				let unconnectedBpx = sw.wins[i].document.getElementById("unconnectedBox");
+				unconnectedBpx.classList.remove("hidden");
+			}
+			catch(e) {
+				sl.err(e);
 			}
 		}
 	},
 	
-	unlock : function(win,force=false) {
+	deleteUnconnectedMessage : function() {
+		sl.debug("deleteUnconnectedMessage");
+		for (var i=0;i<sw.wins.length;i++) {
+			try {
+				let unconnectedBpx = sw.wins[i].document.getElementById("unconnectedBox");
+				unconnectedBpx.classList.add("hidden");
+			}
+			catch(e) {
+				sl.err(e);
+			}
+		}
+	},
+	
+	setReconnectScreen : function() {
+		sl.debug("setReconnectScreen");
+		for (var i=0;i<sw.wins.length;i++) {
+			try {
+				let lockBrowser = sw.wins[i].document.getElementById("seb.lockscreen");
+				let reconnectVbox = lockBrowser.contentDocument.getElementById("sebReconnectVbox");
+				let unlockVbox = lockBrowser.contentDocument.getElementById("sebUnlockVbox");
+				reconnectVbox.classList.remove("hidden");
+				unlockVbox.classList.add("hidden");
+			}
+			catch(e) {
+				sl.err(e);
+			}
+		}
+	},
+	
+	setUnlockScreen : function() {
+		sl.debug("setUnlockScreen");
+		for (var i=0;i<sw.wins.length;i++) {
+			try {
+				let lockBrowser = sw.wins[i].document.getElementById("seb.lockscreen");
+				let reconnectVbox = lockBrowser.contentDocument.getElementById("sebReconnectVbox");
+				let unlockVbox = lockBrowser.contentDocument.getElementById("sebUnlockVbox");
+				reconnectVbox.classList.add("hidden");
+				unlockVbox.classList.remove("hidden");
+			}
+			catch(e) {
+				sl.err(e);
+			}
+		}
+	},
+	
+	unlock : function(win) {
 		sl.debug("try unlock...");
-		
 		let password = win.document.getElementById("sebLockPasswordInput");
 		let unlockMessage = win.document.getElementById("sebLockUnlockMessage");
 		unlockMessage.value = "";
@@ -638,36 +700,28 @@ this.seb =  {
 			return;
 		}
 		let check = su.getHash(pwd);
-		sl.debug(check.toLowerCase() + ":" + passwd.toLowerCase());
+		//sl.debug(check.toLowerCase() + ":" + passwd.toLowerCase());
 		if (check.toLowerCase() != passwd.toLowerCase()) {
 			unlockMessage.value = su.getLocStr("seb.unlock.failed.wrong.password");
 			return;
 		}
 		else {
-			for (var i=0;i<sw.wins.length;i++) {
-				sw.showContent(sw.wins[i]);
-				let imageBox = sw.wins[i].document.getElementById("imageBox");
-				if (imageBox) {
-					imageBox.classList.remove("hidden2");
-				}
-				/*
-				var rl = sw.wins[i].document.getElementById("btnReload");
-				var bk = sw.wins[i].document.getElementById("btnBack");
-				var fw = sw.wins[i].document.getElementById("btnForward");
-				if (rl && rl.getAttribute("disabled")) {
-					rl.setAttribute("disabled",false);
-					rl.classList.remove("disabled");
-				}
-				if (bk) {
-					bk.setAttribute("disabled",false);
-					bk.classList.remove("disabled");
-				}
-				if (fw) {
-					fw.setAttribute("disabled",false);
-					fw.classList.remove("disabled");
-				}
-				*/ 
+			base.unlockAll();
+		}
+		//base.setReconnectScreen();
+	},
+	
+	unlockAll : function() {
+		for (var i=0;i<sw.wins.length;i++) {
+			sw.showContent(sw.wins[i]);
+			let imageBox = sw.wins[i].document.getElementById("imageBox");
+			if (imageBox) {
+				imageBox.classList.remove("hidden2");
 			}
+		}
+		base.isLocked = false;
+		if (sh.messageServer) {
+			base.deleteUnconnectedMessage();
 		}
 	},
 	
