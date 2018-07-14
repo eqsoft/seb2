@@ -322,20 +322,44 @@ this.seb =  {
 	getArsLinksAndKeys : function () {
 		sl.debug("getArsLinksAndKeys");
 		for (let k in base.ars) {
-			//sl.debug(JSON.stringify(base.ars[k]));
-			if (base.ars[k]["linkURL"] && base.ars[k]["linkURL"] != "") {
-				sb.linkURLS[base.ars[k]["linkURL"]] = k;
+			let ar = base.ars[k];
+			// prepare all regex and queries in ar objects for better performance
+			ar["linkURLExist"] = (ar["linkURL"] && ar["linkURL"] != "");
+			ar["refererFilterExist"] = (ar["refererFilter"] && ar["refererFilter"] != "");
+			ar["linkOrReferer"] = (ar["linkURLExist"] || ar["refererFilterExist"]);
+			ar["linkAndReferer"] = (ar["linkURLExist"] && ar["refererFilterExist"]);
+			ar["linkOnly"] = (ar["linkURLExist"] && !ar["refererFilterExist"]);
+			ar["refererOnly"] = (ar["refererFilterExist"] && !ar["linkURLExist"]);
+			ar["isLink"] = (ar["url"] && ar["url"] != "");
+			ar["checkTrigger"] = function () { return false; };
+			
+			if (ar["linkURLExist"]) {
+				ar["linkURLRegex"] = su.globToRegex(ar["linkURL"]);
 			}
-			if (base.ars[k]["keycode"] && base.ars[k]["keycode"] != "") {
-				let m = (base.ars[k]["modifiers"] && base.ars[k]["modifiers"] != "") ? base.ars[k]["modifiers"] : "";
-				base.arsKeys[k] = {keycode : base.ars[k]["keycode"], modifiers : m}
+			if (ar["refererFilter"] && ar["refererFilter"] != "") {
+				ar["refererFilterRegex"] = su.globToRegex(ar["refererFilter"]);
 			}
-			if (base.ars[k]["key"] && base.ars[k]["key"] != "") {
-				let m = (base.ars[k]["modifiers"] && base.ars[k]["modifiers"] != "") ? base.ars[k]["modifiers"] : "";
-				base.arsKeys[k] = {key : base.ars[k]["key"], modifiers : m}
+			if (ar["linkOrReferer"]) {
+				ar["checkTrigger"] = function(url,referer) {
+					if (this.linkOnly) {
+						return this.linkURLRegex.test(url);
+					}
+					if (this.refererOnly) {
+						
+						return this.refererFilterRegex.test(referer);
+					}
+					return (this.linkURLRegex.test(url) && this.refererFilterRegex.test(referer));
+				}
+			} 
+			if (ar["keycode"] && ar["keycode"] != "") {
+				let m = (ar["modifiers"] && ar["modifiers"] != "") ? ar["modifiers"] : "";
+				base.arsKeys[k] = {keycode : ar["keycode"], modifiers : m}
+			}
+			if (ar["key"] && ar["key"] != "") {
+				let m = (ar["modifiers"] && ar["modifiers"] != "") ? ar["modifiers"] : "";
+				base.arsKeys[k] = {key : ar["key"], modifiers : m}
 			}
 		}
-		//sl.debug(JSON.stringify(sb.linkURLS));
 	},
 
 	initArsKeys : function (win) {
@@ -557,7 +581,7 @@ this.seb =  {
 			return true;
 		}
 		
-		let filter = ar["refererFilter"];
+		//let filter = ar["refererFilter"];
 		let reset = ar["resetSession"];
 		let confirm = ar["confirm"];
 		let confirmText = (ar["confirmText"] && ar["confirmText"] != "") ? ar["confirmText"] : su.getLocStr("seb.load.warning");
@@ -566,7 +590,8 @@ this.seb =  {
 			return;
 		}
 
-		// first check referrer
+		// first check referrer: deprecated
+		/*
 		if (filter && filter != "") {
 			let w = (win) ? win : sw.getRecentWin();
 			let loadReferrer = w.content.document.location.href;
@@ -575,7 +600,7 @@ this.seb =  {
 				return false;
 			}
 		}
-
+		*/
 		// check confirmation
 		if (confirm) {
 			var result = prompt.confirm(null, su.getLocStr("seb.load.warning.title"), confirmText);
