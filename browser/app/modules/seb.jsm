@@ -590,7 +590,7 @@ this.seb =  {
 			return;
 		}
 
-		// first check referrer: deprecated
+		// first check referrer -- deprecated
 		/*
 		if (filter && filter != "") {
 			let w = (win) ? win : sw.getRecentWin();
@@ -612,7 +612,12 @@ this.seb =  {
 		if (reset) {
 			sb.clearSession();
 		}
-		sb.loadPage(base.mainWin,url);
+		if (ar["newWindow"] === false) { // explicit exists and false, null ignored
+			sb.loadPage(base.mainWin,url);
+		}
+		else { // default even if no newWindow parameter exists
+			sw.openDistinctWin(url);
+		}
 	},
 	
 	initLockScreen : function(win) {
