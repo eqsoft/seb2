@@ -1234,7 +1234,7 @@ this.SebBrowser = {
 	// for exam login names
 	getHostname : function () {
 		var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
-		//return env.get("host"); // should work in netpoint9
-		return "macbookhrz1.local";
+		return env.get("host"); // should work in netpoint9
+		//return "macbookhrz1.local";
 	}
 }
