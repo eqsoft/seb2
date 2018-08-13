@@ -7,6 +7,7 @@ var 	prot 		= "",
 	sebTable	= null,
 	sebTableHead 	= null,
 	sebTableBody 	= null,
+	totalCount	= null,
 	ws		= null,
 	params		= {},
 	ipFilter	= {},
@@ -15,6 +16,8 @@ var 	prot 		= "",
 					"addData":addData,
 					"addSeb":addSeb, 
 					"removeSeb":removeSeb,
+					"lockedSeb":lockedSeb,
+					"unlockedSeb":unlockedSeb,
 					"socketError":socketError
 				};
 				
@@ -42,6 +45,7 @@ function init() {
 	sebTable = document.getElementById("sebTable");
 	sebTableHead = document.getElementById("sebTableHead");
 	sebTableBody = document.getElementById("sebTableBody");
+	totalCount = document.getElementById("totalCount");
 	prot = (window.location.protocol === "https:") ? "wss:" : "ws:"; // for ssl
 	sock_url = prot + "//" + window.location.host; 
 	ws = new WebSocket(sock_url);
@@ -104,6 +108,18 @@ function removeSeb(seb) {
 	removeRow(seb);
 }
 
+function lockedSeb(obj) {
+	log("lockedSeb: " + obj.seb.id);
+	var el = document.getElementById("lockstatus_" + obj.seb.id);
+	el.setAttribute("src","images/locked.png");
+} 
+
+function unlockedSeb(obj) { 
+        log("unlockedSeb: " + obj.seb.id);
+	var el = document.getElementById("lockstatus_" + obj.seb.id);
+        el.setAttribute("src","images/unlocked.png");
+}
+
 function socketError(opts) {
 	log(opts.error);
 	ws.close();
@@ -143,26 +159,40 @@ function addRow(seb) {
 	};
 	
 	var row = sebTableBody.insertRow(0);
-	row.setAttribute("id","row_"+seb.id);
-	var idCell = row.insertCell(0);
-	idCell.className = "td-id";
-	var ipCell = row.insertCell(1);
+	row.setAttribute("id",seb.id);
+
+	var ipCell = row.insertCell(0);
 	ipCell.className = "td-ip";
-	var rbCell = row.insertCell(2);
+	
+	var rbCell = row.insertCell(1);
 	rbCell.className = "td-reboot";
-	var sdCell = row.insertCell(3);
+
+	var sdCell = row.insertCell(2);
         sdCell.className = "td-shutdown";
-	idCell.innerHTML = seb.id;
+
+	var rtCell = row.insertCell(3);
+        rtCell.className = "td-runtest";
+
+	var lckCell = row.insertCell(4);
+	lckCell.className = "td-lock";
+	
+	var lock_status = (seb.locked) ? "locked" : "unlocked";
+	
 	ipCell.innerHTML = seb.ip;
 	rbCell.innerHTML = "<input type=\"button\" value=\"reboot\" class=\"btn-reboot\" onclick=\"reboot(\'" + seb.id + "\');\" />";
 	sdCell.innerHTML = "<input type=\"button\" value=\"shutdown\" class=\"btn-shutdown\" onclick=\"shutdown(\'" + seb.id + "\');\" />";
+	rtCell.innerHTML = "<input type=\"button\" value=\"runtest\" class=\"btn-runtest\" onclick=\"runTest(\'" + seb.id + "\');\" />";
+	lckCell.innerHTML = "<input type=\"image\" class=\"btn-lock\" title=\"lock\" id=\"lockstatus_" +  seb.id + "\" src=\"images/" + lock_status + ".png\" onclick=\"toggleLock(\'" + seb.id + "\');\" />";
+	
+	totalCount.innerHTML = sebTableBody.getElementsByTagName("tr").length;
 }
 
 function removeRow(seb) {
 	log("removeRow: " + JSON.stringify(seb));
-	var row = document.getElementById("row_"+seb.id);
+	var row = document.getElementById(seb.id);
 	if (row) {
 		row.parentNode.removeChild(row);
+		totalCount.innerHTML = sebTableBody.getElementsByTagName("tr").length;
 	}
 }
 
@@ -176,16 +206,15 @@ function shutdown(id) {
 
 function shutdownAll() {
 	log("shutdownAll");
-	var idNodes = sebTableBody.querySelectorAll('.td-id');
+	var idNodes = sebTableBody.querySelectorAll('tr');
 	var ids = [];
 	for (var i=0;i<idNodes.length;i++) {
-		ids.push(idNodes[i].textContent);
+		ids.push(idNodes[i].id);
 	}
 	var ret = confirm("Shutdown all " + defaultFilter + "?");
 	if (ret) {
 		ws.send(JSON.stringify({"handler":"shutdownAll","opts":{"ids":ids}}));
 	}
-	//var rows sebTableBody.getElementBy
 }
 
 function reboot(id) {
@@ -198,10 +227,10 @@ function reboot(id) {
 
 function rebootAll() {
         log("rebootAll");
-        var idNodes = sebTableBody.querySelectorAll('.td-id');
+        var idNodes = sebTableBody.querySelectorAll('tr');
         var ids = [];
         for (var i=0;i<idNodes.length;i++) {
-                ids.push(idNodes[i].textContent);
+                ids.push(idNodes[i].id);
         }
         var ret = confirm("Reboot all " + defaultFilter + "?");
         if (ret) {
@@ -210,4 +239,83 @@ function rebootAll() {
         //var rows sebTableBody.getElementBy
 }
 
+function lock(id) {
+        log("lock: " + id);
+        var ret = confirm("Lock " + id + "?");
+        if (ret) {
+                ws.send(JSON.stringify({"handler":"lock","opts":{"id":id}}));
+        }
+}
+
+function lockAll() {
+        log("lockAll");
+        var idNodes = sebTableBody.querySelectorAll('tr');
+        var ids = [];
+        for (var i=0;i<idNodes.length;i++) {
+                ids.push(idNodes[i].id);
+        }
+        var ret = confirm("lock all " + defaultFilter + "?");
+        if (ret) {
+                ws.send(JSON.stringify({"handler":"lockAll","opts":{"ids":ids}}));
+        }
+        //var rows sebTableBody.getElementBy
+}
+
+function unlock(id) {
+        log("unlock: " + id);
+        var ret = confirm("Unlock " + id + "?");
+        if (ret) {
+                ws.send(JSON.stringify({"handler":"unlock","opts":{"id":id}}));
+        }
+}
+
+function unlockAll() {
+        log("unlockAll");
+        var idNodes = sebTableBody.querySelectorAll('tr');
+        var ids = [];
+        for (var i=0;i<idNodes.length;i++) {
+                ids.push(idNodes[i].id);
+        }
+        var ret = confirm("unlock all " + defaultFilter + "?");
+        if (ret) {
+                ws.send(JSON.stringify({"handler":"unlockAll","opts":{"ids":ids}}));
+        }
+        //var rows sebTableBody.getElementBy
+}
+
+function toggleLock(id) {
+	log("toggleLock: " + id);
+	var el = document.getElementById("lockstatus_"+id);
+	var locked = !/^.*?unlocked\.png$/.test(el.src);
+	if (locked === true) {
+		unlock(id);
+	}
+	else {
+		lock(id);
+	}
+}
+
+function runTest(id) {
+        log("runTest: " + id);
+        var ret = confirm("Run Test " + id + "?");
+        var test = document.querySelector('#inputTest').value;
+        if (ret) {
+                ws.send(JSON.stringify({"handler":"runTest","opts":{"id":id,"test":test}}));
+        }
+}
+
+function runTestAll() {
+        log("runTestAll");
+        var idNodes = sebTableBody.querySelectorAll('td');
+        var ids = [];
+        for (var i=0;i<idNodes.length;i++) {
+                ids.push(idNodes[i].id);
+        }
+        var ret = confirm("Run Test all " + defaultFilter + "?");
+        if (ret) {
+		var test = document.querySelector('#inputTest').value;
+                ws.send(JSON.stringify({"handler":"runTestAll","opts":{"ids":ids,"test":test}}));
+        }
+        //var rows sebTableBody.getElementBy
+}
 //http://caniuse.com/#feat=queryselector

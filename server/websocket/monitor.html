@@ -2,6 +2,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>seb monitor</title>
 	<script src="res/table.js"></script>
 	<script>
 		var defaultFilter = "";
@@ -14,12 +15,18 @@
 	<p>Message:&nbsp;<span id="message"></span></p>
 	<input id="btnShutDownAll" type="button" value="shutdown all" onclick="shutdownAll();"/ >
 	<input id="btnRebootAll" type="button" value="reboot all" onclick="rebootAll();"/ >
+	<input id="btnLockAll" type="image" src="images/locked.png" title="lock all" onclick="lockAll();"/ >
+	<input id="btnUnlockAll" type="image" src="images/unlocked.png" title="unlock all" onclick="unlockAll();"/ >
+	<input id="btnRunTestAll" type="button" value="run test all" onclick="runTestAll();"/ >
+	<input id="inputTest" type="text" value="file:///data/tests/exam.js" / >
+	<span id="spanTotal">Total:&nbsp;</span><span id="totalCount">0</span>
 	<table id="sebTable">
 		<thead id="sebTableHead">
-			<th id="th-id">id</th>
 			<th id="th-ip">ip</th>
 			<th id="th-reboot">reboot</th>
 			<th id="th-shutdown">shutdown</th>
+			<th id="th-runtest">run test</th>
+			<th id="th-lock">lock status</th>
 		</thead>
 		<tbody id="sebTableBody"></tbody>
 	</table>

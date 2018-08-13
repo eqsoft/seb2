@@ -14,7 +14,13 @@ var 	fs 		= require('fs-extra'),
 				"shutdown":shutdown,
 				"shutdownAll":shutdownAll,
 				"reboot":reboot,
-				"rebootAll":rebootAll
+				"rebootAll":rebootAll,
+				"lock":lock,
+				"lockAll":lockAll,
+				"unlock":unlock,
+				"unlockAll":unlockAll,
+				"runTest":runTest,
+				"runTestAll":runTestAll
 			};
 var monitorOptions = (conf.monitorClientCert) ? conf.getClientCertOptions() : conf.getSSLOptions();
 var monitorServer = https.createServer(monitorOptions, conf.getApp());
@@ -149,6 +155,28 @@ function on_seb_error(error, socket) {
 
 function on_seb_message(data, flags, socket) {
 	out("monitor: seb socket message");
+	var wskey = socket.upgradeReq.headers['sec-websocket-key'];
+	var id = sebmap[wskey];
+	var locked = false;
+	var sebdata = JSON.parse(data);
+	switch (sebdata.handler) {
+		case "locked" :
+			locked = true;
+			break;
+		case "unlocked" : 
+			locked = false;
+			break;
+		default:
+			locked = false;
+	}
+	sebs[id]["locked"] = locked;
+	var seb = sebs[id];
+	// add seb specific data for broadcasting
+	var opts = sebdata.opts;
+	opts["seb"] = seb;
+	var obj = { "handler" : sebdata.handler+"Seb", "opts":opts };
+	out(JSON.stringify(obj));
+	broadcast( obj );
 }
 
 function broadcast(data) { // to all connected admin clients
@@ -159,11 +187,10 @@ function broadcast(data) { // to all connected admin clients
 }
 
 function addSeb(socket, data) {
-	//console.dir(socket);
 	var ip = socket.upgradeReq.connection.remoteAddress.replace(/[f\:]/g,"");
 	var id = crypt.randomBytes(16).toString('hex');
 	var wskey = socket.upgradeReq.headers['sec-websocket-key'];
-	var seb = {"id":id,"ip":ip};
+	var seb = {"id":id,"ip":ip,"locked":false};
 	sebs[id] = seb;
 	_sebs[id] = {"socket":socket};
 	sebmap[wskey] = id;
@@ -215,8 +242,74 @@ function reboot(seb,data) {
 function rebootAll(seb,data) {
         out("monitor: rebootAll " + JSON.stringify(seb.ids));
         for (var idx in seb.ids) {
+		out("monitor: idx " + idx);
                 var id = seb.ids[idx];
-                reboot({"id":id},JSON.stringify({"handler":"reboot","opts":{"id":id}}));
+                //reboot({"id":id},JSON.stringify({"handler":"reboot","opts":{"id":id}}));
+		var obj_id = {"id":id};
+		var obj_opts = JSON.stringify({"handler":"reboot","opts":{"id":id}});
+                setTimeout(reboot,(idx * 2000),obj_id,obj_opts);
+        }
+}
+
+function lock(seb,data) {
+        out("monitor: lock " + seb.id);
+        var socket = _sebs[seb.id].socket;
+        try {
+                socket.send(data); // forward data (same handler and opts object expected on seb client)
+        }
+        catch(e) {
+                console.log(e);
+        }
+        //out("monitor: socket " + socket.send);
+}
+
+function lockAll(seb,data) {
+        out("monitor: lockAll " + JSON.stringify(seb.ids));
+        for (var idx in seb.ids) {
+                var id = seb.ids[idx];
+                lock({"id":id},JSON.stringify({"handler":"lock","opts":{"id":id}}));
+        }
+}
+
+function unlock(seb,data) {
+        out("monitor: unlock " + seb.id);
+        var socket = _sebs[seb.id].socket;
+        try {
+                socket.send(data); // forward data (same handler and opts object expected on seb client)
+        }
+        catch(e) {
+                console.log(e);
+        }
+        //out("monitor: socket " + socket.send);
+}
+
+function unlockAll(seb,data) {
+        out("monitor: unlockAll " + JSON.stringify(seb.ids));
+        for (var idx in seb.ids) {
+                var id = seb.ids[idx];
+                unlock({"id":id},JSON.stringify({"handler":"unlock","opts":{"id":id}}));
+        }
+}
+
+function runTest(seb,data) {
+	//out("monitor: runTest " + seb.id);
+        var socket = _sebs[seb.id].socket;
+        try {
+                socket.send(data); // forward data (same handler and opts object expected on seb client)
+        }
+        catch(e) {
+                console.log(e);
+        }
+}
+
+function runTestAll(seb,data) {
+	//out("monitor: runTestAll " + JSON.stringify(seb.ids));
+	let obj = JSON.parse(data);
+	let test = obj.opts.test;
+	out("monitor: test " + test);
+        for (var idx in seb.ids) {
+                var id = seb.ids[idx];
+                runTest({"id":id},JSON.stringify({"handler":"runTest","opts":{"id":id,"test":test}})); //ToDo: parameter input field
         }
 }
 
