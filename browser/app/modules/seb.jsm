@@ -267,6 +267,7 @@ this.seb =  {
 		base.consts = win.document.getElementById("const");
 		sw.setMainNavigation(win);
 		sw.setToolbar(win);
+        sw.setTaskbar(win);
 		sw.setSize(win);
 		sb.loadPage(win,base.url);
 		//sw.showContent(win); still required?

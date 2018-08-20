@@ -143,7 +143,7 @@
 	"type":2
 	}
 ],
-"enableBrowserWindowToolbar":true,
+"enableBrowserWindowToolbar":false,
 "enableJava":false,
 "enableJavaScript":true,
 "enablePlugIns":true,
@@ -193,6 +193,7 @@
 "sendBrowserExamKey":true,
 "showReloadWarning" : false,
 "showTaskBar":false,
+"showInternalTaskbar":true,
 "startURL_":"https://www.check-dein-wissen.ch/de/",
 "startURL_":"https://www.youtube.de",
 "startURL_":"https://www.heise.de",

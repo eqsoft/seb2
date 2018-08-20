@@ -151,3 +151,32 @@ button[dlgtype="extra1"] {
 menuitem.spell-suggestion {
   font-weight: bold;
 }
+
+#hboxTaskbar {
+    background:#4f6b5f !important;
+    height:40px;
+    position: absolute;
+    bottom: 0;
+}
+
+#spanClock {
+    color: #eee;
+    position: fixed;
+    font-size: 1.6em;
+    font-family: system, sans-serif, courier;
+    right: 12px;
+    bottom: 7px; 
+}
+
+#passwordBox {
+    color: #eee;
+    font-size: 1.2em;
+    font-family: system, sans-serif, courier;
+    position: fixed;
+    bottom: 8px;
+    left: 12px;
+}
+
+#passwordTxt {
+    width: 80px;
+}

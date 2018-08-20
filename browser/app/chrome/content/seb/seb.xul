@@ -109,7 +109,18 @@
 				<browser flex="1" id="message.socket" src="about:blank" type="content-targetable"></browser>
 				<browser flex="1" id="seb.lockscreen" src="about:blank" type="chrome"></browser>
 			</deck>
+            <spacer></spacer>
+            <hbox id="hboxTaskbar" class="hidden">
+                    <span id="passwordBox" flex="1" class="hidden">
+                        <label control="password" value="Passwort (Auswählen mit Doppelklick dann kopieren mit Strg-C und einfügen mit Strg-V):" />
+                        <spacer></spacer>
+                        <textbox id="passwordTxt" readonly="true" value="sd867sdf" />
+                    </span>    
+                    <spacer></spacer>
+                    <span id="spanClock">Clock</span>
+            </hbox>
 		</vbox>
+        
 		<vbox id="loadingBox" class="hidden loadingBox">
 			<hbox>
 				<spacer></spacer>

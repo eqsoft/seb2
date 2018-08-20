@@ -381,6 +381,33 @@ this.SebWin = {
 		}
 	},
 	
+    setTaskbar : function (win) {
+        let showInternalTaskbar = su.getConfig("showInternalTaskbar","boolean",false);
+        if (showInternalTaskbar) {
+            var tb = win.document.getElementById("hboxTaskbar");
+            var clock = win.document.getElementById("spanClock");
+            
+            tb.classList.remove("hidden");
+            startTime();
+            
+            function startTime() {
+                var today = new Date();
+                var h = today.getHours();
+                var m = today.getMinutes();
+                //var s = today.getSeconds();
+                m = checkTime(m);
+                //s = checkTime(s);
+                clock.innerHTML = h + ":" + m;
+                var t = win.setTimeout(startTime, 500);
+            }
+            
+            function checkTime(i) {
+                if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+                return i;
+            }
+        }
+    },
+    
 	showLock : function (win) {
 		let w = (win) ? win : base.getRecentWin();
 		w.document.getElementById("deckContents").selectedIndex = lockDeck;
