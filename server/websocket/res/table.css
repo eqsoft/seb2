@@ -3,17 +3,21 @@ body {
 	font-family: courier;
 }
 
-#btnUnlockAll, #btnLockAll {
+#sebExtra {
+	float: right;
+}
+
+#btnUnlockAll, #btnLockAll, #btnShowPasswordAll, #btnHidePasswordAll {
 	width: 24px;
 	height: 24px;
 	vertical-align: bottom;	
 }
 
-#btnUnlockAll:focus, #btnLockAll:focus, .btn-lock:focus {
+#btnUnlockAll:focus, #btnLockAll:focus, .btn-lock:focus, #btnShowPasswordAll:focus, #btnHidePasswordAll:focus, .btn-pwd:focus {
 	outline: 0
 }
 
-.btn-lock {
+.btn-lock, .btn-pwd {
 	width: 16px;
 	height: 16px;
 	text-align: center;
@@ -47,15 +51,15 @@ td {
 }
 
 #th-ip {
-	width: 32%;
+	width: 40%;
 }
 
-#th-shutdown, #th-reboot, #th-runtest, #th-lock {
-	width: 17%;
+#th-shutdown, #th-reboot, #th-runtest, #th-lock, #th-pwd {
+	width: 12%;
 	white-space: nowrap
 }
 
-.td-shutdown, .td-reboot, .td-runtest, .td-lock {
+.td-shutdown, .td-reboot, .td-runtest, .td-lock, .td-pwd {
 	text-align: center;
 }
 

@@ -20,7 +20,11 @@ var 	fs 		= require('fs-extra'),
 				"unlock":unlock,
 				"unlockAll":unlockAll,
 				"runTest":runTest,
-				"runTestAll":runTestAll
+				"runTestAll":runTestAll,
+				"showPassword":showPassword,
+				"showPasswordAll":showPasswordAll,
+				"hidePassword":hidePassword,
+				"hidePasswordAll":hidePasswordAll
 			};
 var monitorOptions = (conf.monitorClientCert) ? conf.getClientCertOptions() : conf.getSSLOptions();
 var monitorServer = https.createServer(monitorOptions, conf.getApp());
@@ -158,6 +162,7 @@ function on_seb_message(data, flags, socket) {
 	var wskey = socket.upgradeReq.headers['sec-websocket-key'];
 	var id = sebmap[wskey];
 	var locked = false;
+	var pwdShown = false;
 	var sebdata = JSON.parse(data);
 	switch (sebdata.handler) {
 		case "locked" :
@@ -166,10 +171,17 @@ function on_seb_message(data, flags, socket) {
 		case "unlocked" : 
 			locked = false;
 			break;
+		case "pwdShown" :
+			pwdShown = true;
+			break;
+		case "pwdHidden" :
+			pwdShown = false;
+			break;
 		default:
 			locked = false;
 	}
 	sebs[id]["locked"] = locked;
+	sebs[id]["pwdShown"] = pwdShown;
 	var seb = sebs[id];
 	// add seb specific data for broadcasting
 	var opts = sebdata.opts;
@@ -313,6 +325,47 @@ function runTestAll(seb,data) {
         }
 }
 
+function showPassword(seb,data) {
+        out("monitor: showPassword " + seb.id);
+        var socket = _sebs[seb.id].socket;
+        try {
+                socket.send(data); // forward data (same handler and opts object expected on seb client)
+        }
+        catch(e) {
+                console.log(e);
+        }
+}
+
+function showPasswordAll(seb,data) {
+	out("monitor: showPasswordAll");
+	let obj = JSON.parse(data);
+        let password = obj.opts.password;
+        for (var idx in seb.ids) {
+                var id = seb.ids[idx];
+                showPassword({"id":id},JSON.stringify({"handler":"showPassword","opts":{"id":id,"password":password}})); 
+        }
+}
+
+function hidePassword(seb,data) {
+        out("monitor: hidePassword " + seb.id);
+        var socket = _sebs[seb.id].socket;
+        try {
+                socket.send(data); // forward data (same handler and opts object expected on seb client)
+        }
+        catch(e) {
+                console.log(e);
+        }
+}
+
+function hidePasswordAll(seb,data) {
+	out("monitor: hidePasswordAll");
+        let obj = JSON.parse(data);
+        for (var idx in seb.ids) {
+                var id = seb.ids[idx];
+                hidePassword({"id":id},JSON.stringify({"handler":"hidePassword","opts":{"id":id}}));
+        }
+}
+
 // monitor
 var monitor = function () {
 	if(monitor.caller != monitor.getInstance) {
@@ -336,5 +389,3 @@ monitor.getInstance = function(){
 	}
 	return this.instance;
 }
-
-module.exports = monitor.getInstance();

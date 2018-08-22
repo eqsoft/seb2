@@ -18,6 +18,8 @@ var 	prot 		= "",
 					"removeSeb":removeSeb,
 					"lockedSeb":lockedSeb,
 					"unlockedSeb":unlockedSeb,
+					"pwdShownSeb":pwdShownSeb,
+					"pwdHiddenSeb":pwdHiddenSeb,
 					"socketError":socketError
 				};
 				
@@ -28,8 +30,12 @@ function init() {
 	params = getParams();
 	ipFilter["local"] = /^(127\.0\.0\.1$)|(\:\:1)$/;
 	ipFilter["intern"] = /^192\.168\.0\.\d+$/;
+	ipFilter["zmb"] = /^137\.248\.86\.\d+$/;
+	ipFilter["d3"] = /^137\.248\.4\.\d+$/;
 	defaulFilter = (defaultFilter) ? defaultFilter : (params.filter) ? params.filter : null;
 	log("defaultFilter: " + defaultFilter);
+	var btnShutDownAll = document.getElementById('btnShutDownAll');
+	var btnRebootAll = document.getElementById('btnRebootAll');
 	if (defaultFilter && ipFilter[defaultFilter]) { //can be defined in html page	
 		checkIp = ipFilter[defaultFilter];
 	}
@@ -40,6 +46,8 @@ function init() {
 	if (checkIp != null) {
 		var val = btnShutDownAll.getAttribute("value") + ": " + defaultFilter;
 		btnShutDownAll.setAttribute("value", val);
+		val = btnRebootAll.getAttribute("value") + ": " + defaultFilter;
+		btnRebootAll.setAttribute("value", val);
 	}
 	//log("regex: "+ipFilter["local"].test("127.0.0.0"));
 	sebTable = document.getElementById("sebTable");
@@ -120,6 +128,19 @@ function unlockedSeb(obj) {
         el.setAttribute("src","images/unlocked.png");
 }
 
+
+function pwdShownSeb(obj) {
+        log("pwdShown: " + obj.seb.id);
+        var el = document.getElementById("pwdstatus_" + obj.seb.id);
+        el.setAttribute("src","images/pwd_shown.svg");
+}
+
+function pwdHiddenSeb (obj) {
+        log("pwdHidden: " + obj.seb.id);
+        var el = document.getElementById("pwdstatus_" + obj.seb.id);
+        el.setAttribute("src","images/pwd_hidden.svg");
+}
+
 function socketError(opts) {
 	log(opts.error);
 	ws.close();
@@ -172,18 +193,23 @@ function addRow(seb) {
 
 	var rtCell = row.insertCell(3);
         rtCell.className = "td-runtest";
-
-	var lckCell = row.insertCell(4);
-	lckCell.className = "td-lock";
 	
+	var pwdCell = row.insertCell(4);
+        pwdCell.className = "td-pwd";	
+
+	var lckCell = row.insertCell(5);
+	lckCell.className = "td-lock";
+
 	var lock_status = (seb.locked) ? "locked" : "unlocked";
+	var pwd_status = (seb.pwdShown) ? "pwd_shown" : "pwd_hidden";
 	
 	ipCell.innerHTML = seb.ip;
 	rbCell.innerHTML = "<input type=\"button\" value=\"reboot\" class=\"btn-reboot\" onclick=\"reboot(\'" + seb.id + "\');\" />";
 	sdCell.innerHTML = "<input type=\"button\" value=\"shutdown\" class=\"btn-shutdown\" onclick=\"shutdown(\'" + seb.id + "\');\" />";
 	rtCell.innerHTML = "<input type=\"button\" value=\"runtest\" class=\"btn-runtest\" onclick=\"runTest(\'" + seb.id + "\');\" />";
+	pwdCell.innerHTML = "<input type=\"image\" class=\"btn-pwd\" title=\"password\" id=\"pwdstatus_" +  seb.id + "\" src=\"images/" + pwd_status + ".svg\" onclick=\"togglePassword(\'" + seb.id + "\');\" />";
 	lckCell.innerHTML = "<input type=\"image\" class=\"btn-lock\" title=\"lock\" id=\"lockstatus_" +  seb.id + "\" src=\"images/" + lock_status + ".png\" onclick=\"toggleLock(\'" + seb.id + "\');\" />";
-	
+
 	totalCount.innerHTML = sebTableBody.getElementsByTagName("tr").length;
 }
 
@@ -318,4 +344,60 @@ function runTestAll() {
         }
         //var rows sebTableBody.getElementBy
 }
+
+function showPassword(id) {
+        log("showPassword: " + id);
+        var password = document.querySelector('#inputPassword').value;
+        if (password && password.value != "") {
+                ws.send(JSON.stringify({"handler":"showPassword","opts":{"id":id,"password":password}}));
+        }
+	else {
+		alert("Please fill password field.");
+	}
+}
+
+function showPasswordAll() {
+        log("showPasswordAll");
+        var idNodes = sebTableBody.querySelectorAll('tr');
+        var ids = [];
+        for (var i=0;i<idNodes.length;i++) {
+                ids.push(idNodes[i].id);
+        }
+        var password = document.querySelector('#inputPassword').value;
+	if (password && password.value != "") {
+        	ws.send(JSON.stringify({"handler":"showPasswordAll","opts":{"ids":ids,"password":password}}));
+	}
+        else { 
+                alert("Please fill password field.");
+        }
+        //var rows sebTableBody.getElementBy
+}
+
+function hidePassword(id) {
+        log("hidePassword: " + id);
+        ws.send(JSON.stringify({"handler":"hidePassword","opts":{"id":id}}));       
+}
+
+function hidePasswordAll() {
+        log("hidePasswordAll");
+        var idNodes = sebTableBody.querySelectorAll('tr');
+        var ids = [];
+        for (var i=0;i<idNodes.length;i++) {
+                ids.push(idNodes[i].id);
+        }
+	ws.send(JSON.stringify({"handler":"hidePasswordAll","opts":{"ids":ids}}));
+}
+
+function togglePassword(id) {
+        log("togglePassword: " + id);
+        var el = document.getElementById("pwdstatus_"+id);
+        var hidden = /^.*?pwd_hidden\.svg$/.test(el.src);
+        if (hidden === true) {
+                showPassword(id);
+        }
+        else {
+                hidePassword(id);
+        }
+}
+
 //http://caniuse.com/#feat=queryselector

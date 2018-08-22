@@ -15,17 +15,24 @@
 	<p>Message:&nbsp;<span id="message"></span></p>
 	<input id="btnShutDownAll" type="button" value="shutdown all" onclick="shutdownAll();"/ >
 	<input id="btnRebootAll" type="button" value="reboot all" onclick="rebootAll();"/ >
-	<input id="btnLockAll" type="image" src="images/locked.png" title="lock all" onclick="lockAll();"/ >
-	<input id="btnUnlockAll" type="image" src="images/unlocked.png" title="unlock all" onclick="unlockAll();"/ >
-	<input id="btnRunTestAll" type="button" value="run test all" onclick="runTestAll();"/ >
-	<input id="inputTest" type="text" value="file:///data/tests/exam.js" / >
-	<span id="spanTotal">Total:&nbsp;</span><span id="totalCount">0</span>
+	<span id="spanPassword">Show Password:</span>
+	<input id="inputPassword" type="text" value="" minlength="8" size="8" / >
+	<input id="btnShowPasswordAll" type="image" src="images/pwd_shown.svg" title="show password all" onclick="showPasswordAll();"/ >
+	<input id="btnHidePasswordAll" type="image" src="images/pwd_hidden.svg" title="show password all" onclick="hidePasswordAll();"/ >
+	<span id="sebExtra">
+		<span id="spanTotal">Total:&nbsp;</span><span id="totalCount">0</span>
+		<input id="btnLockAll" type="image" src="images/locked.png" title="lock all" onclick="lockAll();"/ >
+		<input id="btnUnlockAll" type="image" src="images/unlocked.png" title="unlock all" onclick="unlockAll();"/ >
+		<input id="btnRunTestAll" type="button" value="run test all" onclick="runTestAll();"/ >
+		<input id="inputTest" type="text" value="file:///data/tests/exam.js" / >
+	</span>
 	<table id="sebTable">
 		<thead id="sebTableHead">
 			<th id="th-ip">ip</th>
 			<th id="th-reboot">reboot</th>
 			<th id="th-shutdown">shutdown</th>
 			<th id="th-runtest">run test</th>
+			<th id="th-password">password</th>
 			<th id="th-lock">lock status</th>
 		</thead>
 		<tbody id="sebTableBody"></tbody>
