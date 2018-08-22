@@ -389,3 +389,6 @@ monitor.getInstance = function(){
 	}
 	return this.instance;
 }
+
+
+module.exports = monitor.getInstance();
