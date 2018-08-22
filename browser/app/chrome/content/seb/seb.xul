@@ -114,7 +114,7 @@
                     <span id="passwordBox" flex="1" class="hidden">
                         <label control="password" value="Passwort (Auswählen mit Doppelklick dann kopieren mit Strg-C und einfügen mit Strg-V):" />
                         <spacer></spacer>
-                        <textbox id="passwordTxt" readonly="true" value="sd867sdf" />
+                        <textbox id="passwordTxt" readonly="true" minlength="8" maxlength="8" size="8" value="aaaaaaaa" />
                     </span>    
                     <spacer></spacer>
                     <span id="spanClock">Clock</span>

@@ -173,10 +173,11 @@ menuitem.spell-suggestion {
     font-size: 1.2em;
     font-family: system, sans-serif, courier;
     position: fixed;
-    bottom: 4px;
+    bottom: 0px;
     left: 12px;
 }
 
 #passwordTxt {
-    width: 80px;
+    font-size: 1.2em;
+    font-weight: bold;
 }
