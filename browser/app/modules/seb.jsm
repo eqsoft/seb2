@@ -787,6 +787,34 @@ this.seb =  {
         }
 	},
 	
+    showPassword : function(password) {
+        sl.debug("showPassword");
+        if (base.mainWin) {
+            let pwdBox = base.mainWin.document.getElementById("passwordBox");
+            pwdBox.classList.remove("hidden");
+            let pwdTxt = base.mainWin.document.getElementById("passwordTxt");
+            pwdTxt.value = password;
+            ss.sendPwdShown();
+		}
+        else {
+            sl.debug("no mainWin!");
+        }
+    },
+    
+    hidePassword : function() {
+         sl.debug("hidePassword");
+        if (base.mainWin) {
+            let pwdTxt = base.mainWin.document.getElementById("passwordTxt");
+            pwdTxt.value = "";
+            let pwdBox = base.mainWin.document.getElementById("passwordBox");
+            pwdBox.classList.add("hidden");
+            ss.sendPwdHidden();
+		}
+        else {
+            sl.debug("no mainWin!");
+        }
+    },
+    
 	quit: function(e) {
 		sl.debug("try to quit...");
 		if (e) {

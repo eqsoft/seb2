@@ -35,10 +35,10 @@
 	"plugin.state.java"		: { "cb" : "pluginEnableJava" },
 	"layout.spellcheckDefault" 	: { "cb" : "spellcheckDefault" }
 },
-"sebRebootKeyEnabled":false,
+"sebRebootKeyEnabled":true,
 "sebServer": {
 	"url"    : "https://www.simple.org:8442/websocket/index.html",
-	"socket" : "wss://www.simple.org:8442"
+	"socket" : "wss://www.simple.org:8442",
 },
 "sebScreenshot":false,
 "sebScreenshotImageType":"image/jpeg",

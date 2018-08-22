@@ -48,7 +48,7 @@ XPCOMUtils.defineLazyModuleGetter(this,"su","resource://modules/SebUtils.jsm","S
 XPCOMUtils.defineLazyModuleGetter(this,"sh","resource://modules/SebHost.jsm","SebHost");
 
 /* ModuleGlobals */
-let 	base = null,
+let base = null,
 	seb = null,
 	sebserverEnabled = false,
 	sebserver = null,
@@ -67,6 +67,8 @@ this.SebServer = {
 		base.handler["reboot"] = base.reboot;
         base.handler["lock"] = base.lock;
 		base.handler["unlock"] = base.unlock;
+        base.handler["showPassword"] = base.showPassword;
+        base.handler["hidePassword"] = base.hidePassword;
 		base.handler["sendScreenshotData"] = base.sendScreenshotData;
 	},
 	
@@ -158,6 +160,16 @@ this.SebServer = {
             seb.unlockAll(true);
     },
     
+    showPassword : function(_seb) {
+        sl.debug("socket client: showPassword  for id: " + _seb.id);
+        seb.showPassword(_seb.password);
+    },
+    
+    hidePassword : function(_seb) {
+        sl.debug("socket client: hidePassword: " + _seb.id);
+        seb.hidePassword();
+    },
+    
     sendLock : function() {
             let obj = {"handler":"locked","opts":{}};
 			base.send(JSON.stringify(obj));
@@ -165,6 +177,18 @@ this.SebServer = {
     
     sendUnlock : function() {
             let obj = {"handler":"unlocked","opts":{}};
+			base.send(JSON.stringify(obj));
+    },
+    
+    sendPwdShown : function() {
+            sl.debug("sendPwdShown");
+            let obj = {"handler":"pwdShown","opts":{}};
+			base.send(JSON.stringify(obj));
+    },
+    
+    sendPwdHidden : function() {
+            sl.debug("sendPwdHidden");
+            let obj = {"handler":"pwdHidden","opts":{}};
 			base.send(JSON.stringify(obj));
     },
     
