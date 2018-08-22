@@ -154,7 +154,7 @@ menuitem.spell-suggestion {
 
 #hboxTaskbar {
     background:#4f6b5f !important;
-    height:40px;
+    height:35px;
     position: absolute;
     bottom: 0;
 }
@@ -165,7 +165,7 @@ menuitem.spell-suggestion {
     font-size: 1.6em;
     font-family: system, sans-serif, courier;
     right: 12px;
-    bottom: 7px; 
+    bottom: 5px; 
 }
 
 #passwordBox {
@@ -173,7 +173,7 @@ menuitem.spell-suggestion {
     font-size: 1.2em;
     font-family: system, sans-serif, courier;
     position: fixed;
-    bottom: 8px;
+    bottom: 4px;
     left: 12px;
 }
 
