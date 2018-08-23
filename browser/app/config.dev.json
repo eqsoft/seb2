@@ -18,7 +18,9 @@
 	"media.navigator.video.enabled" : false,
 	"media.getusermedia.audiocapture.enabled" : false,
 	"dom.allow_scripts_to_close_windows" : true,
-	"security.fileuri.strict_origin_policy" : true
+	"security.fileuri.strict_origin_policy" : true,
+    "browser.taskbar.lists.enabled":false,
+    "browser.taskbar.lists.tasks.enabled":false
 },
 "sebPrefsMap": {
 	"browser.download.dir" 		: "downloadDirectoryWin",
@@ -26,7 +28,7 @@
 	"dom.disable_open_during_load" 	: "blockPopUpWindows",
 	"javascript.enabled" 		: "enableJavaScript",
 	"media.navigator.video.enabled" : "allowVideoCapture",
-        "media.getusermedia.audiocapture.enabled" : "allowAudioCapture",
+    "media.getusermedia.audiocapture.enabled" : "allowAudioCapture",
 	"general.useragent.override" 	: { "cb" : "browserUserAgent"},
 	"browser.zoom.full" 		: { "cb" : "browserZoomFull" },
 	"zoom.maxPercent" 		: { "cb" : "zoomMaxPercent" },
