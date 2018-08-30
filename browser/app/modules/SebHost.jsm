@@ -69,7 +69,7 @@ this.SebHost = {
 	msgHandler : {},
 	sendHandler : {},
 	reconnectTry : 0,
-	//reconnectTriesReached : false,
+	reconnectTriesReached : false,
 	reconnectInterval : 0,
 	reconnectMaxTries : 0,
 	reconnectIntervalObj : null,
@@ -138,7 +138,7 @@ this.SebHost = {
 			sl.debug("messageSocket close: " + e);
 			messageSocket = null;
 			base.messageServer = false;
-			if (!seb.isLocked && su.getConfig("lockOnMessageSocketClose","boolean",false)) {
+			if (!seb.isLocked && su.getConfig("lockOnMessageSocketClose","boolean",true) && !base.reconnectTriesReached) {
 				seb.lock();
 			} 
 		} 
@@ -250,6 +250,10 @@ this.SebHost = {
 	},
 	
 	reconnectSocket : function() {
+        if (base.reconnectTriesReached) {
+            base.resetReconnecting();
+            return;
+        }
 		sl.debug("reconnectSocket...");
 		if (base.messageServer) {
 			sl.debug("message socket reconnected!");
@@ -260,6 +264,7 @@ this.SebHost = {
 		base.reconnectTry += 1;
 		if (base.reconnectTry > base.reconnectMaxTries) {
 			sl.debug("reconnectMaxTries reached");
+            base.reconnectTriesReached = true;
 			base.resetReconnecting();
 			seb.setUnlockScreen();
 			return;
