@@ -145,7 +145,7 @@ this.SebHost = {
 		
 		messageSocket.onmessage = function(evt) { 
 			// ToDo: message handling !!
-			sl.debug("socket message type: " + evt.type);
+			// sl.debug("socket message type: " + evt.type);
 			if (/^SEB\./.test(evt.data)) { // old string messages
 				switch (evt.data) {
 					case "SEB.close" :
