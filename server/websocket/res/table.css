@@ -3,6 +3,15 @@ body {
 	font-family: courier;
 }
 
+#monitorTitle {
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
+#divContent {
+	visibility: hidden;
+}
+
 #sebExtra {
 	float: right;
 }
@@ -61,11 +70,4 @@ td {
 
 .td-shutdown, .td-reboot, .td-runtest, .td-lock, .td-pwd {
 	text-align: center;
-}
-
-#message {
-	/*display: block;
-	-moz-transform: rotate(180deg);
-	-webkit-transform: rotate(180deg);
-	*/ 
 }

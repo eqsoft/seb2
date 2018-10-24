@@ -1,8 +1,7 @@
 window.onload = init;
 
-var 	prot 		= "",
+var prot 		= "",
 	sock_url 	= "", 
-	msg		= null,
 	ws		= null,
 	sebTable	= null,
 	sebTableHead 	= null,
@@ -10,8 +9,13 @@ var 	prot 		= "",
 	totalCount	= null,
 	ws		= null,
 	params		= {},
-	ipFilter	= {},
+	ipFilter	= [],
+	hideFilter	= [],
 	checkIp		= null,
+	divContent	= null,	
+	monitorTitle	= null,
+	selRooms 	= null,
+	defaultFilter	= 'select',
 	handler		= 	{ 
 					"addData":addData,
 					"addSeb":addSeb, 
@@ -23,44 +27,73 @@ var 	prot 		= "",
 					"socketError":socketError
 				};
 				
-
 function init() {
-	msg = document.getElementById("message");
 	log("init");
+	params = {};
+	var href = window.location.href.split('?')[0];
+
 	params = getParams();
-	ipFilter["local"] = /^(127\.0\.0\.1$)|(\:\:1)$/;
-	ipFilter["intern"] = /^192\.168\.0\.\d+$/;
-	ipFilter["zmb"] = /^137\.248\.86\.\d+$/;
-	ipFilter["d3"] = /^137\.248\.4\.\d+$/;
-	defaulFilter = (defaultFilter) ? defaultFilter : (params.filter) ? params.filter : null;
-	log("defaultFilter: " + defaultFilter);
+
+	if (params.filter) {
+		if (!ipFilter[params.filter] && params.filter != 'select') {
+			log("wrong filter: " + params.filter);
+			defaultFilter = 'select';
+		}
+		else {
+			defaultFilter = params.filter;
+		}
+	}	
+	monitorTitle = document.getElementById("monitorTitle");
+	divContent = document.getElementById("divContent");
+	selRooms = document.getElementById("selRooms");
+	Object.keys(ipFilter).sort().map(k => {
+		if (hideFilter.indexOf(k) == -1) {
+			let optRoom = document.createElement("option");
+			optRoom.text = k;
+			if (k == defaultFilter) {
+				optRoom.setAttribute("selected","selected");
+			}
+			selRooms.add(optRoom);
+		}
+	});
+	selRooms.addEventListener("change", function(evt) {
+        	defaultFilter = evt.target[evt.target.selectedIndex].value;
+		window.location.href = href + '?filter='+defaultFilter;
+	});
+		
 	var btnShutDownAll = document.getElementById('btnShutDownAll');
 	var btnRebootAll = document.getElementById('btnRebootAll');
-	if (defaultFilter && ipFilter[defaultFilter]) { //can be defined in html page	
-		checkIp = ipFilter[defaultFilter];
+	if (defaultFilter !== 'select') {
+		checkIp = ipFilter[defaultFilter].regex;
 	}
-	if (params.filter && ipFilter[params.filter]) {
-		defaultFilter = params.filter;
-		checkIp = ipFilter[defaultFilter];
-	}
+	
 	if (checkIp != null) {
 		var val = btnShutDownAll.getAttribute("value") + ": " + defaultFilter;
 		btnShutDownAll.setAttribute("value", val);
 		val = btnRebootAll.getAttribute("value") + ": " + defaultFilter;
 		btnRebootAll.setAttribute("value", val);
 	}
-	//log("regex: "+ipFilter["local"].test("127.0.0.0"));
+	
 	sebTable = document.getElementById("sebTable");
 	sebTableHead = document.getElementById("sebTableHead");
 	sebTableBody = document.getElementById("sebTableBody");
 	totalCount = document.getElementById("totalCount");
+	
 	prot = (window.location.protocol === "https:") ? "wss:" : "ws:"; // for ssl
-	sock_url = prot + "//" + window.location.host; 
+	sock_url = prot + "//" + window.location.host;
 	ws = new WebSocket(sock_url);
 	ws.onopen = on_open;
 	ws.onclose = on_close;
 	ws.onmessage = on_message;
 	ws.onerror = on_error;
+	if (defaultFilter !== 'select') {
+		monitorTitle.innerHTML = ipFilter[defaultFilter].title;
+		divContent.style.visibility = 'visible';		
+	}
+	else {
+		monitorTitle.innerHTML = 'Welcome to seb Monitor';
+		divContent.style.visibility = 'hidden';
+	}
 }
 
 function on_open() {
@@ -86,15 +119,6 @@ function on_error(e) {
 
 function log(str) {
 	console.log(str);
-	if (msg.textContent) {
-		msg.textContent = str;
-		return;
-	}
-	if (msg.innerText) {
-		msg.innerText = str;	
-		return;
-	}
-	msg.innerHTML = str;
 }
 
 /* handler */
@@ -297,6 +321,7 @@ function unlock(id) {
 
 function unlockAll() {
         log("unlockAll");
+
         var idNodes = sebTableBody.querySelectorAll('tr');
         var ids = [];
         for (var i=0;i<idNodes.length;i++) {
@@ -347,7 +372,7 @@ function runTestAll() {
 
 function showPassword(id) {
         log("showPassword: " + id);
-        var password = document.querySelector('#inputPassword').value;
+        var password = document.querySelector('#inputPassword').value.trim();
         if (password && password.value != "") {
                 ws.send(JSON.stringify({"handler":"showPassword","opts":{"id":id,"password":password}}));
         }
@@ -363,7 +388,7 @@ function showPasswordAll() {
         for (var i=0;i<idNodes.length;i++) {
                 ids.push(idNodes[i].id);
         }
-        var password = document.querySelector('#inputPassword').value;
+        var password = document.querySelector('#inputPassword').value.trim();
 	if (password && password.value != "") {
         	ws.send(JSON.stringify({"handler":"showPasswordAll","opts":{"ids":ids,"password":password}}));
 	}
