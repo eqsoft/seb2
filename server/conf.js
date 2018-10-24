@@ -12,7 +12,7 @@ var 	fs 	= require('fs-extra'),
 	directory = require('serve-index'),
 	utils	= require('./utils.js');
 
-const 	CA_CN 	= "Simple Signing CA",
+const 	CA_CN 	= "Example Signing CA",
 	USR_CN	= "seb.client",
 	ADM_CN	= "seb.admin",
 	monitorPort = 8441,
@@ -23,11 +23,11 @@ const 	CA_CN 	= "Simple Signing CA",
 	sendPort = 8080,
 	demoClientCert = false,
 	socketClientCert = false,
-	monitorClientCert = false,
+	monitorClientCert = true,
 	proxy = false,
 	proxyServerPort = 8337,
 	proxyTargetPort = 8338,
-	proxyTarget = 'http://www.simple.org:'+proxyTargetPort,
+	proxyTarget = 'http://sebserver.example.com:'+proxyTargetPort,
 	proxyAuth = true;
 
 var conf = function conf() {
@@ -57,8 +57,8 @@ var conf = function conf() {
 
 	this.getClientCertOptions = function() {
 		var options = 	{
-				key:    fs.readFileSync(__dirname + '/ssl/simple.org.key'),
-				cert:   fs.readFileSync(__dirname + '/ssl/simple.org.crt'),
+				key:    fs.readFileSync(__dirname + '/ssl/example.com.key'),
+				cert:   fs.readFileSync(__dirname + '/ssl/example.com.crt'),
 				ca:     [
 						fs.readFileSync(__dirname + '/ssl/root-ca.crt'),
 						fs.readFileSync(__dirname + '/ssl/signing-ca.crt')
@@ -71,8 +71,8 @@ var conf = function conf() {
 
 	this.getSSLOptions = function() {
 		var options = 	{
-				key:    fs.readFileSync(__dirname + '/ssl/simple.org.key'),
-				cert:   fs.readFileSync(__dirname + '/ssl/simple.org.crt'),
+				key:    fs.readFileSync(__dirname + '/ssl/example.com.key'),
+				cert:   fs.readFileSync(__dirname + '/ssl/example.com.crt'),
 				ca:     [
 						fs.readFileSync(__dirname + '/ssl/root-ca.crt'),
 						fs.readFileSync(__dirname + '/ssl/signing-ca.crt')

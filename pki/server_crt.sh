@@ -1,2 +1,2 @@
 #!/bin/bash
-openssl ca -config etc/signing-ca.conf -in certs/simple.org.csr -out certs/simple.org.crt -extensions server_ext
+openssl ca -config etc/signing-ca.conf -in certs/example.com.csr -out certs/example.com.crt -extensions server_ext
