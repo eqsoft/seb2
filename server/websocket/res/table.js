@@ -1,8 +1,7 @@
 window.onload = init;
 
-var 	prot 		= "",
+var prot 		= "",
 	sock_url 	= "", 
-	msg		= null,
 	ws		= null,
 	sebTable	= null,
 	sebTableHead 	= null,
@@ -10,49 +9,91 @@ var 	prot 		= "",
 	totalCount	= null,
 	ws		= null,
 	params		= {},
-	ipFilter	= {},
+	ipFilter	= [],
+	hideFilter	= [],
 	checkIp		= null,
+	divContent	= null,	
+	monitorTitle	= null,
+	selRooms 	= null,
+	defaultFilter	= 'select',
 	handler		= 	{ 
 					"addData":addData,
 					"addSeb":addSeb, 
 					"removeSeb":removeSeb,
 					"lockedSeb":lockedSeb,
 					"unlockedSeb":unlockedSeb,
+					"pwdShownSeb":pwdShownSeb,
+					"pwdHiddenSeb":pwdHiddenSeb,
 					"socketError":socketError
 				};
 				
-
 function init() {
-	msg = document.getElementById("message");
 	log("init");
+	params = {};
+	var href = window.location.href.split('?')[0];
+
 	params = getParams();
-	ipFilter["local"] = /^(127\.0\.0\.1$)|(\:\:1)$/;
-	ipFilter["intern"] = /^192\.168\.0\.\d+$/;
-	defaulFilter = (defaultFilter) ? defaultFilter : (params.filter) ? params.filter : null;
-	log("defaultFilter: " + defaultFilter);
-	if (defaultFilter && ipFilter[defaultFilter]) { //can be defined in html page	
-		checkIp = ipFilter[defaultFilter];
+
+	if (params.filter) {
+		if (!ipFilter[params.filter] && params.filter != 'select') {
+			log("wrong filter: " + params.filter);
+			defaultFilter = 'select';
+		}
+		else {
+			defaultFilter = params.filter;
+		}
+	}	
+	monitorTitle = document.getElementById("monitorTitle");
+	divContent = document.getElementById("divContent");
+	selRooms = document.getElementById("selRooms");
+	Object.keys(ipFilter).sort().map(k => {
+		if (hideFilter.indexOf(k) == -1) {
+			let optRoom = document.createElement("option");
+			optRoom.text = k;
+			if (k == defaultFilter) {
+				optRoom.setAttribute("selected","selected");
+			}
+			selRooms.add(optRoom);
+		}
+	});
+	selRooms.addEventListener("change", function(evt) {
+        	defaultFilter = evt.target[evt.target.selectedIndex].value;
+		window.location.href = href + '?filter='+defaultFilter;
+	});
+		
+	var btnShutDownAll = document.getElementById('btnShutDownAll');
+	var btnRebootAll = document.getElementById('btnRebootAll');
+	if (defaultFilter !== 'select') {
+		checkIp = ipFilter[defaultFilter].regex;
 	}
-	if (params.filter && ipFilter[params.filter]) {
-		defaultFilter = params.filter;
-		checkIp = ipFilter[defaultFilter];
-	}
+	
 	if (checkIp != null) {
 		var val = btnShutDownAll.getAttribute("value") + ": " + defaultFilter;
 		btnShutDownAll.setAttribute("value", val);
+		val = btnRebootAll.getAttribute("value") + ": " + defaultFilter;
+		btnRebootAll.setAttribute("value", val);
 	}
-	//log("regex: "+ipFilter["local"].test("127.0.0.0"));
+	
 	sebTable = document.getElementById("sebTable");
 	sebTableHead = document.getElementById("sebTableHead");
 	sebTableBody = document.getElementById("sebTableBody");
 	totalCount = document.getElementById("totalCount");
+	
 	prot = (window.location.protocol === "https:") ? "wss:" : "ws:"; // for ssl
-	sock_url = prot + "//" + window.location.host; 
+	sock_url = prot + "//" + window.location.host;
 	ws = new WebSocket(sock_url);
 	ws.onopen = on_open;
 	ws.onclose = on_close;
 	ws.onmessage = on_message;
 	ws.onerror = on_error;
+	if (defaultFilter !== 'select') {
+		monitorTitle.innerHTML = ipFilter[defaultFilter].title;
+		divContent.style.visibility = 'visible';		
+	}
+	else {
+		monitorTitle.innerHTML = 'Welcome to seb Monitor';
+		divContent.style.visibility = 'hidden';
+	}
 }
 
 function on_open() {
@@ -78,15 +119,6 @@ function on_error(e) {
 
 function log(str) {
 	console.log(str);
-	if (msg.textContent) {
-		msg.textContent = str;
-		return;
-	}
-	if (msg.innerText) {
-		msg.innerText = str;	
-		return;
-	}
-	msg.innerHTML = str;
 }
 
 /* handler */
@@ -118,6 +150,19 @@ function unlockedSeb(obj) {
         log("unlockedSeb: " + obj.seb.id);
 	var el = document.getElementById("lockstatus_" + obj.seb.id);
         el.setAttribute("src","images/unlocked.png");
+}
+
+
+function pwdShownSeb(obj) {
+        log("pwdShown: " + obj.seb.id);
+        var el = document.getElementById("pwdstatus_" + obj.seb.id);
+        el.setAttribute("src","images/pwd_shown.svg");
+}
+
+function pwdHiddenSeb (obj) {
+        log("pwdHidden: " + obj.seb.id);
+        var el = document.getElementById("pwdstatus_" + obj.seb.id);
+        el.setAttribute("src","images/pwd_hidden.svg");
 }
 
 function socketError(opts) {
@@ -172,18 +217,23 @@ function addRow(seb) {
 
 	var rtCell = row.insertCell(3);
         rtCell.className = "td-runtest";
-
-	var lckCell = row.insertCell(4);
-	lckCell.className = "td-lock";
 	
+	var pwdCell = row.insertCell(4);
+        pwdCell.className = "td-pwd";	
+
+	var lckCell = row.insertCell(5);
+	lckCell.className = "td-lock";
+
 	var lock_status = (seb.locked) ? "locked" : "unlocked";
+	var pwd_status = (seb.pwdShown) ? "pwd_shown" : "pwd_hidden";
 	
 	ipCell.innerHTML = seb.ip;
 	rbCell.innerHTML = "<input type=\"button\" value=\"reboot\" class=\"btn-reboot\" onclick=\"reboot(\'" + seb.id + "\');\" />";
 	sdCell.innerHTML = "<input type=\"button\" value=\"shutdown\" class=\"btn-shutdown\" onclick=\"shutdown(\'" + seb.id + "\');\" />";
 	rtCell.innerHTML = "<input type=\"button\" value=\"runtest\" class=\"btn-runtest\" onclick=\"runTest(\'" + seb.id + "\');\" />";
+	pwdCell.innerHTML = "<input type=\"image\" class=\"btn-pwd\" title=\"password\" id=\"pwdstatus_" +  seb.id + "\" src=\"images/" + pwd_status + ".svg\" onclick=\"togglePassword(\'" + seb.id + "\');\" />";
 	lckCell.innerHTML = "<input type=\"image\" class=\"btn-lock\" title=\"lock\" id=\"lockstatus_" +  seb.id + "\" src=\"images/" + lock_status + ".png\" onclick=\"toggleLock(\'" + seb.id + "\');\" />";
-	
+
 	totalCount.innerHTML = sebTableBody.getElementsByTagName("tr").length;
 }
 
@@ -271,6 +321,7 @@ function unlock(id) {
 
 function unlockAll() {
         log("unlockAll");
+
         var idNodes = sebTableBody.querySelectorAll('tr');
         var ids = [];
         for (var i=0;i<idNodes.length;i++) {
@@ -318,4 +369,60 @@ function runTestAll() {
         }
         //var rows sebTableBody.getElementBy
 }
+
+function showPassword(id) {
+        log("showPassword: " + id);
+        var password = document.querySelector('#inputPassword').value.trim();
+        if (password && password.value != "") {
+                ws.send(JSON.stringify({"handler":"showPassword","opts":{"id":id,"password":password}}));
+        }
+	else {
+		alert("Please fill password field.");
+	}
+}
+
+function showPasswordAll() {
+        log("showPasswordAll");
+        var idNodes = sebTableBody.querySelectorAll('tr');
+        var ids = [];
+        for (var i=0;i<idNodes.length;i++) {
+                ids.push(idNodes[i].id);
+        }
+        var password = document.querySelector('#inputPassword').value.trim();
+	if (password && password.value != "") {
+        	ws.send(JSON.stringify({"handler":"showPasswordAll","opts":{"ids":ids,"password":password}}));
+	}
+        else { 
+                alert("Please fill password field.");
+        }
+        //var rows sebTableBody.getElementBy
+}
+
+function hidePassword(id) {
+        log("hidePassword: " + id);
+        ws.send(JSON.stringify({"handler":"hidePassword","opts":{"id":id}}));       
+}
+
+function hidePasswordAll() {
+        log("hidePasswordAll");
+        var idNodes = sebTableBody.querySelectorAll('tr');
+        var ids = [];
+        for (var i=0;i<idNodes.length;i++) {
+                ids.push(idNodes[i].id);
+        }
+	ws.send(JSON.stringify({"handler":"hidePasswordAll","opts":{"ids":ids}}));
+}
+
+function togglePassword(id) {
+        log("togglePassword: " + id);
+        var el = document.getElementById("pwdstatus_"+id);
+        var hidden = /^.*?pwd_hidden\.svg$/.test(el.src);
+        if (hidden === true) {
+                showPassword(id);
+        }
+        else {
+                hidePassword(id);
+        }
+}
+
 //http://caniuse.com/#feat=queryselector
