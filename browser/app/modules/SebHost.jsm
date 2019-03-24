@@ -93,7 +93,8 @@ this.SebHost = {
 			"ClearSession" : base.handleClearSession,
 			"AdditionalDictionaries" : base.handleAdditionalDictionaries,
             "LockSeb" : base.handleLockSeb,
-            "UnlockSeb" : base.handleUnlockSeb
+            "UnlockSeb" : base.handleUnlockSeb,
+            "UserSwitchLockScreen" : base.handleUserSwitchLockScreen
 		};
 		base.sendHandler = {
 			"SebFile" : base.sendSebFile,
@@ -103,7 +104,7 @@ this.SebHost = {
 			"FullScreenChanged" : base.sendFullScreenChanged
 		};
 		base.reconnectInterval = su.getConfig("lockOnMessageSocketCloseTriesIntervallMSec","number",1000);
-		base.reconnectMaxTries = su.getConfig("lockOnMessageSocketCloseTries","number",5);
+		base.reconnectMaxTries = su.getConfig("lockOnMessageSocketCloseTries","number",10);
 		
 		sl.out("SebHost initialized: " + seb);
 	},
@@ -403,12 +404,17 @@ this.SebHost = {
 	
     handleLockSeb : function() {
         sl.debug("handleLockSeb");
-        seb.lock();
+        seb.lock(MODE_RECONNECT);
     },
     
     handleUnlockSeb : function() {
         sl.debug("handleUnlockSeb");
         seb.unlockAll();
+    },
+    
+    handleUserSwitchLockScreen: function() {
+        sl.debug("handleUserSwitchLockScreen");
+        seb.lock(MODE_USERSWITCH);
     },
     
 	sendSebFile : function (base64) {
