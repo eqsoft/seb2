@@ -16,34 +16,34 @@
 		Test Page
 		</p>
 		
-		<p><a href="https://www.simple.org:8443/demo/res/test.pdf">pdf file 1 from local demo server</a></p>
-		<p><a href="https://www.simple.org:8443/demo/res/test2.pdf">pdf file 2 from local demo server</a></p>
-		<p><a href="https://www.simple.org:8443/download_pdf">dynamic pdf from local demo server (with inline Content-disposition file name)</a></p>
-		<p><a href="https://www.simple.org:8443/stream_pdf">dynamic pdf from local demo server (without Content-disposition file name)</a></p>
+		<p><a href="https://sebserver.example.com:8443/demo/res/test.pdf">pdf file 1 from local demo server</a></p>
+		<p><a href="https://sebserver.example.com:8443/demo/res/test2.pdf">pdf file 2 from local demo server</a></p>
+		<p><a href="https://sebserver.example.com:8443/download_pdf">dynamic pdf from local demo server (with inline Content-disposition file name)</a></p>
+		<p><a href="https://sebserver.example.com:8443/stream_pdf">dynamic pdf from local demo server (without Content-disposition file name)</a></p>
 		<p><a href="http://java.cete.com/DynamicPDFv80/HelloWorld">dynamic pdf 2</a></p>
 		<p><a href="http://async5.org/moz/pdfjs.pdf">remote pdf</a></p>
 		<p><a href="http://dfgdfgsdfg.br" target="_top">dead link: no dn entry, no server available</a></p>
-		<p><a href="https://www.simple.org:8443/demo/no_ressource" target="_top">dead link: server available, no ressource</a></p>
-		<p><a href="https://www.simple.org:8443/quit" target="_top">Quit URL</a></p>
+		<p><a href="https://sebserver.example.com:8443/demo/no_ressource" target="_top">dead link: server available, no ressource</a></p>
+		<p><a href="https://sebserver.example.com:8443/quit" target="_top">Quit URL</a></p>
 		<p><a href="https://www.bennish.net/mixed-content.html" target="_top">Mixed Content Test Page</a></p>
 		<p><a href="https://www.bennish.net/mixed-content.html" target="_blank">Mixed Content Test Page (Popup)</a></p>
 		<p><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content" target="_top">Mixed Content MDN</a></p>
 		<p><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content" target="_blank">Mixed Content MDN (Popup)</a></p>
-		<p><a href="https://www.simple.org:8443/linkurl" target="_top">link url defined in ars that trigger another ressource</a></p>
+		<p><a href="https://sebserver.example.com:8443/linkurl" target="_top">link url defined in ars that trigger another ressource</a></p>
 		<p><a href="http://www.imdb.com" target="_top">imdb.com</a></p>
 		<p><a href="http://www.google.com" target="_top">google top</a></p>
 		<p><a href="http://www.google.com" target="_blank">google popup blank</a></p>
 		<p><a href="http://www.google.com" onclick="openWin(this.href);return false;">google popup javascript</a></p>
 		<p><a href="http://online-pruefungen.let.ethz.ch" target="_top">Online Prüfungen LET</a></p>
-		<p><a href="https://www.simple.org:8443/error" target="_top">Error: Server not available</a></p>
+		<p><a href="https://sebserver.example.com:8443/error" target="_top">Error: Server not available</a></p>
 		<p><a href="https://safeexambrowser.org/testing" target="_top">safeexambrowser.org/testing</a></p>
 		<iframe src="https://safeexambrowser.org/exams/index3.html"></iframe>
-		<p><a href="sebs://www.simple.org:8443/demo/res/reconf.seb">sebs file for reconiguration (simple.org)</a></p>
-		<p><a href="sebs://www.simple.org:8443/demo/res/exam.seb">sebs file for exam start (simple.org)</a></p>
+		<p><a href="sebs://sebserver.example.com:8443/demo/res/reconf.seb">sebs file for reconiguration (simple.org)</a></p>
+		<p><a href="sebs://sebserver.example.com:8443/demo/res/exam.seb">sebs file for exam start (simple.org)</a></p>
 		<p><a href="https://test.inspera.no">Inspera Test PDF</a></p>
-		<p><a href="https://www.simple.org:8443/basic/test.html">Basic Auth</a></p>
-		<p><a href="https://www.simple.org:8443/basic/test.html" target="_blank">Basic Auth _blank</a></p>
-		<p><a href="sebs://www.simple.org:8443/basic/res/reconf.seb">Basic Auth seb file</a></p>
+		<p><a href="https://sebserver.example.com:8443/basic/test.html">Basic Auth</a></p>
+		<p><a href="https://sebserver.example.com:8443/basic/test.html" target="_blank">Basic Auth _blank</a></p>
+		<p><a href="sebs://sebserver.example.com:8443/basic/res/reconf.seb">Basic Auth seb file</a></p>
 		<p><a href="https://localhost:8443/linkurl">ARS linkURL</a></p>
 		<p><a href="https://github.com/SafeExamBrowser/seb-mac">linkURL for embedded AR -> msg to host</a></p>
         
@@ -56,7 +56,7 @@
 		<p>Spellchecking ohne Angabe (wird die Sprache der Seite genommen "en")</p>
 		<textarea spellcheck="true"></textarea>
 		<br />
-		<iframe src="https://www.simple.org:8443/demo/q1.html" title="" width="400" height="300"></iframe>
+		<iframe src="https://sebserver.example.com:8443/demo/q1.html" title="" width="400" height="300"></iframe>
 		<br />
 		<br />
 		<br />
@@ -68,19 +68,20 @@
 			<input type="file" name="sampleFile" />
 			<input type='submit' value='Upload!' />
 		</form> 
-		<p><a href="https://www.simple.org:8443/demo/res/test.ods">Download ods File</a></p>
+        <p><a href="res/test.odt">Download odt File</a></p>
+		<p><a href="res/test.ods">Download ods File</a></p>
 		<!--<iframe src="https://d2snzxottmona5.cloudfront.net/lib/pdfjs/1.5.188_5/web/viewer.html?file=https%3A%2F%2Finsperalearning-dev.s3.amazonaws.com%2Ftest%2F2015%2F02%2F04%2Fdocumentation_detailed_1574906_1423049263458.pdf%3Fresponse-cache-control%3Dprivate%252C%2520max-age%253D43200%26x-amz-security-token%3DFQoDYXdzEL7%252F%252F%252F%252F%252F%252F%252F%252F%252F%252FwEaDIAiQUR0N0Ggo6M5GiK3A2rtq6tjbb40zHMurpMBVeA%252B3EqYy2hXwYOOlLm4ymGtUfx%252FfA2dRSma0omZstOHyc%252FyOKhm7%252B1MOovNO6ctVW81%252Fu1FzjalIXFriPwY5g5KiUg12PH%252FehxiD7N9X1XGD4uX44Q84gTOn7VLzqsnb%252F%252F0pwnkrMGInOrW317Je16x3df%252BUPtnEtXyA72ZFgm4AVA1OBjWeGw2F4RYMVhj1gaMKbPCW%252FPCHzMAR%252Bz7i%252B6ReQOVX%252BTPR3uUMDsqQsfOSn3L0a18cItTPkQdk5Sa67W2JFAXwmdlfHnHqKH7e%252FCUV2bW4Ye2gjbs0ajSiwIkAzOYMZF%252BgbCmwhqcqoYPksTQ9%252BuJcFnmazeJHpR6%252FElSjb%252BSlTucb7c%252BgEM%252FANSk05pRpRHivMmXJhHzBXNaJ0R1i2C5yjRR4L80IJ1%252BPP1RHmXh%252Btk6PkVHlJjy7CdGgUMHU0OAP7Wh67HcQbvUfQnozPUM2f4XeJQO%252F5Gb2JOZqnUT5TmvLXcRmarViS2VfQqBrVJWkg2ME4%252Fk5EHDKlqZ0b0IIUWqM26H6YFJ0xnxVq8lFUFbaT9CFSUSRkIs86vrCAB0G%252BUotdy%252B1QU%253D%26AWSAccessKeyId%3DASIAJ2IMCX6ITU25VQCA%26Expires%3D1521508336%26Signature%3DK399%252B5x1CqyGfWCuc1dDbCizsLg%253D" title="pdf" style="visibility: visible;"></iframe>-->
-		<iframe src="https://d2snzxottmona5.cloudfront.net/lib/pdfjs/1.5.188_5/web/viewer.html?file=https%3A%2F%2Finsperalearning-stage.s3.amazonaws.com%2Ftest%2F2018%2F01%2F31%2Fpdf-sample_23028467_1517401615617.pdf" title="pdf" style="visibility: visible;"></iframe>
-		
+		<!--<iframe src="https://d2snzxottmona5.cloudfront.net/lib/pdfjs/1.5.188_5/web/viewer.html?file=https%3A%2F%2Finsperalearning-stage.s3.amazonaws.com%2Ftest%2F2018%2F01%2F31%2Fpdf-sample_23028467_1517401615617.pdf" title="pdf" style="visibility: visible;"></iframe>-->
+
 		<!--
 		<p><a href="http://ipxe.org" target="_top">ipxe.org</a></p>
 		<p><a href="http://wikipedia.de" target="_self">Wikipedia</a></p>
-		<p><a href="https://www.simple.org:8443/quit" target="_self">Beenden</a></p>
+		<p><a href="https://sebserver.example.com:8443/quit" target="_self">Beenden</a></p>
 		<p><a href="/demo/q1.html" target="_blank">new Window per _blank link</a></p>
 		<p><a href="/demo/q1.html" target="_blank">new Window per _new link</a></p>
 		<p><a href="/demo/q1.html" onclick="openWin(this.href);return false">new Window per javascript</a></p>
 		<p><a href="sebs://192.168.224.1:8443/demo/res/test.seb">sebs file (192.)</a></p>
-		<p><a href="sebs://www.simple.org:8443/basic/res/test.seb">sebs file (simple.org basic auth)</a></p>
+		<p><a href="sebs://sebserver.example.com:8443/basic/res/test.seb">sebs file (simple.org basic auth)</a></p>
 		<p><a href="sebs://192.168.224.1:8443/download">sebs file as attatchment (192.)</a></p>
 		<p><a href="sebs://192.168.224.1:8443/demo/end.html">seb file link (192.)</a></p>
 		<p><a href="sebs://localhost:8443/demo/res/test.seb">sebs file (local)</a></p>
@@ -90,10 +91,10 @@
 		<p><a href="sebs://moodle-app2.let.ethz.ch/mod/resource/view.php?id=120434">seb file link (shibboleth redirect)</a></p>
 		<p><a href="http://localhost:8443/linkurl">linkURL</a></p>
 		<p><a href="http://localhost/google">linkURL2</a></p>
-		<p><a href="https://www.simple.org/quitlink">https quit link</a></p>
+		<p><a href="https://sebserver.example.com/quitlink">https quit link</a></p>
 		<p><a href="http://localhost/quitlink">quit url as AR wrapper link</a></p>
 		
-		<p><a href="http://www.simple.org:8080/websocket/">Whitelist Check</a></p>
+		<p><a href="http://sebserver.example.com:8080/websocket/">Whitelist Check</a></p>
 		<p><a href="https://www.check-dein-wissen.ch/de/" target="_self">TEST</a></p>
 		<p><a href="chrome://global/locale/netError.dtd" target="_self">Neterror.dtd</a></p>
 		<p><input type="text" size="100" />

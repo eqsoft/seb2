@@ -35,7 +35,8 @@
 	"zoom.minPercent" 		: { "cb" : "zoomMinPercent" },
 	"plugin.state.flash"		: { "cb" : "pluginEnableFlash" },
 	"plugin.state.java"		: { "cb" : "pluginEnableJava" },
-	"layout.spellcheckDefault" 	: { "cb" : "spellcheckDefault" }
+	"layout.spellcheckDefault" 	: { "cb" : "spellcheckDefault" },
+    "browser.download.forbid_open_with" : { "cb": "openDownloads"} 
 },
 "sebRebootKeyEnabled":false,
 "sebServer": {
@@ -126,6 +127,7 @@
 "newBrowserWindowByScriptBlockForeign":false,
 "newBrowserWindowByScriptPolicy":2,
 "newBrowserWindowShowReloadWarning" : false,
+"openDownloads":true,
 "pinEmbeddedCertificates":false,
 "proxies": {},
 "quitOnMessageSocketClose":true,
@@ -139,7 +141,8 @@
 "sendBrowserExamKey":true,
 "showReloadWarning" : true,
 "showTaskBar":false,
-"startURL":"https://sebserver.example.com:8443/websocket/index.html",
+"startURL_":"https://sebserver.example.com:8443/websocket/index.html",
+"startURL":"https://sebserver.example.com:8443/demo/test.html",
 "taskBarHeight":0,
 "touchOptimized":false,
 "urlFilterTrustedContent":true,
