@@ -54,6 +54,7 @@
 "additionalResources": [],
 "allowAudioCapture": false,
 "allowBrowsingBackForward":true,
+"allowDownUploads":true, 
 "allowQuit":true,
 "allowSpellCheck":true,
 "allowSpellCheckDictionary":"en-US",
@@ -76,6 +77,7 @@
 "browserViewMode":1,
 "browserWindowTitleSuffix": "",
 "browserWindowAllowReload" : true,
+"downloadAndOpenSebConfig" : true,
 "downloadDirectoryWin":"",
 "embeddedCertificates":
 [
