@@ -415,7 +415,7 @@ this.SebBrowser = {
 			}
 			if (this.isLoaded(flags)) {
 				// ignore custom tracing status
-				if (request && request.status && (request.status > 0 && request.status < 11)) {
+				if (request && request.status && (request.status > 0 && request.status < 10)) {
 					switch (request.status) {
 						case STATUS_PDF_REDIRECT.status :
 						case STATUS_QUIT_URL_STOP.status :
@@ -585,7 +585,7 @@ this.SebBrowser = {
 		    // ignore requests that are not a channel
 		    return
 		}
-		if (status > 0 && status < 11) {
+		if (status > 0 && status < 10) {
 			sl.debug("custom request handling: " + status + " - " + message);
 			let uri = request.URI.spec.replace(/\/$/,"");
 			switch (status) {
@@ -650,14 +650,6 @@ this.SebBrowser = {
 					base.stopLoading(sw.getChromeWin(progress.DOMWindow));
                     sh.sendClearClipboard();
                     break;
-				/*
-				case STATUS_REDIRECT_TO_SEB_FILE_DOWNLOAD_DIALOG.status :
-					request.cancel(status);
-					this.mainPageURI = null;
-					base.stopLoading(sw.getChromeWin(progress.DOMWindow));
-					base.openSebFileDialog(uri);
-					break;
-				*/	
 			}
 		}
 	},
