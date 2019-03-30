@@ -30,6 +30,8 @@
 	see: https://developer.mozilla.org/en/Components.utils.import 
 */
 
+// http://kb.mozillazine.org/Chrome_URLs
+
 this.EXPORTED_SYMBOLS = ["SebWin"];
 
 /* Modules */

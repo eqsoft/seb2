@@ -308,6 +308,11 @@ this.SebBrowser = {
 						this.onStatusChange(progress, request, STATUS_QUIT_URL_STOP.status, STATUS_QUIT_URL_STOP.message);
 						return;
 					}
+                    
+                    if (seb.clearClipboardUrl == uri) {
+                        this.onStatusChange(progress, request, STATUS_CLEAR_CLIPBOARD_URL_STOP.status, STATUS_CLEAR_CLIPBOARD_URL_STOP.message);
+						return;
+                    }
 					
 					for (var key in seb.ars) {
 						if (seb.ars[key].checkTrigger(uri,progress.DOMWindow.document.URL)) {
@@ -410,14 +415,15 @@ this.SebBrowser = {
 			}
 			if (this.isLoaded(flags)) {
 				// ignore custom tracing status
-				if (request && request.status && (request.status > 0 && request.status < 10)) {
+				if (request && request.status && (request.status > 0 && request.status < 11)) {
 					switch (request.status) {
 						case STATUS_PDF_REDIRECT.status :
 						case STATUS_QUIT_URL_STOP.status :
 						case STATUS_QUIT_URL_WRONG_REFERRER.status :
 						case STATUS_BLOCK_HTTP.status :
 						case STATUS_INVALID_URL.status :
-						case STATUS_REDIRECT_TO_SEB_FILE_DOWNLOAD_DIALOG :
+						case STATUS_REDIRECT_TO_SEB_FILE_DOWNLOAD_DIALOG.status :
+                        case STATUS_CLEAR_CLIPBOARD_URL_STOP.status :
 							sl.debug("custom request stop: " + uri + " status: " + request.status);
 						return;
 					}
@@ -579,7 +585,7 @@ this.SebBrowser = {
 		    // ignore requests that are not a channel
 		    return
 		}
-		if (status > 0 && status < 10) {
+		if (status > 0 && status < 11) {
 			sl.debug("custom request handling: " + status + " - " + message);
 			let uri = request.URI.spec.replace(/\/$/,"");
 			switch (status) {
@@ -638,6 +644,12 @@ this.SebBrowser = {
 					base.stopLoading(sw.getChromeWin(progress.DOMWindow));
 					prompt.alert(seb.mainWin, su.getLocStr("seb.title"), su.getLocStr("seb.url.blocked"));
 					break;
+                case STATUS_CLEAR_CLIPBOARD_URL_STOP.status :
+                    request.cancel(status);
+					this.mainPageURI = null;
+					base.stopLoading(sw.getChromeWin(progress.DOMWindow));
+                    sh.sendClearClipboard();
+                    break;
 				/*
 				case STATUS_REDIRECT_TO_SEB_FILE_DOWNLOAD_DIALOG.status :
 					request.cancel(status);

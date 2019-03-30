@@ -101,7 +101,8 @@ this.SebHost = {
 			"ReconfigureAborted" : base.sendReconfigureAborted,
 			"ReconfigureSuccess" : base.sendReconfigureSuccess,
 			"AdditionalRessourceTriggered" : base.sendAdditionalRessourceTriggered,
-			"FullScreenChanged" : base.sendFullScreenChanged
+			"FullScreenChanged" : base.sendFullScreenChanged,
+            "ClearClipboard" : base.sendClearClipboard
 		};
 		base.reconnectInterval = su.getConfig("lockOnMessageSocketCloseTriesIntervallMSec","number",1000);
 		base.reconnectMaxTries = su.getConfig("lockOnMessageSocketCloseTries","number",10);
@@ -445,6 +446,11 @@ this.SebHost = {
 		base.sendMessage(JSON.stringify(msg));
 	},
 	
+    sendClearClipboard : function() {
+		let msg = {Handler:"ClearClipboard",Opts:{}};
+		base.sendMessage(JSON.stringify(msg));
+	},
+    
 	quitFromHost : function () {
 		seb.hostForceQuit = true;
 		seb.quitIgnoreWarning = true;
