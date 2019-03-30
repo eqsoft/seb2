@@ -189,7 +189,7 @@ requestObserver.prototype.observe = function ( subject, topic, data ) {
 			subject.setRequestHeader(reqHeader, k, false);
 			sl.info("request header:");
 			sl.info("*****************");
-			aVisitor2 = new requestHeaderVisitor();
+			let aVisitor2 = new requestHeaderVisitor();
 			subject.visitRequestHeaders(aVisitor2);
 			sl.info("");
 		}
