@@ -87,6 +87,7 @@ this.seb =  {
 	arsKeys : {},
 	isLocked : false,
     lockMode : MODE_RECONNECT,
+    privateClipboard : {},
 
 	toString : function() {
 		return appinfo.name;
@@ -160,6 +161,7 @@ this.seb =  {
 		base.initLocale();
 		base.initAdditionalResources();
 		base.getArsLinksAndKeys();
+        base.initPrivateClipboard();
 		sn.init(base); // needs config on init for compiled RegEx
 		sn.initProxies();
 		sh.init(base);
@@ -264,6 +266,7 @@ this.seb =  {
 		sh.createFullscreenController(win);
 		ss.setSebserverSocketHandler(win);
 		sb.createSpellCheckController(win);
+        sb.createClipboardController(win);
 		base.locs = win.document.getElementById("locale");
 		base.consts = win.document.getElementById("const");
 		sw.setMainNavigation(win);
@@ -287,6 +290,7 @@ this.seb =  {
 		sh.createScreenKeyboardController(win);
 		sh.createFullscreenController(win);
 		sb.createSpellCheckController(win);
+        sb.createClipboardController(win);
 	},
 
 	initAdditionalResources : function (obj) {
@@ -383,6 +387,11 @@ this.seb =  {
 		keySet.parentNode.appendChild(keySet);
 	},
 	
+    initPrivateClipboard : function() {
+        base.privateClipboard['text'] = "";
+        base.privateClipboard['ranges'] = [];
+    },
+    
 	/* handler */
 	setQuitHandler : function(win) {
 		sl.debug("setQuitHandler");
