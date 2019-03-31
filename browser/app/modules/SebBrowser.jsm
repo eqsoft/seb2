@@ -1212,8 +1212,8 @@ this.SebBrowser = {
                 let sel = w.getSelection();
                 let text = "";
                 for (let i = 0; i < sel.rangeCount; i++) {
-                    seb.privateClipboard.ranges[i] = sel.getRangeAt(i).cloneRange();
-                    text += seb.privateClipboard.ranges[i].toString();
+                    seb.privateClipboard.ranges[i] = sel.getRangeAt(i).cloneContents();
+                    text += seb.privateClipboard.ranges[i].textContent;
                 }
                 seb.privateClipboard.text = text;
             }
@@ -1309,29 +1309,42 @@ this.SebBrowser = {
                         }
                     }
                      
-                    let r0 = sel.getRangeAt(0);
-                    //r0.collapse();
                     if (designMode === 'on') {
+                        let range = w.getSelection().getRangeAt(0);
                         if (seb.privateClipboard.ranges.length > 0) {
                             seb.privateClipboard.ranges.map(r => {
-                                r0.insertNode(r.cloneContents());
+                                range = w.getSelection().getRangeAt(0);
+                                range.collapse();
+                                const newNode = r.cloneNode(true);
+                                range.insertNode(newNode);
+                                range.collapse();
                             });
                         }
                         else {
-                            r0.insertNode(w.document.createTextNode(seb.privateClipboard.text));
+                            range.collapse();
+                            range.insertNode(w.document.createTextNode(seb.privateClipboard.text));
+                            range.collapse();
                         }
                     }
                     else {
                         if (contentEditables.length) {
                             contentEditables.forEach( node => {
-                                if (node.contains(r0.commonAncestorContainer)) {
+                                let range = w.getSelection().getRangeAt(0);
+                                if (node.contains(range.commonAncestorContainer)) {
                                     if (seb.privateClipboard.ranges.length > 0) {
                                         seb.privateClipboard.ranges.map(r => {
-                                            r0.insertNode(r.cloneContents());
+                                            range = w.getSelection().getRangeAt(0);
+                                            range.collapse();
+                                            const newNode = r.cloneNode(true);
+                                            range.insertNode(newNode);
+                                            range.collapse();
                                         });
                                     }
                                     else {
-                                        r0.insertNode(w.document.createTextNode(seb.privateClipboard.text));
+                                        range = w.getSelection().getRangeAt(0);
+                                        range.collapse();
+                                        range.insertNode(w.document.createTextNode(seb.privateClipboard.text));
+                                        range.collapse();
                                     }
                                 }
                             });
@@ -1347,29 +1360,6 @@ this.SebBrowser = {
                 evt.returnValue = false;
                 return false;
             }
-        }
-        
-        function replaceSelection(w) {
-            var range;
-            //var html = seb.privateClipboard.data;
-            /*
-            var html = "<b>sdfsdfsdfsdf</b>";
-            if (w.getSelection && w.getSelection().getRangeAt) {
-                range = w.getSelection().getRangeAt(0);
-                range.deleteContents();
-                var div = w.document.createElement("div");
-                div.innerHTML = html;
-                var frag = w.document.createDocumentFragment(), child;
-                while ( (child = div.firstChild) ) {
-                    frag.appendChild(child);
-                }
-                range.insertNode(frag);
-            } 
-            else if (w.document.selection && w.document.selection.createRange) {
-                range = w.document.selection.createRange();
-                range.pasteHTML(html);
-            }
-            */ 
         }
     }
 }
