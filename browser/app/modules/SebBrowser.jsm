@@ -309,7 +309,8 @@ this.SebBrowser = {
 						return;
 					}
                     
-                    if (seb.clearClipboardUrl == uri) {
+                    //if (seb.clearClipboardUrl == uri) {
+                    if (seb.clearClipboardUrlRegex.test(uri)) {
                         this.onStatusChange(progress, request, STATUS_CLEAR_CLIPBOARD_URL_STOP.status, STATUS_CLEAR_CLIPBOARD_URL_STOP.message);
 						return;
                     }
@@ -648,7 +649,7 @@ this.SebBrowser = {
                     request.cancel(status);
 					this.mainPageURI = null;
 					base.stopLoading(sw.getChromeWin(progress.DOMWindow));
-                    sh.sendClearClipboard();
+                    seb.clearClipboard();
                     break;
 			}
 		}

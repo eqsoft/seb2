@@ -258,6 +258,7 @@ this.seb =  {
 		base.allowQuit = su.getConfig("allowQuit","boolean",false);
 		base.quitURL = su.getConfig("quitURL","string","").replace(/\/$/,"");
         base.clearClipboardUrl = su.getConfig("clearClipboardUrl","string","").replace(/\/$/,"");
+        base.clearClipboardUrlRegex = new RegExp(sn.getRegex(base.clearClipboardUrl));
 		base.initArsKeys(win);
 		sb.setEmbeddedCerts();
 		base.setQuitHandler(win);
@@ -949,5 +950,12 @@ this.seb =  {
 			sw.closeAllWin();
 			sl.debug("quit");
 		}
-	}
+	},
+    
+    clearClipboard : function() {
+        sl.debug("clearClipboard");
+        base.privateClipboard.ranges = [];
+        base.privateClipboard.text = "";
+        sh.sendClearClipboard();
+    }
 }
