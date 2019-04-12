@@ -35,7 +35,8 @@
 	"zoom.minPercent" 		: { "cb" : "zoomMinPercent" },
 	"plugin.state.flash"		: { "cb" : "pluginEnableFlash" },
 	"plugin.state.java"		: { "cb" : "pluginEnableJava" },
-	"layout.spellcheckDefault" 	: { "cb" : "spellcheckDefault" }
+	"layout.spellcheckDefault" 	: { "cb" : "spellcheckDefault" },
+    "browser.download.forbid_open_with" : { "cb": "openDownloads"}
 },
 "sebRebootKeyEnabled":false,
 "sebServer": {
