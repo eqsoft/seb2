@@ -54,7 +54,7 @@
 "additionalResources": [],
 "allowAudioCapture": false,
 "allowBrowsingBackForward":true,
-"allowDownUploads":false,
+"allowDownUploads":true,
 "allowQuit":true,
 "allowSpellCheck":false,
 "allowSpellCheckDictionary":"en-US",
