@@ -36,7 +36,7 @@ this.EXPORTED_SYMBOLS = ["SebWin"];
 
 /* Modules */
 const 	{ classes: Cc, interfaces: Ci, results: Cr, utils: Cu } = Components,
-	{ scriptloader } = Cu.import("resource://gre/modules/Services.jsm").Services;
+	{ scriptloader, prompt } = Cu.import("resource://gre/modules/Services.jsm").Services;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
@@ -99,12 +99,13 @@ this.SebWin = {
         onCloseWindow: function (aWindow) {},
         onWindowTitleChange: function (aWindow, aTitle) {
             let domWin = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
+            sl.debug(domWin.location.href);
             switch (domWin.location.href) {
                 case unknownContent :
                     if (!su.getConfig("allowDownUploads","boolean",true)) { // close dialog
                         sl.debug("close unknownContent dialog");
                         domWin.close();
-                        // prompt!
+                        prompt.alert(seb.mainWin, su.getLocStr("seb.download.blocked.title"), su.getLocStr("seb.download.blocked.text"));
                     }
                     else { // show dialog but look at urls
                         sl.debug("parse commonDialog for unallowed url");
