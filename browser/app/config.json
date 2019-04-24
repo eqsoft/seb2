@@ -58,6 +58,7 @@
 "allowQuit":true,
 "allowSpellCheck":true,
 "allowSpellCheckDictionary":"en-US",
+"allowUrlInCommonDialog":false,
 "allowVideoCapture":false,
 "blacklistURLFilter":[],
 "blockPopUpWindows":false,

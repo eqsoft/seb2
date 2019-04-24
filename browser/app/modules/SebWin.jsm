@@ -70,6 +70,7 @@ const	xulFrame = "seb.iframe",
 	xulErr = "chrome://seb/content/err.xul",
 	xulLoad	= "chrome://seb/content/load.xul",
     unknownContent = "chrome://mozapps/content/downloads/unknownContentType.xul",
+    commonDialog = "chrome://global/content/commonDialog.xul",
 	contentDeck = 0,
 	serverDeck = 1,
 	messageDeck = 2,
@@ -90,22 +91,31 @@ this.SebWin = {
 		pdfViewer : /^.*?\/pdfjs\/.*?viewer\.html\?file\=/,
 		errorViewer : /^.*?error\.xhtml\?req\=.*/
 	},
-	
+	urlInRef : /(w+\.w+)/,
     windowListener : {
         //https://stackoverflow.com/questions/24560243/intercept-handle-mime-type-file?lq=1
         //https://mike.kaply.com/2013/05/15/setting-default-application-handlers/
         onOpenWindow: function (aWindow) {},
         onCloseWindow: function (aWindow) {},
         onWindowTitleChange: function (aWindow, aTitle) {
-            if (su.getConfig("allowDownUploads","boolean",true)) {
+            //let domWin = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
+            //sl.debug(domWin.document.documentElement.innerHTML);
+            if (su.getConfig("allowDownUploads","boolean",true) && su.getConfig("allowUrlInCommonDialog","boolean",true)) {
                 return;
             }
             let domWin = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
             //let win = base.getChromeWin(domWin);
-            sl.debug(domWin.location);
-            if (domWin.location.href === unknownContent) {
+            //sl.debug(domWin.location);
+            if (domWin.location.href === unknownContent && !su.getConfig("allowDownUploads","boolean",true)) {
                 sl.debug("close unknownContent dialog");
                 domWin.close();
+            }
+            if (domWin.location.href === commonDialog && !su.getConfig("allowUrlInCommonDialog","boolean",true)) {
+                sl.debug("parse commonDialog for unallowed url");
+                let infoElement = domWin.document.getElementById("info.body");
+                let infoHtml = infoElement.innerHTML;
+                let newInfoHtml = infoHtml.replace(/\w*?\.\w+/g,"*");
+                infoElement.innerHTML = newInfoHtml;
             }
         }
     },
