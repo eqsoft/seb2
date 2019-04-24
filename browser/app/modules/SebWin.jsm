@@ -98,24 +98,38 @@ this.SebWin = {
         onOpenWindow: function (aWindow) {},
         onCloseWindow: function (aWindow) {},
         onWindowTitleChange: function (aWindow, aTitle) {
-            //let domWin = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-            //sl.debug(domWin.document.documentElement.innerHTML);
-            if (su.getConfig("allowDownUploads","boolean",true) && su.getConfig("allowUrlInCommonDialog","boolean",true)) {
-                return;
-            }
             let domWin = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-            //let win = base.getChromeWin(domWin);
-            //sl.debug(domWin.location);
-            if (domWin.location.href === unknownContent && !su.getConfig("allowDownUploads","boolean",true)) {
-                sl.debug("close unknownContent dialog");
-                domWin.close();
-            }
-            if (domWin.location.href === commonDialog && !su.getConfig("allowUrlInCommonDialog","boolean",true)) {
-                sl.debug("parse commonDialog for unallowed url");
-                let infoElement = domWin.document.getElementById("info.body");
-                let infoHtml = infoElement.innerHTML;
-                let newInfoHtml = infoHtml.replace(/\w*?\.\w+/g,"*");
-                infoElement.innerHTML = newInfoHtml;
+            switch (domWin.location.href) {
+                case unknownContent :
+                    if (!su.getConfig("allowDownUploads","boolean",true)) { // close dialog
+                        sl.debug("close unknownContent dialog");
+                        domWin.close();
+                        // prompt!
+                    }
+                    else { // show dialog but look at urls
+                        sl.debug("parse commonDialog for unallowed url");
+                        if (!su.getConfig("allowUrlInCommonDialog","boolean",false)) {
+                            try {
+                                domWin.document.getElementById("from").parentElement.style.display = "none";
+                            }
+                            catch(e) { sl.debug(e); }
+                        }
+                    }
+                break;
+                case commonDialog :
+                   if (!su.getConfig("allowUrlInCommonDialog","boolean",false)) {
+                        sl.debug("parse commonDialog for unallowed url");
+                        try {
+                            let infoElement = domWin.document.getElementById("info.body");
+                            let infoHtml = infoElement.innerHTML;
+                            let newInfoHtml = infoHtml.replace(/\w*?\.\w+/g,"*");
+                            infoElement.innerHTML = newInfoHtml;
+                        }
+                        catch (e) { sl.debug(e); }
+                    }
+                break;
+                default :
+                    return
             }
         }
     },

@@ -132,7 +132,7 @@
 "newBrowserWindowByScriptBlockForeign":false,
 "newBrowserWindowByScriptPolicy":2,
 "newBrowserWindowShowReloadWarning" : false,
-"openDownloads":true,
+"openDownloads":false,
 "pinEmbeddedCertificates":false,
 "proxies": {},
 "quitOnMessageSocketClose":true,
