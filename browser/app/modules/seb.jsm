@@ -957,5 +957,17 @@ this.seb =  {
         base.privateClipboard.ranges = [];
         base.privateClipboard.text = "";
         sh.sendClearClipboard();
+    },
+    
+    zoomIn : function(win) {
+        win.ZoomManager.enlarge();
+    },
+    
+    zoomOut : function(win) {
+         win.ZoomManager.reduce();
+    },
+    
+    zoomReset : function(win) {
+        win.ZoomManager.reset();
     }
 }
