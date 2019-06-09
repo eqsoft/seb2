@@ -316,7 +316,13 @@ this.SebWin = {
 	},
 	
 	openPdfViewer : function(url) {
-		base.openDistinctWin(pdfViewer+encodeURIComponent(url));
+        if (url == su.getUrl()) {
+            sl.debug("PDF as startURL");
+            sb.loadPage(seb.mainWin,pdfViewer+encodeURIComponent(url));
+        }
+        else {
+            base.openDistinctWin(pdfViewer+encodeURIComponent(url));
+        }
 	},
 	
 	openWin : function(url) {
