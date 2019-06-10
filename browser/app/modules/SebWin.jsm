@@ -315,8 +315,8 @@ this.SebWin = {
 		base.openWin(url);
 	},
 	
-	openPdfViewer : function(url) {
-        if (url == su.getUrl()) {
+	openPdfViewer : function(url, newWindow=true) {
+        if (url == su.getUrl() || newWindow === false) {
             sl.debug("PDF as startURL");
             sb.loadPage(seb.mainWin,pdfViewer+encodeURIComponent(url));
         }

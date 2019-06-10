@@ -352,7 +352,6 @@ this.seb =  {
 						return this.linkURLRegex.test(url);
 					}
 					if (this.refererOnly) {
-						
 						return this.refererFilterRegex.test(referer);
 					}
 					return (this.linkURLRegex.test(url) && this.refererFilterRegex.test(referer));
@@ -625,12 +624,17 @@ this.seb =  {
 		if (reset) {
 			sb.clearSession();
 		}
-		if (ar["newWindow"] === false) { // explicit exists and false, null ignored
-			sb.loadPage(base.mainWin,url);
-		}
-		else { // default even if no newWindow parameter exists
-			sw.openDistinctWin(url);
-		}
+        if (/\.pdf$/i.test(url)) {
+            sw.openPdfViewer(url,ar["newWindow"]);
+        }
+        else { // ToDo: mimetype handling
+            if (ar["newWindow"] === false) {
+                sb.loadPage(base.mainWin,url);
+            }
+            else {
+                sw.openDistinctWin(url);
+            }
+        }
 	},
 	
 	initLockScreen : function(win) {

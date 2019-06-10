@@ -323,7 +323,6 @@ this.SebBrowser = {
 					for (var key in seb.ars) {
 						if (seb.ars[key].checkTrigger(uri,progress.DOMWindow.document.URL)) {
 							if (seb.ars[key].isLink) {
-								
 								this.onStatusChange(progress, request, STATUS_LOAD_AR.status, key);
 								return;
 							}

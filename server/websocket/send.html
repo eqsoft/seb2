@@ -5,20 +5,34 @@
 		<script>
 			var ws = null;
 			var msg = {
-
-
 				"close" : { "Handler":"Close", "Opts":null},
 				"restartExam" : { "Handler":"RestartExam", "Opts": null},
 				"displaySettingsChanged" : { "Handler":"DisplaySettingsChanged", "Opts":{}},
 				"reload" : { "Handler":"Reload", "Opts":{}},
 				"keyboardShown" : { "Handler":"KeyboardShown", "Opts":{}},
 				"shutdown" : { "Handler":"Shutdown", "Opts":{}},
-
+                
+                "AdditionalResourcesPdfLinuxMainWindow" :
+				{
+					"Handler": "AdditionalResources",
+					"Opts": {
+						"id": "2",
+						"path": "/data/seb2/server/demo/res/"
+					}
+				},
+                "AdditionalResourcesPdfLinuxNewWindow" :
+				{
+					"Handler": "AdditionalResources",
+					"Opts": {
+						"id": "3",
+						"path": "/data/seb2/server/demo/res/"
+					}
+				},
 				"AdditionalResourcesPdfMac" :
 				{
 					"Handler": "AdditionalResources",
 					"Opts": {
-						"id": "1",
+						"id": "16",
 						"path": "/Users/stefan/Development/seb2/browser/app/chrome/content/pdfjs/web/"
 					}
 				},
