@@ -1218,6 +1218,7 @@ var PDFViewerApplication = {
     if (support && _pdfjsLib.PDFJS.disableFullscreen === true) {
       support = false;
     }
+    support = false;
     return (0, _pdfjsLib.shadow)(this, 'supportsFullscreen', support);
   },
   get supportsIntegratedFind() {
