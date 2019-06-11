@@ -99,7 +99,7 @@ this.SebWin = {
         onCloseWindow: function (aWindow) {},
         onWindowTitleChange: function (aWindow, aTitle) {
             let domWin = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-            sl.debug(domWin.location.href);
+            //sl.debug(domWin.location.href);
             switch (domWin.location.href) {
                 case unknownContent :
                     if (!su.getConfig("allowDownUploads","boolean",true)) { // close dialog
@@ -319,11 +319,13 @@ this.SebWin = {
         sl.debug("isAlreadyOpen check");
         url.replace(/\/$/,"");
         for (var i=base.wins.length-1;i>=0;i--) {
-            let a = btoa(url);
-            let c = base.wins[i].XULBrowserWindow.baseurl;
-            if (a == c || c == null) {
-                sl.debug("is already open: " + url);
-                return base.wins[i];
+            if (base.getWinType(base.wins[i]) !== "main") {
+                let a = btoa(url);
+                let c = base.wins[i].XULBrowserWindow.baseurl;
+                if (a == c || c == null) {
+                    sl.debug("is already open: " + url);
+                    return base.wins[i];
+                }
             }
         }
         return false;
