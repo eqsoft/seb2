@@ -119,7 +119,7 @@ this.SebWin = {
                 break;
                 case commonDialog :
                    if (!su.getConfig("allowUrlInCommonDialog","boolean",false)) {
-                        sl.debug("parse commonDialog for unallowed url");
+                        sl.debug("parse commonDialog");
                         try {
                             let infoElement = domWin.document.getElementById("info.body");
                             let infoHtml = infoElement.innerHTML;
@@ -315,7 +315,26 @@ this.SebWin = {
 		base.openWin(url);
 	},
 	
+    isAlreadyOpen : function(url) {
+        sl.debug("isAlreadyOpen check");
+        url.replace(/\/$/,"");
+        for (var i=base.wins.length-1;i>=0;i--) {
+            let a = btoa(url);
+            let c = base.wins[i].XULBrowserWindow.baseurl;
+            if (a == c || c == null) {
+                sl.debug("is already open: " + url);
+                return base.wins[i];
+            }
+        }
+        return false;
+    },
+    
 	openPdfViewer : function(url, newWindow=true) {
+        // check if already window opened with a "target='blank'" link"
+        let win = base.isAlreadyOpen(url);
+        if (win) {
+            win.close();
+        }
         if (url == su.getUrl() || newWindow === false) {
             sl.debug("PDF as startURL");
             sb.loadPage(seb.mainWin,pdfViewer+encodeURIComponent(url));
