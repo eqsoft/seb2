@@ -119,7 +119,8 @@ function nsBrowserStatusHandler() {};
 nsBrowserStatusHandler.prototype = {
 	browser : null,
 	originRequestURI : null,
-	mainPageURI : null,	
+	mainPageURI : null,
+    redirecting : false,
 	baseurl : null,
 	lastSuccess : null,
 	referrer : null,
