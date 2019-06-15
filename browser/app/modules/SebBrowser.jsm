@@ -1372,5 +1372,28 @@ this.SebBrowser = {
                 return false;
             }
         }
+    },
+    
+    createUploadController : function (win) {
+        if (su.getConfig("allowDownUploads","boolean",true)) {
+            return;
+        }
+        sl.debug("createUploadController");
+        win.document.addEventListener("click",onDocumentClick,false);
+		function onDocumentClick(evt) {
+            var el = evt.target;
+            if (el.tagName == "INPUT") {
+                if (el.getAttribute("type") == "file") {
+                    cancelClick(evt);
+                }
+            }
+		}
+        function cancelClick(evt) {
+            sl.debug("input type=file click");
+            evt.stopPropagation();
+            evt.preventDefault();
+            prompt.alert(seb.mainWin, su.getLocStr("seb.download.blocked.title"), su.getLocStr("seb.download.blocked.text"));
+            evt.returnValue = false;
+        }
     }
 }

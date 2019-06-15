@@ -268,6 +268,7 @@ this.seb =  {
 		ss.setSebserverSocketHandler(win);
 		sb.createSpellCheckController(win);
         sb.createClipboardController(win);
+        sb.createUploadController(win);
 		base.locs = win.document.getElementById("locale");
 		base.consts = win.document.getElementById("const");
 		sw.setMainNavigation(win);
@@ -292,6 +293,7 @@ this.seb =  {
 		sh.createFullscreenController(win);
 		sb.createSpellCheckController(win);
         sb.createClipboardController(win);
+        sb.createUploadController(win);
 	},
 
 	initAdditionalResources : function (obj) {
