@@ -459,10 +459,12 @@ this.SebNet = {
 		if (p === 0) {
 			return 5;
 		}
-		// http(s) proxy
+		// all *Enabled settings need proxy_type 1
 		p = proxies["HTTPEnable"];
 		let p2 = proxies["HTTPSEnable"];
-		if ( (typeof p === "boolean" && p) || (typeof p2 === "boolean" && p2) ) {
+        let p3 = proxies["SOCKSEnable"];
+        let p4 = proxies["FTPEnable"];
+		if ( (typeof p === "boolean" && p) || (typeof p2 === "boolean" && p2) || (typeof p3 === "boolean" && p3) || (typeof p4 === "boolean" && p4)) {
 			return 1;
 		}
 		return null;
