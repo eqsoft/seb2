@@ -1232,6 +1232,7 @@ this.SebBrowser = {
         
         function onCopy(evt) {
             sl.debug("captured copy:" + evt);
+            seb.clearClipboard();
             try {
                 getData(evt);
             }
@@ -1247,6 +1248,7 @@ this.SebBrowser = {
         
         function onCut(evt) {
             sl.debug("captured cut:" + evt);
+            seb.clearClipboard();
             try {
                 getData(evt);
                 
