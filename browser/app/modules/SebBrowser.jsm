@@ -836,6 +836,13 @@ this.SebBrowser = {
         }
 	},
 	
+	initSessionCookies : function () {
+		if (su.getConfig("examSessionClearCookiesOnStart","boolean",true)) {
+			sl.debug("examSessionClearCookiesOnStart = true");
+			base.clearSession();
+		}
+	},
+
 	addAdditionalDictionaries : function(opt) {
 		sl.debug("addDictionaries: " + opt.path);
 		// if allowSpellCheck false, abort
