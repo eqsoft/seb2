@@ -15,7 +15,8 @@
 		"ws": "^1.1.1",
 		"basic-auth": "^1.1.0",
 		"http-auth": "^3.0.1",
-		"http-proxy": "^1.15.2"
+		"http-proxy": "^1.15.2",
+		"clipboardy": "^2.2.0"
 	},
 	"keywords": [
 		"Safe-Exam-Browser",

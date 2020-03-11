@@ -2,10 +2,22 @@ var WebSocketServer = require('ws').Server
 , fs = require('fs-extra')
 , port = 8706
 , wss = new WebSocketServer({port: 8706})
-, fakefail = false;
+, fakefail = false
+, clipboardy = require('clipboardy');
 
 wss.on('connection', function(ws) {
 	ws.on('message', function(message,data) {
+		var m = '';
+		try {
+			m = JSON.parse(message)['Handler'];
+		}
+		catch (e) {
+			m = message;
+		}
+		if (m === 'ClearClipboard') {
+			clipboardy.writeSync('');
+		}
+		
 		if (data.binary) { // just for testing seb file transfer
 			var filepath = __dirname + '/websocket/data/test.seb';
 			var reconfpath = __dirname + '/websocket/data/base64.json';
